@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Browser-Only AI Demos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, Helvetica, Arial, sans-serif;
+      background: #f6f7f9;
+      color: #1f2937;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 900px;
+      width: 100%;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2rem;
+    }
+
+    header p {
+      margin-top: 8px;
+      color: #6b7280;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .card h2 {
+      margin-top: 0;
+      font-size: 1.2rem;
+    }
+
+    .card p {
+      color: #6b7280;
+      font-size: 0.95rem;
+      flex-grow: 1;
+    }
+
+    .card a {
+      margin-top: 16px;
+      text-decoration: none;
+      text-align: center;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: #2563eb;
+      color: #ffffff;
+      font-weight: 500;
+    }
+
+    .card a:hover {
+      background: #1e4fd6;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>Browser-Only AI-Style Demos</h1>
+      <p>No backend · No API · Runs 100% in your browser</p>
+    </header>
+
+    <div class="grid">
+      <div class="card">
+        <h2>🖼 Image Frame Tool</h2>
+        <p>
+          Upload an image, auto-balance text, apply a clean frame,
+          and export as PNG.
+        </p>
+        <a href="frame.html">Open Tool</a>
+      </div>
+
+      <div class="card">
+        <h2>🧠 Text Visualizer</h2>
+        <p>
+          Turn plain text into a visual composition with smart sizing
+          and layout balance.
+        </p>
+        <a href="text-visualizer.html">Open Demo</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
+

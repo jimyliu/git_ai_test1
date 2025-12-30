@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Text Visualizer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    body {
+      margin: 0;
+      padding: 16px;
+      background: #f6f7f9;
+      font-family: system-ui, sans-serif;
+      display: flex;
+      justify-content: center;
+    }
+
+    .app {
+      max-width: 900px;
+      width: 100%;
+      background: #fff;
+      padding: 22px;
+      border-radius: 14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+
+    textarea {
+      width: 100%;
+      height: 100px;
+      margin-bottom: 12px;
+    }
+
+    button {
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      background: #2563eb;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    canvas {
+      margin-top: 16px;
+      width: 100%;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    }
+  </style>
+</head>
+<body>
+
+<div class="app">
+  <h1>Text Visualizer</h1>
+  <a href="index.html">← Back</a>
+
+  <textarea id="text"></textarea>
+  <button onclick="draw()">Visualize</button>
+  <canvas id="canvas" width="800" height="400"></canvas>
+</div>
+
+<script>
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
+
+  function draw() {
+    const text = document.getElementById("text").value;
+    ctx.fillStyle = "#fff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.textAlign = "center";
+
+    let size = 48;
+    do {
+      ctx.font = `600 ${size}px system-ui`;
+      size--;
+    } while (ctx.measureText(text).width > canvas.width * 0.9 && size > 14);
+
+    ctx.fillStyle = "#111";
+    ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+  }
+</script>
+
+</body>
+</html>
+
