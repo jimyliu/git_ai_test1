@@ -1,481 +1,584 @@
 <!DOCTYPE html>
-
-<html lang="zh-Hant">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>AI Image Frame Tool — 2025-12-30 15:00:12</title>
-<style>
-:root {
---primary: #007AFF;
---bg: #F5F5F7;
---panel: #FFFFFF;
---text: #1D1D1F;
---border: #D2D2D7;
---radius: 12px;
---shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI Image Frame Tool — 2025-12-30 15:09:51</title>
+    <style>
+        :root {
+            --bg-color: #f4f4f7;
+            --panel-bg: #ffffff;
+            --text-color: #333333;
+            --accent-color: #007aff;
+            --border-color: #e0e0e0;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --radius: 12px;
+            --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
 
-```
-    * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+        body {
+            font-family: var(--font-ui);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
 
-    body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        background-color: var(--bg);
-        color: var(--text);
-        margin: 0;
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        min-height: 100vh;
-    }
+        header {
+            background: var(--panel-bg);
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            z-index: 10;
+        }
 
-    h1 {
-        font-size: 1.2rem;
-        font-weight: 600;
-        margin-bottom: 20px;
-        color: #86868b;
-    }
+        h1 {
+            font-size: 18px;
+            margin: 0;
+            font-weight: 600;
+            color: var(--text-color);
+        }
 
-    .app-container {
-        display: grid;
-        grid-template-columns: 320px 1fr;
-        gap: 24px;
-        width: 100%;
-        max-width: 1200px;
-        align-items: start;
-    }
+        .version-tag {
+            font-size: 12px;
+            color: #888;
+            font-family: monospace;
+        }
 
-    @media (max-width: 900px) {
-        .app-container { grid-template-columns: 1fr; }
-        .canvas-wrapper { order: -1; }
-    }
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
 
-    /* Controls Panel */
-    .controls {
-        background: var(--panel);
-        padding: 24px;
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-        max-height: 90vh;
-        overflow-y: auto;
-    }
+        /* Canvas Area */
+        .canvas-area {
+            flex: 1;
+            background-color: #e5e5e5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow: auto;
+            background-image: radial-gradient(#ccc 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
 
-    .control-group {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        border-bottom: 1px solid #eee;
-        padding-bottom: 16px;
-    }
-    
-    .control-group:last-child { border-bottom: none; }
+        canvas {
+            background: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-width: 100%;
+            max-height: 100%;
+            cursor: crosshair;
+            touch-action: none; /* Critical for touch dragging */
+        }
 
-    label {
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: #666;
-        display: flex;
-        justify-content: space-between;
-    }
+        /* Controls Sidebar */
+        .controls {
+            width: 340px;
+            background: var(--panel-bg);
+            border-left: 1px solid var(--border-color);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            padding-bottom: 40px;
+        }
 
-    input[type="text"], select {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        font-size: 1rem;
-        outline: none;
-        transition: border-color 0.2s;
-    }
+        .control-section {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
 
-    input[type="text"]:focus, select:focus {
-        border-color: var(--primary);
-    }
+        .control-section h3 {
+            margin: 0 0 15px 0;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #666;
+        }
 
-    input[type="color"] {
-        -webkit-appearance: none;
-        width: 100%;
-        height: 40px;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        padding: 0;
-        overflow: hidden;
-    }
-    
-    input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
-    input[type="color"]::-webkit-color-swatch { border: none; }
+        /* Form Elements */
+        .input-group {
+            margin-bottom: 12px;
+        }
 
-    input[type="range"] {
-        width: 100%;
-        accent-color: var(--primary);
-    }
+        label {
+            display: block;
+            font-size: 13px;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
 
-    input[type="file"] {
-        font-size: 0.9rem;
-    }
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+            font-family: var(--font-ui);
+        }
 
-    /* Buttons */
-    .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    
-    button {
-        padding: 12px;
-        border-radius: 8px;
-        border: none;
-        font-weight: 600;
-        cursor: pointer;
-        transition: transform 0.1s, opacity 0.2s;
-        font-size: 0.9rem;
-    }
-    
-    button:active { transform: scale(0.98); }
+        input[type="color"] {
+            -webkit-appearance: none;
+            border: none;
+            width: 100%;
+            height: 36px;
+            border-radius: 6px;
+            cursor: pointer;
+            padding: 0;
+            overflow: hidden;
+        }
 
-    .btn-primary { background: var(--primary); color: white; }
-    .btn-secondary { background: #e5e5ea; color: var(--text); }
-    .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+        input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+        input[type="color"]::-webkit-color-swatch {
+            border: none;
+        }
 
-    /* Canvas Area */
-    .canvas-wrapper {
-        background: #e5e5ea; /* Contrast bg */
-        border-radius: var(--radius);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 400px;
-        padding: 20px;
-        overflow: hidden;
-        position: relative;
-        box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
-    }
+        .slider-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-    canvas {
-        max-width: 100%;
-        height: auto;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        background: white;
-        cursor: grab;
-        touch-action: none; /* Critical for iOS drag */
-    }
-    
-    canvas:active { cursor: grabbing; }
+        input[type="range"] {
+            flex: 1;
+            accent-color: var(--accent-color);
+        }
 
-    .empty-state {
-        color: #888;
-        text-align: center;
-    }
-</style>
+        input[type="number"] {
+            width: 60px;
+            padding: 4px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-align: center;
+        }
 
-```
+        /* Buttons */
+        .btn {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-bottom: 8px;
+            text-align: center;
+        }
 
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #0066d6;
+        }
+
+        .btn-secondary {
+            background-color: #f0f0f5;
+            color: #333;
+        }
+        .btn-secondary:hover {
+            background-color: #e0e0e5;
+        }
+
+        .file-upload-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-upload-wrapper input[type=file] {
+            font-size: 100px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            body {
+                height: auto;
+                overflow-y: auto;
+            }
+            .main-container {
+                flex-direction: column;
+            }
+            .canvas-area {
+                height: 50vh;
+                min-height: 300px;
+                order: 1;
+            }
+            .controls {
+                width: 100%;
+                height: auto;
+                order: 2;
+                border-left: none;
+                border-top: 1px solid var(--border-color);
+            }
+        }
+
+        /* Font Specifics */
+        optgroup { font-style: normal; font-weight: bold; color: #666; }
+        option { color: #000; }
+    </style>
 </head>
 <body>
 
-```
-<h1>AI Image Frame Tool — 2025-12-30 15:00:12</h1>
+<header>
+    <div>
+        <h1>AI Image Frame Tool</h1>
+        <span class="version-tag">2025-12-30 15:09:51</span>
+    </div>
+</header>
 
-<div class="app-container">
-    <aside class="controls">
-        
-        <div class="control-group">
-            <label>Input Image</label>
-            <input type="file" id="imageInput" accept="image/*">
-        </div>
+<div class="main-container">
+    <div class="canvas-area">
+        <canvas id="mainCanvas"></canvas>
+    </div>
 
-        <div class="control-group">
-            <label>Frame Settings</label>
-            <div style="display:flex; gap:10px; margin-bottom:5px;">
-                <input type="color" id="frameColor" value="#ffffff" title="Frame Color">
-                <input type="number" id="frameWidthVal" value="20" min="0" max="200" style="width: 60px; padding: 5px; border-radius: 6px; border:1px solid #ccc;">
+    <div class="controls">
+        <div class="control-section">
+            <h3>🖼 Source & Frame</h3>
+            <div class="input-group">
+                <div class="file-upload-wrapper">
+                    <button class="btn btn-secondary">📂 Upload Image</button>
+                    <input type="file" id="imageUpload" accept="image/*">
+                </div>
             </div>
-            <input type="range" id="frameWidth" min="0" max="200" value="20">
-        </div>
-
-        <div class="control-group">
-            <label>Title Layer</label>
-            <input type="text" id="titleText" placeholder="Enter Title...">
             
-            <div style="margin-top:10px; display:flex; gap:10px;">
-                <input type="color" id="titleColor" value="#000000" style="flex:1">
-                <input type="number" id="titleSizeVal" value="60" min="14" max="200" style="width: 60px; padding: 5px; border-radius: 6px; border:1px solid #ccc;">
+            <div class="input-group">
+                <label>Frame Color</label>
+                <input type="color" id="frameColor" value="#ffffff">
             </div>
-            <input type="range" id="titleSize" min="14" max="200" value="60">
 
-            <label style="margin-top:10px;">Font Family</label>
-            <select id="titleFont"></select>
+            <div class="input-group">
+                <label>Frame Thickness</label>
+                <div class="slider-group">
+                    <input type="range" id="frameWidth" min="0" max="200" value="40">
+                    <input type="number" id="frameWidthNum" value="40" min="0" max="200">
+                </div>
+            </div>
         </div>
 
-        <div class="control-group">
-            <label>Subtitle Layer</label>
-            <input type="text" id="subText" placeholder="Enter Subtitle...">
+        <div class="control-section">
+            <h3>📝 Title Layer</h3>
+            <div class="input-group">
+                <input type="text" id="titleText" value="Traditional Style">
+            </div>
             
-            <div style="margin-top:10px; display:flex; gap:10px;">
-                <input type="color" id="subColor" value="#666666" style="flex:1">
-                <input type="number" id="subSizeVal" value="30" min="14" max="200" style="width: 60px; padding: 5px; border-radius: 6px; border:1px solid #ccc;">
+            <div class="input-group">
+                <label>Font</label>
+                <select id="titleFont">
+                    <optgroup label="Traditional Chinese - UI/Web">
+                        <option value="'PingFang TC', 'PingFangTC-Regular', sans-serif">PingFang TC (Standard)</option>
+                        <option value="'PingFangTC-Medium', 'PingFang TC', sans-serif">PingFang TC Medium</option>
+                        <option value="'PingFangTC-Semibold', 'PingFang TC', sans-serif">PingFang TC Semibold</option>
+                        <option value="'Heiti TC', 'Heiti TC Light', sans-serif">Heiti TC</option>
+                        <option value="'Heiti TC Medium', 'Heiti TC', sans-serif">Heiti TC Medium</option>
+                    </optgroup>
+                    <optgroup label="Traditional Chinese - Serif/Classic">
+                        <option value="'Songti TC', 'Songti TC Regular', serif">Songti TC Regular</option>
+                        <option value="'Songti TC Bold', 'Songti TC', serif">Songti TC Bold</option>
+                        <option value="'Kaiti TC', serif">Kaiti TC (Calligraphy)</option>
+                    </optgroup>
+                    <optgroup label="Latin / System">
+                        <option value="system-ui, -apple-system, sans-serif">System UI</option>
+                        <option value="Arial, sans-serif">Arial</option>
+                        <option value="Helvetica, sans-serif">Helvetica</option>
+                    </optgroup>
+                </select>
             </div>
-            <input type="range" id="subSize" min="14" max="200" value="30">
-            
-            <label style="margin-top:10px;">Font Family</label>
-            <select id="subFont"></select>
-        </div>
 
-        <div class="control-group">
-            <label>AI Tools</label>
-            <div class="btn-group">
-                <button class="btn-secondary" id="btnInspire">💡 Caption</button>
-                <button class="btn-secondary" id="btnRandomStyle">🎨 Style</button>
+            <div class="input-group">
+                <label>Size (pt)</label>
+                <div class="slider-group">
+                    <input type="range" id="titleSize" min="14" max="800" value="80">
+                    <input type="number" id="titleSizeNum" value="80" min="14" max="800">
+                </div>
             </div>
-            <button class="btn-outline" id="btnCenter" style="margin-top:10px; width:100%;">Target Center</button>
+
+            <div class="input-group">
+                <label>Color</label>
+                <input type="color" id="titleColor" value="#000000">
+            </div>
         </div>
 
-        <button class="btn-primary" id="btnDownload">Download PNG</button>
+        <div class="control-section">
+            <h3>✍️ Subtitle Layer</h3>
+            <div class="input-group">
+                <input type="text" id="subtitleText" value="Captured in Taipei, 2025">
+            </div>
 
-    </aside>
+            <div class="input-group">
+                <label>Font</label>
+                <select id="subtitleFont">
+                    <optgroup label="Traditional Chinese - UI/Web">
+                        <option value="'PingFang TC', 'PingFangTC-Regular', sans-serif">PingFang TC (Standard)</option>
+                        <option value="'PingFangTC-Medium', 'PingFang TC', sans-serif">PingFang TC Medium</option>
+                        <option value="'Heiti TC', 'Heiti TC Light', sans-serif">Heiti TC</option>
+                    </optgroup>
+                    <optgroup label="Traditional Chinese - Serif/Classic">
+                        <option value="'Songti TC', 'Songti TC Regular', serif">Songti TC Regular</option>
+                        <option value="'Kaiti TC', serif">Kaiti TC (Calligraphy)</option>
+                    </optgroup>
+                    <optgroup label="Latin / System">
+                        <option value="system-ui, -apple-system, sans-serif" selected>System UI</option>
+                        <option value="Arial, sans-serif">Arial</option>
+                        <option value="Helvetica, sans-serif">Helvetica</option>
+                    </optgroup>
+                </select>
+            </div>
 
-    <main class="canvas-wrapper">
-        <canvas id="canvas"></canvas>
-        <div id="emptyState" class="empty-state">
-            <h3>No Image Loaded</h3>
-            <p>Upload an image to start framing.</p>
+            <div class="input-group">
+                <label>Size (pt)</label>
+                <div class="slider-group">
+                    <input type="range" id="subtitleSize" min="14" max="800" value="32">
+                    <input type="number" id="subtitleSizeNum" value="32" min="14" max="800">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Color</label>
+                <input type="color" id="subtitleColor" value="#666666">
+            </div>
         </div>
-    </main>
+
+        <div class="control-section">
+            <h3>⚡️ Smart Tools</h3>
+            <button class="btn btn-secondary" id="btnPresets">💡 Inspirational Caption</button>
+            <button class="btn btn-secondary" id="btnRandomStyle">🎨 Randomize Style</button>
+            <button class="btn btn-secondary" id="btnCenterText">🎯 Auto-Center Text</button>
+            <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 15px 0;">
+            <button class="btn btn-primary" id="btnExport">📥 Download PNG</button>
+        </div>
+    </div>
 </div>
 
 <script>
-    // --- Configuration & State ---
-    const FONTS = [
-        { name: "PingFang TC (Primary)", val: '"PingFang TC", "PingFangTC-Regular", "Heiti TC", system-ui, sans-serif' },
-        { name: "PingFang Medium", val: '"PingFangTC-Medium", "PingFang TC", system-ui, sans-serif' },
-        { name: "PingFang Semibold", val: '"PingFangTC-Semibold", "PingFang TC", system-ui, sans-serif' },
-        { name: "Heiti TC (Traditional)", val: '"Heiti TC", "Heiti TC Light", "PingFang TC", sans-serif' },
-        { name: "Songti TC (Serif)", val: '"Songti TC", "Songti TC Regular", serif' },
-        { name: "Songti TC Bold", val: '"Songti TC Bold", "Songti TC", serif' },
-        { name: "Kaiti TC (Calligraphy)", val: '"Kaiti TC", "Kaiti SC", serif' },
-        { name: "System UI", val: 'system-ui, -apple-system, sans-serif' },
-        { name: "Helvetica", val: '"Helvetica Neue", Helvetica, Arial, sans-serif' },
-        { name: "Arial", val: 'Arial, sans-serif' }
-    ];
-
-    const PRESETS = [
-        { t: "Morning Light", s: "Capture the moment" },
-        { t: "City Vibes", s: "Urban exploration" },
-        { t: "Quiet Mind", s: "Focus on the present" },
-        { t: "Deep Focus", s: "Work in progress" },
-        { t: "Nature's Path", s: "Walk with purpose" }
-    ];
-
-    const state = {
-        img: null,
-        frame: { color: "#ffffff", width: 40 },
-        title: { text: "Visual Story", x: 0, y: 0, color: "#000000", size: 80, font: FONTS[0].val },
-        sub: { text: "2025 Collection", x: 0, y: 0, color: "#666666", size: 32, font: FONTS[0].val },
-        isDragging: null, // 'title' or 'sub' or null
-        dragOffsetX: 0,
-        dragOffsetY: 0
-    };
-
-    // --- DOM Elements ---
-    const canvas = document.getElementById('canvas');
+    // --- State Management ---
+    const canvas = document.getElementById('mainCanvas');
     const ctx = canvas.getContext('2d');
-    const emptyState = document.getElementById('emptyState');
-    const imgInput = document.getElementById('imageInput');
-
-    // Inputs
-    const els = {
-        frameColor: document.getElementById('frameColor'),
-        frameWidth: document.getElementById('frameWidth'),
-        frameWidthVal: document.getElementById('frameWidthVal'),
-        
-        titleText: document.getElementById('titleText'),
-        titleColor: document.getElementById('titleColor'),
-        titleSize: document.getElementById('titleSize'),
-        titleSizeVal: document.getElementById('titleSizeVal'),
-        titleFont: document.getElementById('titleFont'),
-
-        subText: document.getElementById('subText'),
-        subColor: document.getElementById('subColor'),
-        subSize: document.getElementById('subSize'),
-        subSizeVal: document.getElementById('subSizeVal'),
-        subFont: document.getElementById('subFont'),
+    
+    // Default State
+    let state = {
+        image: new Image(),
+        imageLoaded: false,
+        frameColor: '#ffffff',
+        frameWidth: 40,
+        title: {
+            text: 'Visual Harmony',
+            font: "'PingFang TC', 'PingFangTC-Regular', sans-serif",
+            size: 80,
+            color: '#000000',
+            x: 0,
+            y: 0,
+            isDragging: false
+        },
+        subtitle: {
+            text: 'Captured on a bright afternoon',
+            font: "system-ui, -apple-system, sans-serif",
+            size: 32,
+            color: '#666666',
+            x: 0,
+            y: 0,
+            isDragging: false
+        }
     };
 
-    // --- Initialization ---
-    function init() {
-        // Populate Font Selectors
-        [els.titleFont, els.subFont].forEach(sel => {
-            FONTS.forEach(f => {
-                const opt = document.createElement('option');
-                opt.value = f.val;
-                opt.textContent = f.name;
-                sel.appendChild(opt);
-            });
-        });
+    // Placeholder Logic
+    function initPlaceholder() {
+        canvas.width = 1200;
+        canvas.height = 800;
+        
+        // Draw a placeholder gradient/rect until image loads
+        ctx.fillStyle = "#ddd";
+        ctx.fillRect(0,0,1200,800);
+        ctx.font = "40px sans-serif";
+        ctx.fillStyle = "#888";
+        ctx.textAlign = "center";
+        ctx.fillText("Upload an image to start", 600, 400);
 
-        // Set initial UI values from state
-        els.frameWidth.value = state.frame.width;
-        els.frameWidthVal.value = state.frame.width;
-        
-        els.titleText.value = state.title.text;
-        els.titleSize.value = state.title.size;
-        els.titleSizeVal.value = state.title.size;
-        
-        els.subText.value = state.sub.text;
-        els.subSize.value = state.sub.size;
-        els.subSizeVal.value = state.sub.size;
+        // Set initial text positions based on this size
+        state.title.x = 600;
+        state.title.y = 650;
+        state.subtitle.x = 600;
+        state.subtitle.y = 700;
     }
 
-    // --- Core Rendering ---
+    initPlaceholder();
+
+    // --- Core Rendering Loop ---
     function draw() {
-        if (!state.img) return;
+        if (!state.imageLoaded) return;
 
-        // 1. Clear & Setup
-        canvas.width = state.img.naturalWidth;
-        canvas.height = state.img.naturalHeight;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // 1. Clear & Draw Image
+        canvas.width = state.image.naturalWidth;
+        canvas.height = state.image.naturalHeight;
+        
+        ctx.drawImage(state.image, 0, 0);
 
-        // 2. Draw Image
-        ctx.drawImage(state.img, 0, 0);
+        // 2. Draw Frame (Border Inset)
+        // To keep border uniform, we draw 4 rectangles along the edges
+        const fw = parseInt(state.frameWidth);
+        const w = canvas.width;
+        const h = canvas.height;
 
-        // 3. Draw Frame (Uniform Border)
-        // We draw "inside" the canvas edges
-        if (state.frame.width > 0) {
-            const w = state.frame.width;
-            ctx.lineWidth = w;
-            ctx.strokeStyle = state.frame.color;
-            ctx.lineJoin = 'miter'; 
-            // Stroke is centered on path. To stay inside:
-            // Path rect is width/2 from edge.
-            ctx.strokeRect(w/2, w/2, canvas.width - w, canvas.height - w);
-        }
+        ctx.fillStyle = state.frameColor;
+        
+        // Top
+        ctx.fillRect(0, 0, w, fw);
+        // Bottom
+        ctx.fillRect(0, h - fw, w, fw);
+        // Left
+        ctx.fillRect(0, fw, fw, h - (fw * 2));
+        // Right
+        ctx.fillRect(w - fw, fw, fw, h - (fw * 2));
 
-        // 4. Draw Text
-        drawTextLayer(state.title);
-        drawTextLayer(state.sub);
+        // 3. Draw Text
+        drawTextObj(state.title);
+        drawTextObj(state.subtitle);
     }
 
-    function drawTextLayer(layer) {
-        if (!layer.text) return;
-        ctx.font = `${layer.size}px ${layer.font}`;
-        ctx.fillStyle = layer.color;
+    function drawTextObj(obj) {
+        ctx.save();
+        ctx.font = `${obj.size}px ${obj.font}`;
+        ctx.fillStyle = obj.color;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         
-        // Shadow for readability
-        ctx.shadowColor = "rgba(0,0,0,0.3)";
-        ctx.shadowBlur = 4;
-        ctx.shadowOffsetX = 0;
-        ctx.shadowOffsetY = 2;
+        // Shadow for better visibility if needed (subtle)
+        // ctx.shadowColor = "rgba(0,0,0,0.1)";
+        // ctx.shadowBlur = 4;
 
-        ctx.fillText(layer.text, layer.x, layer.y);
+        ctx.fillText(obj.text, obj.x, obj.y);
         
-        // Reset shadow
-        ctx.shadowColor = "transparent";
+        // Debug box logic for drag detection (invisible)
+        /* const metrics = ctx.measureText(obj.text);
+        const h = obj.size; 
+        ctx.strokeStyle = "red";
+        ctx.strokeRect(obj.x - metrics.width/2, obj.y - h/2, metrics.width, h);
+        */
+        
+        ctx.restore();
     }
 
-    // --- Event Handling ---
+    // --- Inputs & Event Listeners ---
+
+    // DOM Elements
+    const dom = {
+        imgUpload: document.getElementById('imageUpload'),
+        frameColor: document.getElementById('frameColor'),
+        frameWidth: document.getElementById('frameWidth'),
+        frameWidthNum: document.getElementById('frameWidthNum'),
+        
+        titleText: document.getElementById('titleText'),
+        titleFont: document.getElementById('titleFont'),
+        titleSize: document.getElementById('titleSize'),
+        titleSizeNum: document.getElementById('titleSizeNum'),
+        titleColor: document.getElementById('titleColor'),
+        
+        subText: document.getElementById('subtitleText'),
+        subFont: document.getElementById('subtitleFont'),
+        subSize: document.getElementById('subtitleSize'),
+        subSizeNum: document.getElementById('subtitleSizeNum'),
+        subColor: document.getElementById('subtitleColor'),
+        
+        btnExport: document.getElementById('btnExport'),
+        btnCenter: document.getElementById('btnCenterText'),
+        btnPresets: document.getElementById('btnPresets'),
+        btnRandom: document.getElementById('btnRandomStyle')
+    };
+
+    // Helper to sync slider and number
+    function syncInputs(slider, number, key, subKey) {
+        slider.addEventListener('input', (e) => {
+            number.value = e.target.value;
+            if(subKey) state[key][subKey] = parseInt(e.target.value);
+            else state[key] = parseInt(e.target.value);
+            draw();
+        });
+        number.addEventListener('input', (e) => {
+            slider.value = e.target.value;
+            if(subKey) state[key][subKey] = parseInt(e.target.value);
+            else state[key] = parseInt(e.target.value);
+            draw();
+        });
+    }
 
     // Image Upload
-    imgInput.addEventListener('change', (e) => {
+    dom.imgUpload.addEventListener('change', (e) => {
         const file = e.target.files[0];
-        if (!file) return;
-
+        if(!file) return;
         const reader = new FileReader();
-        reader.onload = (evt) => {
-            const img = new Image();
-            img.onload = () => {
-                state.img = img;
-                emptyState.style.display = 'none';
-                canvas.style.display = 'block';
+        reader.onload = (event) => {
+            state.image = new Image();
+            state.image.onload = () => {
+                state.imageLoaded = true;
                 
-                // Smart Defaults
-                resetPositions();
-                autoScaleText();
-                
+                // Smart default sizing
+                const h = state.image.naturalHeight;
+                // Frame proportional
+                state.frameWidth = Math.max(20, Math.floor(h * 0.05));
+                dom.frameWidth.value = state.frameWidth;
+                dom.frameWidthNum.value = state.frameWidth;
+
+                // Font proportional
+                state.title.size = Math.floor(h * 0.08);
+                dom.titleSize.value = state.title.size;
+                dom.titleSizeNum.value = state.title.size;
+
+                state.subtitle.size = Math.floor(h * 0.035);
+                dom.subtitleSize.value = state.subtitle.size;
+                dom.subtitleSizeNum.value = state.subtitle.size;
+
+                centerText();
                 draw();
             };
-            img.src = evt.target.result;
+            state.image.src = event.target.result;
         };
         reader.readAsDataURL(file);
     });
 
-    // Frame Controls
-    const updateFrame = () => {
-        state.frame.color = els.frameColor.value;
-        state.frame.width = parseInt(els.frameWidth.value);
-        els.frameWidthVal.value = state.frame.width;
-        draw();
-    };
-    els.frameColor.addEventListener('input', updateFrame);
-    els.frameWidth.addEventListener('input', updateFrame);
-    els.frameWidthVal.addEventListener('input', (e) => {
-        els.frameWidth.value = e.target.value;
-        updateFrame();
-    });
+    // Frame
+    dom.frameColor.addEventListener('input', (e) => { state.frameColor = e.target.value; draw(); });
+    syncInputs(dom.frameWidth, dom.frameWidthNum, 'frameWidth');
 
-    // Text Controls (Generic Handler)
-    const setupTextHandler = (layerName, elPrefix) => {
-        const update = () => {
-            state[layerName].text = els[elPrefix + 'Text'].value;
-            state[layerName].color = els[elPrefix + 'Color'].value;
-            state[layerName].size = parseInt(els[elPrefix + 'Size'].value);
-            state[layerName].font = els[elPrefix + 'Font'].value;
-            
-            // Sync numeric inputs
-            els[elPrefix + 'SizeVal'].value = state[layerName].size;
-            draw();
-        };
+    // Title
+    dom.titleText.addEventListener('input', (e) => { state.title.text = e.target.value; draw(); });
+    dom.titleFont.addEventListener('change', (e) => { state.title.font = e.target.value; draw(); });
+    dom.titleColor.addEventListener('input', (e) => { state.title.color = e.target.value; draw(); });
+    syncInputs(dom.titleSize, dom.titleSizeNum, 'title', 'size');
 
-        ['Text', 'Color', 'Size', 'Font'].forEach(key => {
-            els[elPrefix + key].addEventListener('input', update);
-        });
-        
-        // Numeric Input Sync
-        els[elPrefix + 'SizeVal'].addEventListener('input', (e) => {
-            els[elPrefix + 'Size'].value = e.target.value;
-            update();
-        });
-    };
+    // Subtitle
+    dom.subText.addEventListener('input', (e) => { state.subtitle.text = e.target.value; draw(); });
+    dom.subFont.addEventListener('change', (e) => { state.subtitle.font = e.target.value; draw(); });
+    dom.subColor.addEventListener('input', (e) => { state.subtitle.color = e.target.value; draw(); });
+    syncInputs(dom.subSize, dom.subSizeNum, 'subtitle', 'size');
 
-    setupTextHandler('title', 'title');
-    setupTextHandler('sub', 'sub');
-
-    // --- Positioning Logic ---
-
-    function resetPositions() {
-        if(!state.img) return;
-        state.title.x = canvas.width / 2;
-        state.title.y = canvas.height * 0.85;
-        state.sub.x = canvas.width / 2;
-        state.sub.y = canvas.height * 0.92;
-    }
-
-    function autoScaleText() {
-        if(!state.img) return;
-        // Rough heuristic: Title is 5% of height, Sub is 2.5%
-        const h = state.img.naturalHeight;
-        const tSize = Math.max(14, Math.round(h * 0.05));
-        const sSize = Math.max(14, Math.round(h * 0.025));
-        
-        state.title.size = tSize;
-        state.sub.size = sSize;
-        
-        els.titleSize.value = tSize;
-        els.titleSizeVal.value = tSize;
-        els.subSize.value = sSize;
-        els.subSizeVal.value = sSize;
-    }
-
-    // --- Drag & Drop System (Mouse & Touch) ---
+    // --- Positioning Logic (Drag & Drop) ---
+    let dragTarget = null;
+    let dragStart = { x: 0, y: 0 };
+    let objStart = { x: 0, y: 0 };
 
     function getCanvasCoords(e) {
         const rect = canvas.getBoundingClientRect();
-        const scaleX = canvas.width / rect.width;
-        const scaleY = canvas.height / rect.height;
-        
         let clientX, clientY;
         
         if (e.touches && e.touches.length > 0) {
@@ -486,119 +589,155 @@
             clientY = e.clientY;
         }
 
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+
         return {
             x: (clientX - rect.left) * scaleX,
             y: (clientY - rect.top) * scaleY
         };
     }
 
-    function isHit(pos, layer) {
-        if (!layer.text) return false;
-        ctx.font = `${layer.size}px ${layer.font}`;
-        const metrics = ctx.measureText(layer.text);
-        const height = layer.size; // approximate
+    function isHit(obj, x, y) {
+        ctx.font = `${obj.size}px ${obj.font}`;
+        const metrics = ctx.measureText(obj.text);
         const width = metrics.width;
+        const height = obj.size; // approximation usually works well for hit targets
         
-        // Check bounding box (centered alignment)
-        const left = layer.x - (width / 2);
-        const right = layer.x + (width / 2);
-        const top = layer.y - (height / 2);
-        const bottom = layer.y + (height / 2);
-        
-        return (pos.x >= left && pos.x <= right && pos.y >= top && pos.y <= bottom);
+        // Centered text logic
+        const left = obj.x - width / 2;
+        const right = obj.x + width / 2;
+        const top = obj.y - height / 2;
+        const bottom = obj.y + height / 2;
+
+        return (x >= left && x <= right && y >= top && y <= bottom);
     }
 
     function handleStart(e) {
-        if (!state.img) return;
-        const pos = getCanvasCoords(e);
+        if (!state.imageLoaded) return;
+        const coords = getCanvasCoords(e);
         
-        // Check Subtitle first (usually smaller/on top visually)
-        if (isHit(pos, state.sub)) {
-            state.isDragging = 'sub';
-            state.dragOffsetX = pos.x - state.sub.x;
-            state.dragOffsetY = pos.y - state.sub.y;
-        } else if (isHit(pos, state.title)) {
-            state.isDragging = 'title';
-            state.dragOffsetX = pos.x - state.title.x;
-            state.dragOffsetY = pos.y - state.title.y;
+        // Check Subtitle first (usually smaller/on top)
+        if (isHit(state.subtitle, coords.x, coords.y)) {
+            dragTarget = state.subtitle;
+        } else if (isHit(state.title, coords.x, coords.y)) {
+            dragTarget = state.title;
+        }
+
+        if (dragTarget) {
+            dragTarget.isDragging = true;
+            dragStart = coords;
+            objStart = { x: dragTarget.x, y: dragTarget.y };
         }
     }
 
     function handleMove(e) {
-        if (!state.isDragging || !state.img) return;
-        e.preventDefault(); // Stop scroll on mobile
-
-        const pos = getCanvasCoords(e);
-        const layer = state[state.isDragging];
+        if (!dragTarget || !state.imageLoaded) return;
+        e.preventDefault(); // Stop scrolling on mobile
         
-        layer.x = pos.x - state.dragOffsetX;
-        layer.y = pos.y - state.dragOffsetY;
+        const coords = getCanvasCoords(e);
+        const dx = coords.x - dragStart.x;
+        const dy = coords.y - dragStart.y;
+
+        dragTarget.x = objStart.x + dx;
+        dragTarget.y = objStart.y + dy;
         
         draw();
     }
 
     function handleEnd() {
-        state.isDragging = null;
+        if (dragTarget) {
+            dragTarget.isDragging = false;
+            dragTarget = null;
+        }
     }
 
+    // Mouse Events
     canvas.addEventListener('mousedown', handleStart);
     canvas.addEventListener('mousemove', handleMove);
     canvas.addEventListener('mouseup', handleEnd);
-    canvas.addEventListener('mouseout', handleEnd);
+    canvas.addEventListener('mouseleave', handleEnd);
 
+    // Touch Events (Passive false for preventDefault)
     canvas.addEventListener('touchstart', handleStart, { passive: false });
     canvas.addEventListener('touchmove', handleMove, { passive: false });
     canvas.addEventListener('touchend', handleEnd);
 
-    // --- AI / Helper Functions ---
+    // --- AI / Smart Features ---
 
-    document.getElementById('btnCenter').addEventListener('click', () => {
-        resetPositions();
+    function centerText() {
+        if (!state.imageLoaded) return;
+        const w = canvas.width;
+        const h = canvas.height;
+        
+        state.title.x = w / 2;
+        state.title.y = h * 0.85;
+        
+        state.subtitle.x = w / 2;
+        state.subtitle.y = h * 0.92;
+        
+        draw();
+    }
+    
+    dom.btnCenter.addEventListener('click', centerText);
+
+    const captions = [
+        "Quiet moments speak volumes.",
+        "Simplicity is the ultimate sophistication.",
+        "Chasing the light.",
+        "Memory preserved.",
+        "In the mood for love.",
+        "Echoes of silence.",
+        "Urban solitude.",
+        "Nature's whisper."
+    ];
+
+    dom.btnPresets.addEventListener('click', () => {
+        const r = Math.floor(Math.random() * captions.length);
+        state.subtitle.text = captions[r];
+        dom.subText.value = captions[r];
         draw();
     });
 
-    document.getElementById('btnInspire').addEventListener('click', () => {
-        const random = PRESETS[Math.floor(Math.random() * PRESETS.length)];
-        els.titleText.value = random.t;
-        els.subText.value = random.s;
-        // Update state & UI
-        els.titleText.dispatchEvent(new Event('input'));
-        els.subText.dispatchEvent(new Event('input'));
-    });
+    const colors = ['#000000', '#FFFFFF', '#FF3B30', '#007AFF', '#FFCC00', '#5856D6', '#8E8E93'];
+    
+    dom.btnRandom.addEventListener('click', () => {
+        // Randomize Title Color
+        const c1 = colors[Math.floor(Math.random() * colors.length)];
+        state.title.color = c1;
+        dom.titleColor.value = c1;
 
-    document.getElementById('btnRandomStyle').addEventListener('click', () => {
-        // Random Font
-        const rFont = FONTS[Math.floor(Math.random() * FONTS.length)].val;
-        els.titleFont.value = rFont;
-        els.subFont.value = rFont;
+        // Randomize Subtitle Color
+        const c2 = colors[Math.floor(Math.random() * colors.length)];
+        state.subtitle.color = c2;
+        dom.subColor.value = c2;
+
+        // Randomize Font (pick random option index)
+        const opts = dom.titleFont.options;
+        const rFontIndex = Math.floor(Math.random() * opts.length);
+        const rFontVal = opts[rFontIndex].value;
         
-        // Random Color (Pastels/Muted usually look better)
-        const colors = ['#ffffff', '#000000', '#FF3B30', '#FF9500', '#007AFF', '#5856D6'];
-        const rCol = colors[Math.floor(Math.random() * colors.length)];
-        els.titleColor.value = rCol;
+        state.title.font = rFontVal;
+        dom.titleFont.value = rFontVal;
         
-        // Trigger updates
-        state.title.font = rFont;
-        state.sub.font = rFont;
-        state.title.color = rCol;
+        state.subtitle.font = rFontVal;
+        dom.subFont.value = rFontVal;
+
         draw();
     });
 
-    document.getElementById('btnDownload').addEventListener('click', () => {
-        if (!state.img) return alert("Please upload an image first.");
-        
+    // --- Export ---
+    dom.btnExport.addEventListener('click', () => {
+        if (!state.imageLoaded) {
+            alert("Please upload an image first.");
+            return;
+        }
         const link = document.createElement('a');
-        link.download = `framed-image-${Date.now()}.png`;
+        link.download = `framed-${Date.now()}.png`;
         link.href = canvas.toDataURL('image/png');
         link.click();
     });
 
-    // Initialize
-    init();
-
 </script>
-
-```
-
 </body>
 </html>
