@@ -3,22 +3,23 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>AI-Style Image Frame Tool</title>
+<title>Browser Image Frame Tool 2</title>
+
 <style>
   :root {
-    --bg: #f5f6f8;
+    --bg: #f4f6f8;
     --panel: #ffffff;
     --accent: #2563eb;
     --text: #1f2937;
-    --shadow: 0 10px 25px rgba(0,0,0,0.08);
+    --shadow: 0 8px 20px rgba(0,0,0,0.08);
   }
 
   * { box-sizing: border-box; }
 
   body {
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
-                 Roboto, Helvetica, Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont,
+      "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     background: var(--bg);
     color: var(--text);
   }
@@ -39,9 +40,7 @@
   }
 
   @media (max-width: 900px) {
-    main {
-      grid-template-columns: 1fr;
-    }
+    main { grid-template-columns: 1fr; }
   }
 
   .canvas-wrapper {
@@ -57,7 +56,7 @@
   canvas {
     max-width: 100%;
     height: auto;
-    border-radius: 6px;
+    cursor: grab;
   }
 
   .controls {
@@ -70,39 +69,33 @@
     gap: 14px;
   }
 
-  .controls h3 {
-    margin: 0 0 4px;
-    font-size: 15px;
+  h3 {
+    margin: 8px 0 4px;
+    font-size: 14px;
     font-weight: 600;
   }
 
   label {
-    font-size: 13px;
-    margin-bottom: 4px;
+    font-size: 12px;
     display: block;
-  }
-
-  input[type="file"] {
-    font-size: 13px;
+    margin-bottom: 2px;
   }
 
   input[type="text"] {
     width: 100%;
-    padding: 8px 10px;
-    font-size: 14px;
+    padding: 8px;
     border-radius: 6px;
     border: 1px solid #d1d5db;
+    font-size: 14px;
   }
 
-  input[type="range"] {
-    width: 100%;
-  }
+  input[type="range"] { width: 100%; }
 
   input[type="color"] {
-    width: 40px;
+    width: 42px;
     height: 28px;
-    padding: 0;
     border: none;
+    padding: 0;
     background: none;
   }
 
@@ -113,13 +106,13 @@
   }
 
   button {
-    padding: 10px 14px;
-    font-size: 14px;
+    padding: 10px;
     border-radius: 8px;
     border: none;
+    font-size: 14px;
     cursor: pointer;
     background: var(--accent);
-    color: white;
+    color: #fff;
     font-weight: 500;
   }
 
@@ -127,19 +120,17 @@
     background: #6b7280;
   }
 
-  button:active {
-    transform: translateY(1px);
-  }
-
   .hint {
     font-size: 12px;
     color: #6b7280;
+    line-height: 1.4;
   }
 </style>
 </head>
+
 <body>
 
-<header>🖼️ AI-Style Image Frame Tool</header>
+<header>🖼️ Browser-Only Image Frame Tool</header>
 
 <main>
   <div class="canvas-wrapper">
@@ -150,7 +141,7 @@
     <h3>Image</h3>
     <input type="file" id="imageInput" accept="image/*"/>
 
-    <h3>Frame</h3>
+    <h3>Frame Border</h3>
     <div class="row">
       <label>Color</label>
       <input type="color" id="frameColor" value="#000000"/>
@@ -174,17 +165,14 @@
     </div>
     <input type="range" id="subtitleSize" min="14" max="72" value="20"/>
 
-    <h3>AI Assist (Browser-only)</h3>
-    <button id="autoCenter">Auto-Center Text</button>
-    <button id="randomStyle" class="secondary">Random Style</button>
-
     <h3>Export</h3>
     <button id="downloadBtn">Download PNG</button>
 
     <div class="hint">
-      • Drag title/subtitle directly on canvas<br/>
-      • Keeps original image ratio<br/>
-      • Works in Chrome & Safari
+      • Drag title / subtitle to move<br/>
+      • Image ratio always preserved<br/>
+      • Border thickness is equal on all sides<br/>
+      • Chrome & Safari compatible
     </div>
   </div>
 </main>
@@ -194,32 +182,21 @@ const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
 let img = null;
-let imgRatio = 1;
+let dragging = null;
 
-let title = {
-  text: "",
-  x: 0.5,
-  y: 0.15,
-  size: 36,
-  color: "#ffffff"
-};
-
-let subtitle = {
-  text: "",
-  x: 0.5,
-  y: 0.25,
-  size: 20,
-  color: "#ffffff"
-};
+const title = { text: "", x: 0.5, y: 0.15, size: 36, color: "#ffffff" };
+const subtitle = { text: "", x: 0.5, y: 0.25, size: 20, color: "#ffffff" };
 
 let frameColor = "#000000";
 let frameThickness = 20;
 
-let dragging = null;
-
-function resizeCanvas(w, h) {
-  canvas.width = w;
-  canvas.height = h;
+function resizeCanvasByImage(image) {
+  const maxWidth = 900;
+  const ratio = image.width / image.height;
+  const width = Math.min(maxWidth, image.width);
+  const height = width / ratio;
+  canvas.width = width;
+  canvas.height = height;
 }
 
 function draw() {
@@ -229,23 +206,19 @@ function draw() {
   }
 
   ctx.clearRect(0,0,canvas.width,canvas.height);
-
-  // image
   ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-  // frame
   if (frameThickness > 0) {
     ctx.strokeStyle = frameColor;
     ctx.lineWidth = frameThickness;
     ctx.strokeRect(
-      frameThickness/2,
-      frameThickness/2,
+      frameThickness / 2,
+      frameThickness / 2,
       canvas.width - frameThickness,
       canvas.height - frameThickness
     );
   }
 
-  // title
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
 
@@ -253,7 +226,6 @@ function draw() {
   ctx.font = `${title.size}px sans-serif`;
   ctx.fillText(title.text, canvas.width * title.x, canvas.height * title.y);
 
-  // subtitle
   ctx.fillStyle = subtitle.color;
   ctx.font = `${subtitle.size}px sans-serif`;
   ctx.fillText(subtitle.text, canvas.width * subtitle.x, canvas.height * subtitle.y);
@@ -266,33 +238,28 @@ document.getElementById("imageInput").addEventListener("change", e => {
   const image = new Image();
   image.onload = () => {
     img = image;
-    imgRatio = img.width / img.height;
-
-    const maxW = 900;
-    const w = Math.min(maxW, img.width);
-    const h = w / imgRatio;
-
-    resizeCanvas(w, h);
+    resizeCanvasByImage(image);
     draw();
   };
-
   image.src = URL.createObjectURL(file);
 });
 
-function bind(id, prop, obj) {
+function bindInput(id, target, prop) {
   document.getElementById(id).addEventListener("input", e => {
-    obj[prop] = e.target.type === "range" ? Number(e.target.value) : e.target.value;
+    target[prop] = e.target.type === "range"
+      ? Number(e.target.value)
+      : e.target.value;
     draw();
   });
 }
 
-bind("titleText", "text", title);
-bind("titleSize", "size", title);
-bind("titleColor", "color", title);
+bindInput("titleText", title, "text");
+bindInput("titleSize", title, "size");
+bindInput("titleColor", title, "color");
 
-bind("subtitleText", "text", subtitle);
-bind("subtitleSize", "size", subtitle);
-bind("subtitleColor", "color", subtitle);
+bindInput("subtitleText", subtitle, "text");
+bindInput("subtitleSize", subtitle, "size");
+bindInput("subtitleColor", subtitle, "color");
 
 document.getElementById("frameColor").addEventListener("input", e => {
   frameColor = e.target.value;
@@ -304,47 +271,55 @@ document.getElementById("frameThickness").addEventListener("input", e => {
   draw();
 });
 
-// drag text
-canvas.addEventListener("mousedown", e => {
+function getPointerPos(evt) {
   const rect = canvas.getBoundingClientRect();
-  const x = (e.clientX - rect.left) / canvas.width;
-  const y = (e.clientY - rect.top) / canvas.height;
+  const x = (evt.clientX - rect.left) / canvas.width;
+  const y = (evt.clientY - rect.top) / canvas.height;
+  return { x, y };
+}
 
-  if (Math.abs(y - title.y) < 0.05) dragging = title;
-  else if (Math.abs(y - subtitle.y) < 0.05) dragging = subtitle;
+canvas.addEventListener("mousedown", e => {
+  const p = getPointerPos(e);
+  if (Math.abs(p.y - title.y) < 0.05) dragging = title;
+  else if (Math.abs(p.y - subtitle.y) < 0.05) dragging = subtitle;
 });
 
 canvas.addEventListener("mousemove", e => {
   if (!dragging) return;
-  const rect = canvas.getBoundingClientRect();
-  dragging.x = (e.clientX - rect.left) / canvas.width;
-  dragging.y = (e.clientY - rect.top) / canvas.height;
+  const p = getPointerPos(e);
+  dragging.x = p.x;
+  dragging.y = p.y;
   draw();
 });
 
 window.addEventListener("mouseup", () => dragging = null);
 
-// AI-like helpers
-document.getElementById("autoCenter").onclick = () => {
-  title.x = subtitle.x = 0.5;
-  title.y = 0.15;
-  subtitle.y = 0.25;
-  draw();
-};
+/* Safari & mobile touch support */
+canvas.addEventListener("touchstart", e => {
+  const t = e.touches[0];
+  const p = getPointerPos(t);
+  if (Math.abs(p.y - title.y) < 0.05) dragging = title;
+  else if (Math.abs(p.y - subtitle.y) < 0.05) dragging = subtitle;
+});
 
-document.getElementById("randomStyle").onclick = () => {
-  frameColor = "#" + Math.floor(Math.random()*16777215).toString(16);
-  title.size = 28 + Math.random()*20;
-  subtitle.size = 16 + Math.random()*12;
+canvas.addEventListener("touchmove", e => {
+  if (!dragging) return;
+  const t = e.touches[0];
+  const p = getPointerPos(t);
+  dragging.x = p.x;
+  dragging.y = p.y;
   draw();
-};
+  e.preventDefault();
+}, { passive: false });
 
-document.getElementById("downloadBtn").onclick = () => {
-  const link = document.createElement("a");
-  link.download = "framed-image.png";
-  link.href = canvas.toDataURL("image/png");
-  link.click();
-};
+window.addEventListener("touchend", () => dragging = null);
+
+document.getElementById("downloadBtn").addEventListener("click", () => {
+  const a = document.createElement("a");
+  a.download = "framed-image.png";
+  a.href = canvas.toDataURL("image/png");
+  a.click();
+});
 </script>
 
 </body>
