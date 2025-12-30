@@ -148,13 +148,12 @@
       canvas.height / image.height
     );
 
-    const drawWidth = image.width * scale;
-    const drawHeight = image.height * scale;
+    const w = image.width * scale;
+    const h = image.height * scale;
+    const x = (canvas.width - w) / 2;
+    const y = (canvas.height - h) / 2;
 
-    const x = (canvas.width - drawWidth) / 2;
-    const y = (canvas.height - drawHeight) / 2;
-
-    ctx.drawImage(image, x, y, drawWidth, drawHeight);
+    ctx.drawImage(image, x, y, w, h);
   }
 
   function drawFrame() {
@@ -206,22 +205,29 @@
     const file = imageInput.files[0];
     if (!file) return;
 
-    const img = new Image();
-    img.onload = () => {
-      image = img;
-      render();
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = async () => {
+        // Safari-safe render timing
+        requestAnimationFrame(() => {
+          image = img;
+          render();
+        });
+      };
+      img.src = reader.result;
     };
-    img.src = URL.createObjectURL(file);
+    reader.readAsDataURL(file);
   });
 
   titleInput.addEventListener("input", render);
   subtitleInput.addEventListener("input", render);
 
   downloadBtn.addEventListener("click", () => {
-    const a = document.createElement("a");
-    a.href = canvas.toDataURL("image/png");
-    a.download = "framed-image.png";
-    a.click();
+    const link = document.createElement("a");
+    link.href = canvas.toDataURL("image/png");
+    link.download = "framed-image.png";
+    link.click();
   });
 
   render();
