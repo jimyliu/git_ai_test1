@@ -17,7 +17,7 @@
     }
 
     .app {
-      max-width: 960px;
+      max-width: 1100px;
       width: 100%;
       background: #ffffff;
       border-radius: 14px;
@@ -79,6 +79,15 @@
       background: #1e4fd6;
     }
 
+    .canvas-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #fafafa;
+      border-radius: 12px;
+      padding: 12px;
+    }
+
     canvas {
       background: #ffffff;
       border-radius: 6px;
@@ -101,28 +110,66 @@
       <input type="file" id="imageInput" accept="image/*" />
 
       <label>Title</label>
-      <input type="text" id="titleInput" />
+      <input type="text" id="titleInput" placeholder="Title text" />
 
       <label>Subtitle</label>
-      <input type="text" id="subtitleInput" />
+      <input type="text" id="subtitleInput" placeholder="Subtitle text" />
 
       <button id="downloadBtn">Download PNG</button>
     </div>
 
-    <canvas id="canvas" width="600" height="600"></canvas>
+    <div class="canvas-wrap">
+      <canvas id="canvas" width="800" height="600"></canvas>
+    </div>
   </div>
 </div>
 
 <script>
   const canvas = document.getElementById("canvas");
   const ctx = canvas.getContext("2d");
+
   const imageInput = document.getElementById("imageInput");
   const titleInput = document.getElementById("titleInput");
   const subtitleInput = document.getElementById("subtitleInput");
+  const downloadBtn = document.getElementById("downloadBtn");
 
   let image = null;
 
-  function smartFont(text, maxWidth, maxSize) {
+  function clearCanvas() {
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
+
+  function drawImage() {
+    if (!image) return;
+
+    const scale = Math.min(
+      canvas.width / image.width,
+      canvas.height / image.height
+    );
+
+    const drawWidth = image.width * scale;
+    const drawHeight = image.height * scale;
+
+    const x = (canvas.width - drawWidth) / 2;
+    const y = (canvas.height - drawHeight) / 2;
+
+    ctx.drawImage(image, x, y, drawWidth, drawHeight);
+  }
+
+  function drawFrame() {
+    const border = 18;
+    ctx.lineWidth = border;
+    ctx.strokeStyle = "#111827";
+    ctx.strokeRect(
+      border / 2,
+      border / 2,
+      canvas.width - border,
+      canvas.height - border
+    );
+  }
+
+  function autoFontSize(text, maxWidth, maxSize) {
     let size = maxSize;
     do {
       ctx.font = `600 ${size}px system-ui`;
@@ -131,36 +178,54 @@
     return size;
   }
 
-  function render() {
-    ctx.fillStyle = "#fff";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    if (image) {
-      const r = Math.min(canvas.width / image.width, canvas.height / image.height);
-      ctx.drawImage(image, (canvas.width - image.width * r) / 2,
-        (canvas.height - image.height * r) / 2,
-        image.width * r, image.height * r);
-    }
-
-    ctx.lineWidth = 18;
-    ctx.strokeRect(9, 9, canvas.width - 18, canvas.height - 18);
-
+  function drawText() {
     ctx.textAlign = "center";
-    ctx.fillStyle = "#111";
+    ctx.fillStyle = "#111827";
 
     if (titleInput.value) {
-      ctx.font = `600 ${smartFont(titleInput.value, 480, 36)}px system-ui`;
-      ctx.fillText(titleInput.value, 300, 52);
+      const size = autoFontSize(titleInput.value, canvas.width * 0.8, 36);
+      ctx.font = `600 ${size}px system-ui`;
+      ctx.fillText(titleInput.value, canvas.width / 2, 50);
     }
 
     if (subtitleInput.value) {
-      ctx.font = `18px system-ui`;
-      ctx.fillText(subtitleInput.value, 300, 560);
+      const size = autoFontSize(subtitleInput.value, canvas.width * 0.7, 20);
+      ctx.font = `${size}px system-ui`;
+      ctx.fillText(subtitleInput.value, canvas.width / 2, canvas.height - 30);
     }
   }
 
-  imageInput.onchange = () => {
-    const img = new Image();
-    img.onload = () => { image = img; render(); };
-    img.src = URL.createObjectURL(imageInput.fi
+  function render() {
+    clearCanvas();
+    drawImage();
+    drawFrame();
+    drawText();
+  }
 
+  imageInput.addEventListener("change", () => {
+    const file = imageInput.files[0];
+    if (!file) return;
+
+    const img = new Image();
+    img.onload = () => {
+      image = img;
+      render();
+    };
+    img.src = URL.createObjectURL(file);
+  });
+
+  titleInput.addEventListener("input", render);
+  subtitleInput.addEventListener("input", render);
+
+  downloadBtn.addEventListener("click", () => {
+    const a = document.createElement("a");
+    a.href = canvas.toDataURL("image/png");
+    a.download = "framed-image.png";
+    a.click();
+  });
+
+  render();
+</script>
+
+</body>
+</html>
