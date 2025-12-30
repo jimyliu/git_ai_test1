@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Browser Image Frame Tool</title>
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --panel: #ffffff;
+      --primary: #2563eb;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --shadow: 0 10px 25px rgba(0,0,0,0.08);
+      --radius: 14px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                   Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 900px;
+      background: var(--panel);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.4rem;
+      text-align: center;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      align-items: end;
+    }
+
+    label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+      font-size: 0.9rem;
+    }
+
+    input[type="file"] {
+      font-size: 0.85rem;
+    }
+
+    input[type="color"] {
+      padding: 0;
+      height: 38px;
+      border: none;
+      background: none;
+    }
+
+    button {
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: none;
+      font-size: 0.9rem;
+      cursor: pointer;
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(37,99,235,0.25);
+    }
+
+    button.secondary {
+      background: #e5e7eb;
+      color: #111827;
+      box-shadow: none;
+    }
+
+    .canvas-wrap {
+      width: 100%;
+      overflow: auto;
+      background: #fafafa;
+      border-radius: 12px;
+      padding: 10px;
+      display: flex;
+      justify-content: center;
+    }
+
+    canvas {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <h1>Image Frame Generator</h1>
+
+    <div class="controls">
+      <label>
+        Upload Image
+        <input type="file" id="imageInput" accept="image/*">
+      </label>
+
+      <label>
+        Title Text
+        <input type="text" id="titleInput" placeholder="Your title">
+      </label>
+
+      <label>
+        Subtitle Text
+        <input type="text" id="subtitleInput" placeholder="Your subtitle">
+      </label>
+
+      <label>
+        Frame Color
+        <input type="color" id="frameColor" value="#000000">
+      </label>
+
+      <label>
+        Frame Thickness
+        <input type="number" id="frameThickness" value="20" min="2" max="100">
+      </label>
+
+      <button id="randomStyle">Random Style</button>
+      <button id="downloadBtn">Download PNG</button>
+    </div>
+
+    <div class="canvas-wrap">
+      <canvas id="canvas"></canvas>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    const imageInput = document.getElementById('imageInput');
+    const titleInput = document.getElementById('titleInput');
+    const subtitleInput = document.getElementById('subtitleInput');
+    const frameColorInput = document.getElementById('frameColor');
+    const frameThicknessInput = document.getElementById('frameThickness');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const randomStyleBtn = document.getElementById('randomStyle');
+
+    let img = null;
+
+    const presets = [
+      { title: "Stay Curious", subtitle: "Every day is a new chance" },
+      { title: "Faith Over Fear", subtitle: "Walk forward with courage" },
+      { title: "Create & Inspire", subtitle: "Your ideas matter" },
+      { title: "One Step at a Time", subtitle: "Progress beats perfection" }
+    ];
+
+    function setupCanvas(width, height) {
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      canvas.style.width = width + "px";
+      canvas.style.height = height + "px";
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function draw() {
+      if (!img) return;
+
+      const frameThickness = parseInt(frameThicknessInput.value, 10);
+      const w = img.width + frameThickness * 2;
+      const h = img.height + frameThickness * 2 + 120;
+
+      setupCanvas(w, h);
+
+      ctx.clearRect(0, 0, w, h);
+
+      // Frame
+      ctx.fillStyle = frameColorInput.value;
+      ctx.fillRect(0, 0, w, h);
+
+      // Inner background
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(frameThickness, frameThickness, w - frameThickness * 2, h - frameThickness * 2);
+
+      // Image
+      ctx.drawImage(img, frameThickness, frameThickness, img.width, img.height);
+
+      // Auto font sizing
+      const maxTextWidth = w - frameThickness * 2 - 20;
+
+      function fitText(text, baseSize, weight) {
+        let size = baseSize;
+        do {
+          ctx.font = `${weight} ${size}px sans-serif`;
+          size--;
+        } while (ctx.measureText(text).width > maxTextWidth && size > 10);
+        return size;
+      }
+
+      const title = titleInput.value;
+      const subtitle = subtitleInput.value;
+
+      let yText = frameThickness + img.height + 40;
+
+      if (title) {
+        const size = fitText(title, 36, "600");
+        ctx.font = `600 ${size}px sans-serif`;
+        ctx.fillStyle = "#111827";
+        ctx.textAlign = "center";
+        ctx.fillText(title, w / 2, yText);
+        yText += size + 10;
+      }
+
+      if (subtitle) {
+        const size = fitText(subtitle, 22, "400");
+        ctx.font = `400 ${size}px sans-serif`;
+        ctx.fillStyle = "#4b5563";
+        ctx.textAlign = "center";
+        ctx.fillText(subtitle, w / 2, yText);
+      }
+    }
+
+    imageInput.addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        img = new Image();
+        img.onload = draw;
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    [titleInput, subtitleInput, frameColorInput, frameThicknessInput]
+      .forEach(el => el.addEventListener('input', draw));
+
+    randomStyleBtn.addEventListener('click', () => {
+      const preset = presets[Math.floor(Math.random() * presets.length)];
+      titleInput.value = preset.title;
+      subtitleInput.value = preset.subtitle;
+      frameColorInput.value =
+        '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+      frameThicknessInput.value = Math.floor(Math.random() * 40) + 10;
+      draw();
+    });
+
+    downloadBtn.addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.download = 'framed-image.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+  </script>
+</body>
+</html>
+
