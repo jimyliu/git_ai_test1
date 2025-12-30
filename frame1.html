@@ -2,325 +2,317 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Browser Image Frame Tool 2</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Browser Image Frame Tool</title>
 <style>
-  :root {
-    --bg: #f4f6f8;
-    --panel: #ffffff;
-    --accent: #2563eb;
-    --text: #1f2937;
-    --shadow: 0 8px 20px rgba(0,0,0,0.08);
-  }
-
-  * { box-sizing: border-box; }
-
-  body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont,
-      "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-  }
-
-  header {
-    padding: 16px 24px;
-    font-size: 18px;
-    font-weight: 600;
-  }
-
-  main {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 16px;
-    display: grid;
-    grid-template-columns: 1fr 320px;
-    gap: 20px;
-  }
-
-  @media (max-width: 900px) {
-    main { grid-template-columns: 1fr; }
-  }
-
-  .canvas-wrapper {
-    background: var(--panel);
-    border-radius: 12px;
-    box-shadow: var(--shadow);
-    padding: 16px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  canvas {
-    max-width: 100%;
-    height: auto;
-    cursor: grab;
-  }
-
-  .controls {
-    background: var(--panel);
-    border-radius: 12px;
-    box-shadow: var(--shadow);
-    padding: 16px;
-    display: flex;
+:root {
+  --bg: #f5f6f8;
+  --panel: #ffffff;
+  --shadow: 0 8px 20px rgba(0,0,0,0.08);
+  --text: #222;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+header {
+  padding: 14px 18px;
+  font-size: 18px;
+  font-weight: 600;
+}
+.container {
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  max-width: 1200px;
+  margin: auto;
+}
+.controls {
+  width: 320px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.controls h3 {
+  margin: 8px 0 4px;
+  font-size: 14px;
+  opacity: 0.8;
+}
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.control-group label {
+  font-size: 12px;
+  opacity: 0.8;
+}
+input[type="text"] {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+}
+input[type="range"] {
+  width: 100%;
+}
+input[type="color"] {
+  width: 100%;
+  height: 36px;
+  padding: 0;
+  border: none;
+  background: none;
+}
+button {
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: #2563eb;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+button.secondary {
+  background: #444;
+}
+.canvas-wrapper {
+  flex: 1;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+canvas {
+  max-width: 100%;
+  height: auto;
+  touch-action: none;
+}
+@media (max-width: 900px) {
+  .container {
     flex-direction: column;
-    gap: 14px;
   }
-
-  h3 {
-    margin: 8px 0 4px;
-    font-size: 14px;
-    font-weight: 600;
-  }
-
-  label {
-    font-size: 12px;
-    display: block;
-    margin-bottom: 2px;
-  }
-
-  input[type="text"] {
+  .controls {
     width: 100%;
-    padding: 8px;
-    border-radius: 6px;
-    border: 1px solid #d1d5db;
-    font-size: 14px;
   }
-
-  input[type="range"] { width: 100%; }
-
-  input[type="color"] {
-    width: 42px;
-    height: 28px;
-    border: none;
-    padding: 0;
-    background: none;
-  }
-
-  .row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  button {
-    padding: 10px;
-    border-radius: 8px;
-    border: none;
-    font-size: 14px;
-    cursor: pointer;
-    background: var(--accent);
-    color: #fff;
-    font-weight: 500;
-  }
-
-  button.secondary {
-    background: #6b7280;
-  }
-
-  .hint {
-    font-size: 12px;
-    color: #6b7280;
-    line-height: 1.4;
-  }
+}
 </style>
 </head>
-
 <body>
 
-<header>🖼️ Browser-Only Image Frame Tool</header>
+<header>Image Frame Tool</header>
 
-<main>
+<div class="container">
+  <div class="controls">
+    <div class="control-group">
+      <label>Upload Image</label>
+      <input type="file" id="imageInput" accept="image/*" />
+    </div>
+
+    <h3>Frame</h3>
+    <div class="control-group">
+      <label>Border Color</label>
+      <input type="color" id="borderColor" value="#000000" />
+    </div>
+    <div class="control-group">
+      <label>Border Thickness</label>
+      <input type="range" id="borderSize" min="0" max="100" value="20" />
+    </div>
+
+    <h3>Title</h3>
+    <div class="control-group">
+      <label>Text</label>
+      <input type="text" id="titleText" value="Your Title" />
+    </div>
+    <div class="control-group">
+      <label>Color</label>
+      <input type="color" id="titleColor" value="#ffffff" />
+    </div>
+    <div class="control-group">
+      <label>Size</label>
+      <input type="range" id="titleSize" min="14" max="72" value="48" />
+    </div>
+
+    <h3>Subtitle</h3>
+    <div class="control-group">
+      <label>Text</label>
+      <input type="text" id="subtitleText" value="Subtitle here" />
+    </div>
+    <div class="control-group">
+      <label>Color</label>
+      <input type="color" id="subtitleColor" value="#ffffff" />
+    </div>
+    <div class="control-group">
+      <label>Size</label>
+      <input type="range" id="subtitleSize" min="14" max="72" value="28" />
+    </div>
+
+    <button id="randomStyle">✨ Random Style</button>
+    <button id="downloadBtn" class="secondary">Download PNG</button>
+  </div>
+
   <div class="canvas-wrapper">
     <canvas id="canvas"></canvas>
   </div>
-
-  <div class="controls">
-    <h3>Image</h3>
-    <input type="file" id="imageInput" accept="image/*"/>
-
-    <h3>Frame Border</h3>
-    <div class="row">
-      <label>Color</label>
-      <input type="color" id="frameColor" value="#000000"/>
-      <label>Thickness</label>
-    </div>
-    <input type="range" id="frameThickness" min="0" max="80" value="20"/>
-
-    <h3>Title</h3>
-    <input type="text" id="titleText" placeholder="Title text"/>
-    <div class="row">
-      <label>Color</label><input type="color" id="titleColor" value="#ffffff"/>
-      <label>Size</label>
-    </div>
-    <input type="range" id="titleSize" min="14" max="72" value="36"/>
-
-    <h3>Subtitle</h3>
-    <input type="text" id="subtitleText" placeholder="Subtitle text"/>
-    <div class="row">
-      <label>Color</label><input type="color" id="subtitleColor" value="#ffffff"/>
-      <label>Size</label>
-    </div>
-    <input type="range" id="subtitleSize" min="14" max="72" value="20"/>
-
-    <h3>Export</h3>
-    <button id="downloadBtn">Download PNG</button>
-
-    <div class="hint">
-      • Drag title / subtitle to move<br/>
-      • Image ratio always preserved<br/>
-      • Border thickness is equal on all sides<br/>
-      • Chrome & Safari compatible
-    </div>
-  </div>
-</main>
+</div>
 
 <script>
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
 
 let img = null;
 let dragging = null;
+let offsetX = 0, offsetY = 0;
 
-const title = { text: "", x: 0.5, y: 0.15, size: 36, color: "#ffffff" };
-const subtitle = { text: "", x: 0.5, y: 0.25, size: 20, color: "#ffffff" };
+const state = {
+  borderColor: '#000000',
+  borderSize: 20,
+  title: { text: 'Your Title', x: 0, y: 0, size: 48, color: '#ffffff' },
+  subtitle: { text: 'Subtitle here', x: 0, y: 0, size: 28, color: '#ffffff' }
+};
 
-let frameColor = "#000000";
-let frameThickness = 20;
+function autoCenterText() {
+  state.title.x = canvas.width / 2;
+  state.title.y = canvas.height * 0.15;
+  state.subtitle.x = canvas.width / 2;
+  state.subtitle.y = canvas.height * 0.25;
+}
 
-function resizeCanvasByImage(image) {
-  const maxWidth = 900;
-  const ratio = image.width / image.height;
-  const width = Math.min(maxWidth, image.width);
-  const height = width / ratio;
-  canvas.width = width;
-  canvas.height = height;
+function resizeCanvas(w, h) {
+  canvas.width = w;
+  canvas.height = h;
+  autoCenterText();
+  draw();
 }
 
 function draw() {
-  if (!img) {
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    return;
-  }
-
+  if (!img) return;
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+  ctx.drawImage(img,0,0,canvas.width,canvas.height);
 
-  if (frameThickness > 0) {
-    ctx.strokeStyle = frameColor;
-    ctx.lineWidth = frameThickness;
+  if (state.borderSize > 0) {
+    ctx.strokeStyle = state.borderColor;
+    ctx.lineWidth = state.borderSize;
     ctx.strokeRect(
-      frameThickness / 2,
-      frameThickness / 2,
-      canvas.width - frameThickness,
-      canvas.height - frameThickness
+      state.borderSize/2,
+      state.borderSize/2,
+      canvas.width - state.borderSize,
+      canvas.height - state.borderSize
     );
   }
 
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-
-  ctx.fillStyle = title.color;
-  ctx.font = `${title.size}px sans-serif`;
-  ctx.fillText(title.text, canvas.width * title.x, canvas.height * title.y);
-
-  ctx.fillStyle = subtitle.color;
-  ctx.font = `${subtitle.size}px sans-serif`;
-  ctx.fillText(subtitle.text, canvas.width * subtitle.x, canvas.height * subtitle.y);
+  drawText(state.title, 'center');
+  drawText(state.subtitle, 'center');
 }
 
-document.getElementById("imageInput").addEventListener("change", e => {
+function drawText(obj, align) {
+  ctx.font = `${obj.size}px sans-serif`;
+  ctx.fillStyle = obj.color;
+  ctx.textAlign = align;
+  ctx.textBaseline = 'middle';
+  ctx.fillText(obj.text, obj.x, obj.y);
+}
+
+function hitTest(x, y, obj) {
+  ctx.font = `${obj.size}px sans-serif`;
+  const w = ctx.measureText(obj.text).width;
+  const h = obj.size;
+  return x >= obj.x - w/2 && x <= obj.x + w/2 &&
+         y >= obj.y - h/2 && y <= obj.y + h/2;
+}
+
+function pointerPos(e) {
+  const rect = canvas.getBoundingClientRect();
+  const t = e.touches ? e.touches[0] : e;
+  return {
+    x: (t.clientX - rect.left) * (canvas.width / rect.width),
+    y: (t.clientY - rect.top) * (canvas.height / rect.height)
+  };
+}
+
+canvas.addEventListener('mousedown', startDrag);
+canvas.addEventListener('touchstart', startDrag);
+
+function startDrag(e) {
+  if (!img) return;
+  const p = pointerPos(e);
+  if (hitTest(p.x,p.y,state.title)) dragging = state.title;
+  else if (hitTest(p.x,p.y,state.subtitle)) dragging = state.subtitle;
+  if (dragging) {
+    offsetX = p.x - dragging.x;
+    offsetY = p.y - dragging.y;
+  }
+}
+
+window.addEventListener('mousemove', drag);
+window.addEventListener('touchmove', drag, {passive:false});
+
+function drag(e) {
+  if (!dragging) return;
+  e.preventDefault();
+  const p = pointerPos(e);
+  dragging.x = p.x - offsetX;
+  dragging.y = p.y - offsetY;
+  draw();
+}
+
+window.addEventListener('mouseup', ()=> dragging=null);
+window.addEventListener('touchend', ()=> dragging=null);
+
+document.getElementById('imageInput').onchange = e => {
   const file = e.target.files[0];
   if (!file) return;
-
   const image = new Image();
   image.onload = () => {
     img = image;
-    resizeCanvasByImage(image);
-    draw();
+    resizeCanvas(image.naturalWidth, image.naturalHeight);
   };
   image.src = URL.createObjectURL(file);
-});
+};
 
-function bindInput(id, target, prop) {
-  document.getElementById(id).addEventListener("input", e => {
-    target[prop] = e.target.type === "range"
-      ? Number(e.target.value)
-      : e.target.value;
-    draw();
-  });
-}
-
-bindInput("titleText", title, "text");
-bindInput("titleSize", title, "size");
-bindInput("titleColor", title, "color");
-
-bindInput("subtitleText", subtitle, "text");
-bindInput("subtitleSize", subtitle, "size");
-bindInput("subtitleColor", subtitle, "color");
-
-document.getElementById("frameColor").addEventListener("input", e => {
-  frameColor = e.target.value;
+document.getElementById('borderColor').oninput = e => {
+  state.borderColor = e.target.value;
   draw();
-});
-
-document.getElementById("frameThickness").addEventListener("input", e => {
-  frameThickness = Number(e.target.value);
+};
+document.getElementById('borderSize').oninput = e => {
+  state.borderSize = +e.target.value;
   draw();
-});
+};
 
-function getPointerPos(evt) {
-  const rect = canvas.getBoundingClientRect();
-  const x = (evt.clientX - rect.left) / canvas.width;
-  const y = (evt.clientY - rect.top) / canvas.height;
-  return { x, y };
-}
+document.getElementById('titleText').oninput = e => { state.title.text = e.target.value; draw(); };
+document.getElementById('titleColor').oninput = e => { state.title.color = e.target.value; draw(); };
+document.getElementById('titleSize').oninput = e => { state.title.size = +e.target.value; draw(); };
 
-canvas.addEventListener("mousedown", e => {
-  const p = getPointerPos(e);
-  if (Math.abs(p.y - title.y) < 0.05) dragging = title;
-  else if (Math.abs(p.y - subtitle.y) < 0.05) dragging = subtitle;
-});
+document.getElementById('subtitleText').oninput = e => { state.subtitle.text = e.target.value; draw(); };
+document.getElementById('subtitleColor').oninput = e => { state.subtitle.color = e.target.value; draw(); };
+document.getElementById('subtitleSize').oninput = e => { state.subtitle.size = +e.target.value; draw(); };
 
-canvas.addEventListener("mousemove", e => {
-  if (!dragging) return;
-  const p = getPointerPos(e);
-  dragging.x = p.x;
-  dragging.y = p.y;
-  draw();
-});
-
-window.addEventListener("mouseup", () => dragging = null);
-
-/* Safari & mobile touch support */
-canvas.addEventListener("touchstart", e => {
-  const t = e.touches[0];
-  const p = getPointerPos(t);
-  if (Math.abs(p.y - title.y) < 0.05) dragging = title;
-  else if (Math.abs(p.y - subtitle.y) < 0.05) dragging = subtitle;
-});
-
-canvas.addEventListener("touchmove", e => {
-  if (!dragging) return;
-  const t = e.touches[0];
-  const p = getPointerPos(t);
-  dragging.x = p.x;
-  dragging.y = p.y;
-  draw();
-  e.preventDefault();
-}, { passive: false });
-
-window.addEventListener("touchend", () => dragging = null);
-
-document.getElementById("downloadBtn").addEventListener("click", () => {
-  const a = document.createElement("a");
-  a.download = "framed-image.png";
-  a.href = canvas.toDataURL("image/png");
+document.getElementById('downloadBtn').onclick = () => {
+  const a = document.createElement('a');
+  a.download = 'framed-image.png';
+  a.href = canvas.toDataURL('image/png');
   a.click();
-});
-</script>
+};
 
+document.getElementById('randomStyle').onclick = () => {
+  const colors = ['#ffffff','#facc15','#38bdf8','#f472b6'];
+  state.borderColor = colors[Math.floor(Math.random()*colors.length)];
+  state.borderSize = Math.floor(Math.random()*40)+10;
+  state.title.size = Math.floor(Math.random()*30)+32;
+  state.subtitle.size = Math.floor(Math.random()*20)+18;
+  autoCenterText();
+  draw();
+};
+</script>
 </body>
 </html>
