@@ -2,83 +2,81 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>AI Image Frame Tool</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI-Style Image Frame Tool (Browser-Only)</title>
 
 <style>
   :root {
-    --panel-bg: #ffffff;
-    --accent: #2563eb;
-    --shadow: 0 10px 30px rgba(0,0,0,0.12);
+    --bg: #f5f7fb;
+    --panel: #ffffff;
+    --primary: #2563eb;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --shadow: 0 10px 25px rgba(0,0,0,0.08);
     --radius: 14px;
   }
 
+  * { box-sizing: border-box; }
+
   body {
     margin: 0;
-    padding: 24px;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
-                 Roboto, Helvetica, Arial, sans-serif;
-    background: linear-gradient(180deg, #f3f4f6, #e5e7eb);
-    color: #111827;
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
   }
 
-  h1 {
-    margin: 0 0 16px;
-    font-size: 22px;
-    font-weight: 600;
+  header {
+    padding: 18px 20px;
     text-align: center;
+    font-weight: 600;
+    letter-spacing: .3px;
   }
 
-  .app {
+  main {
     max-width: 1100px;
     margin: 0 auto;
+    padding: 12px 16px 32px;
     display: grid;
     grid-template-columns: 320px 1fr;
     gap: 20px;
   }
 
   @media (max-width: 900px) {
-    .app {
+    main {
       grid-template-columns: 1fr;
     }
   }
 
   .panel {
-    background: var(--panel-bg);
+    background: var(--panel);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
     padding: 16px;
   }
 
-  .panel h2 {
-    font-size: 14px;
-    font-weight: 600;
-    margin: 16px 0 8px;
-    color: #374151;
+  .panel h3 {
+    margin: 0 0 12px;
+    font-size: 15px;
   }
 
   .control {
     margin-bottom: 12px;
-    font-size: 13px;
   }
 
   .control label {
     display: block;
+    font-size: 12px;
+    color: var(--muted);
     margin-bottom: 4px;
-    color: #4b5563;
   }
 
   .control input[type="text"],
-  .control input[type="number"] {
+  .control input[type="file"] {
     width: 100%;
     padding: 8px 10px;
     border-radius: 8px;
-    border: 1px solid #d1d5db;
-    font-size: 13px;
-  }
-
-  .control input[type="range"] {
-    width: 100%;
+    border: 1px solid #e5e7eb;
+    font-size: 14px;
   }
 
   .row {
@@ -87,288 +85,250 @@
     align-items: center;
   }
 
+  .row input[type="range"] {
+    flex: 1;
+  }
+
   button {
+    appearance: none;
+    border: none;
+    background: var(--primary);
+    color: #fff;
     padding: 10px 14px;
     border-radius: 10px;
-    border: none;
-    font-size: 13px;
-    font-weight: 500;
+    font-weight: 600;
     cursor: pointer;
-    background: var(--accent);
-    color: #fff;
-    box-shadow: 0 6px 14px rgba(37,99,235,0.35);
+    box-shadow: 0 6px 14px rgba(37,99,235,.25);
   }
 
   button.secondary {
-    background: #6b7280;
+    background: #e5e7eb;
+    color: #111827;
     box-shadow: none;
   }
 
-  button.full {
-    width: 100%;
+  button:active {
+    transform: translateY(1px);
   }
 
-  canvas {
-    width: 100%;
-    height: auto;
-    border-radius: var(--radius);
-    background: #fff;
-    box-shadow: var(--shadow);
-    touch-action: none;
+  .buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
   }
 
   .canvas-wrap {
+    background: var(--panel);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 16px;
     display: flex;
     justify-content: center;
     align-items: center;
   }
 
-  .hint {
+  canvas {
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+    cursor: move;
+  }
+
+  footer {
+    text-align: center;
     font-size: 12px;
-    color: #6b7280;
-    margin-top: 4px;
+    color: var(--muted);
+    padding-top: 10px;
   }
 </style>
 </head>
-
 <body>
-<h1>AI-Style Image Frame Tool</h1>
 
-<div class="app">
+<header>Browser-Only AI-Style Image Frame Tool</header>
+
+<main>
   <!-- Controls -->
   <div class="panel">
+    <h3>Image</h3>
     <div class="control">
-      <label>Upload Image</label>
       <input type="file" id="imageInput" accept="image/*" />
     </div>
 
-    <h2>Frame</h2>
-    <div class="control row">
-      <div style="flex:1">
-        <label>Border Color</label>
-        <input type="color" id="borderColor" value="#000000" />
-      </div>
-      <div style="flex:1">
-        <label>Thickness</label>
-        <input type="range" id="borderSize" min="0" max="80" value="20" />
-      </div>
+    <h3>Frame</h3>
+    <div class="control">
+      <label>Border Color</label>
+      <input type="color" id="borderColor" value="#000000">
+    </div>
+    <div class="control">
+      <label>Border Thickness</label>
+      <input type="range" id="borderSize" min="0" max="80" value="20">
     </div>
 
-    <h2>Title</h2>
+    <h3>Title</h3>
     <div class="control">
-      <label>Text</label>
-      <input type="text" id="titleText" placeholder="Title text" />
+      <input type="text" id="titleText" placeholder="Title text">
     </div>
     <div class="control row">
-      <div style="flex:1">
-        <label>Color</label>
-        <input type="color" id="titleColor" value="#ffffff" />
-      </div>
-      <div style="flex:1">
-        <label>Size</label>
-        <input type="range" id="titleSize" min="20" max="120" value="48" />
-      </div>
+      <label>Size</label>
+      <input type="range" id="titleSize" min="20" max="100" value="48">
+    </div>
+    <div class="control">
+      <label>Color</label>
+      <input type="color" id="titleColor" value="#ffffff">
     </div>
 
-    <h2>Subtitle</h2>
+    <h3>Subtitle</h3>
     <div class="control">
-      <label>Text</label>
-      <input type="text" id="subtitleText" placeholder="Subtitle text" />
+      <input type="text" id="subtitleText" placeholder="Subtitle text">
     </div>
     <div class="control row">
-      <div style="flex:1">
-        <label>Color</label>
-        <input type="color" id="subtitleColor" value="#e5e7eb" />
-      </div>
-      <div style="flex:1">
-        <label>Size</label>
-        <input type="range" id="subtitleSize" min="14" max="80" value="26" />
-      </div>
-    </div>
-
-    <h2>AI Assist</h2>
-    <div class="control">
-      <button id="randomStyle" class="full secondary">🎨 Random Style</button>
+      <label>Size</label>
+      <input type="range" id="subtitleSize" min="12" max="60" value="24">
     </div>
     <div class="control">
-      <button id="randomCaption" class="full secondary">✨ Random Caption</button>
+      <label>Color</label>
+      <input type="color" id="subtitleColor" value="#ffffff">
     </div>
 
-    <h2>Export</h2>
-    <button id="downloadBtn" class="full">⬇ Download PNG</button>
-
-    <div class="hint">
-      • Drag title or subtitle directly on canvas<br/>
-      • Everything runs locally in your browser
+    <h3>AI-Style Helpers</h3>
+    <div class="buttons">
+      <button id="autoCenter">Auto-Center Text</button>
+      <button id="randomStyle" class="secondary">Random Style</button>
+      <button id="presetCaption" class="secondary">Preset Caption</button>
     </div>
+
+    <h3 style="margin-top:16px;">Export</h3>
+    <button id="downloadBtn">Download PNG</button>
   </div>
 
   <!-- Canvas -->
   <div class="canvas-wrap">
     <canvas id="canvas"></canvas>
   </div>
-</div>
+</main>
+
+<footer>No backend • Runs entirely in your browser • Works on Chrome & Safari</footer>
 
 <script>
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
 
 let img = null;
-let imgRatio = 1;
+let ratio = 1;
 
-let title = {
-  text: '',
-  x: 0.5,
-  y: 0.25,
-  size: 48,
-  color: '#ffffff'
-};
-
-let subtitle = {
-  text: '',
-  x: 0.5,
-  y: 0.35,
-  size: 26,
-  color: '#e5e7eb'
-};
-
-let borderSize = 20;
-let borderColor = '#000000';
-
+let titlePos = { x: 0.5, y: 0.15 };
+let subtitlePos = { x: 0.5, y: 0.25 };
 let dragging = null;
 
-function resizeCanvas() {
-  if (!img) return;
-  const maxW = canvas.parentElement.clientWidth;
-  canvas.width = maxW;
-  canvas.height = maxW / imgRatio;
-  draw();
+function resizeCanvas(w, h) {
+  canvas.width = w;
+  canvas.height = h;
 }
 
 function draw() {
   if (!img) return;
+  resizeCanvas(img.width, img.height);
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+  ctx.drawImage(img, 0, 0);
 
-  // Frame
-  if (borderSize > 0) {
-    ctx.strokeStyle = borderColor;
-    ctx.lineWidth = borderSize;
+  const border = +borderSize.value;
+  if (border > 0) {
+    ctx.strokeStyle = borderColor.value;
+    ctx.lineWidth = border;
     ctx.strokeRect(
-      borderSize / 2,
-      borderSize / 2,
-      canvas.width - borderSize,
-      canvas.height - borderSize
+      border / 2,
+      border / 2,
+      canvas.width - border,
+      canvas.height - border
     );
   }
 
-  // Title
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillStyle = title.color;
-  ctx.font = `bold ${title.size}px system-ui`;
-  ctx.fillText(title.text, title.x * canvas.width, title.y * canvas.height);
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
 
-  // Subtitle
-  ctx.fillStyle = subtitle.color;
-  ctx.font = `${subtitle.size}px system-ui`;
-  ctx.fillText(subtitle.text, subtitle.x * canvas.width, subtitle.y * canvas.height);
+  ctx.fillStyle = titleColor.value;
+  ctx.font = `bold ${titleSize.value}px sans-serif`;
+  ctx.fillText(titleText.value, canvas.width * titlePos.x, canvas.height * titlePos.y);
+
+  ctx.fillStyle = subtitleColor.value;
+  ctx.font = `${subtitleSize.value}px sans-serif`;
+  ctx.fillText(subtitleText.value, canvas.width * subtitlePos.x, canvas.height * subtitlePos.y);
 }
 
-function loadImage(file) {
+imageInput.onchange = e => {
+  const file = e.target.files[0];
+  if (!file) return;
   const reader = new FileReader();
-  reader.onload = e => {
+  reader.onload = () => {
     img = new Image();
-    img.onload = () => {
-      imgRatio = img.width / img.height;
-      resizeCanvas();
-    };
-    img.src = e.target.result;
+    img.onload = draw;
+    img.src = reader.result;
   };
   reader.readAsDataURL(file);
-}
+};
 
-// Inputs
-imageInput.onchange = e => loadImage(e.target.files[0]);
+[
+  borderColor, borderSize,
+  titleText, titleSize, titleColor,
+  subtitleText, subtitleSize, subtitleColor
+].forEach(el => el.oninput = draw);
 
-titleText.oninput = e => { title.text = e.target.value; draw(); };
-subtitleText.oninput = e => { subtitle.text = e.target.value; draw(); };
+canvas.onmousedown = e => {
+  const y = e.offsetY / canvas.height;
+  if (Math.abs(y - titlePos.y) < 0.05) dragging = "title";
+  else if (Math.abs(y - subtitlePos.y) < 0.05) dragging = "subtitle";
+};
 
-titleColor.oninput = e => { title.color = e.target.value; draw(); };
-subtitleColor.oninput = e => { subtitle.color = e.target.value; draw(); };
-
-titleSize.oninput = e => { title.size = +e.target.value; draw(); };
-subtitleSize.oninput = e => { subtitle.size = +e.target.value; draw(); };
-
-borderSize.oninput = e => { borderSize = +e.target.value; draw(); };
-borderColor.oninput = e => { borderColor = e.target.value; draw(); };
-
-// Dragging text
-canvas.addEventListener('pointerdown', e => {
-  const rect = canvas.getBoundingClientRect();
-  const x = (e.clientX - rect.left) / canvas.width;
-  const y = (e.clientY - rect.top) / canvas.height;
-
-  if (Math.abs(y - title.y) < 0.05) dragging = title;
-  else if (Math.abs(y - subtitle.y) < 0.05) dragging = subtitle;
-});
-
-canvas.addEventListener('pointermove', e => {
+canvas.onmousemove = e => {
   if (!dragging) return;
-  const rect = canvas.getBoundingClientRect();
-  dragging.x = (e.clientX - rect.left) / canvas.width;
-  dragging.y = (e.clientY - rect.top) / canvas.height;
+  const x = e.offsetX / canvas.width;
+  const y = e.offsetY / canvas.height;
+  if (dragging === "title") titlePos = { x, y };
+  if (dragging === "subtitle") subtitlePos = { x, y };
   draw();
-});
+};
 
-canvas.addEventListener('pointerup', () => dragging = null);
-canvas.addEventListener('pointerleave', () => dragging = null);
+canvas.onmouseup = () => dragging = null;
+canvas.onmouseleave = () => dragging = null;
 
-// Download
 downloadBtn.onclick = () => {
-  const a = document.createElement('a');
-  a.download = 'framed-image.png';
-  a.href = canvas.toDataURL('image/png');
+  const a = document.createElement("a");
+  a.download = "framed-image.png";
+  a.href = canvas.toDataURL("image/png");
   a.click();
 };
 
-// AI-like helpers
-const captions = [
-  ['Live with Purpose', 'Every moment matters'],
-  ['Faith Over Fear', 'Trust the journey'],
-  ['One Step at a Time', 'Progress, not perfection'],
-  ['Created to Shine', 'Let your light be seen'],
-  ['Grace & Truth', 'Anchored in hope']
-];
+// AI-style helpers
+autoCenter.onclick = () => {
+  titlePos = { x: 0.5, y: 0.15 };
+  subtitlePos = { x: 0.5, y: 0.25 };
+  draw();
+};
 
-randomCaption.onclick = () => {
-  const c = captions[Math.floor(Math.random() * captions.length)];
-  title.text = c[0];
-  subtitle.text = c[1];
-  titleText.value = title.text;
-  subtitleText.value = subtitle.text;
+presetCaption.onclick = () => {
+  const presets = [
+    ["Stay Curious", "Every day is a new frame"],
+    ["Create Beauty", "Even from simple tools"],
+    ["Faith Over Fear", "One step at a time"],
+    ["Moments Matter", "Capture what counts"]
+  ];
+  const p = presets[Math.floor(Math.random() * presets.length)];
+  titleText.value = p[0];
+  subtitleText.value = p[1];
   draw();
 };
 
 randomStyle.onclick = () => {
-  borderColor = '#' + Math.floor(Math.random()*16777215).toString(16);
-  title.color = '#' + Math.floor(Math.random()*16777215).toString(16);
-  subtitle.color = '#' + Math.floor(Math.random()*16777215).toString(16);
-  borderSize = Math.floor(Math.random() * 50) + 10;
-
-  borderColorInput = borderColor;
-  borderSizeInput = borderSize;
-
-  borderColor.value = borderColor;
-  borderSize.value = borderSize;
-  titleColor.value = title.color;
-  subtitleColor.value = subtitle.color;
-
+  borderColor.value = `#${Math.floor(Math.random()*16777215).toString(16)}`;
+  titleColor.value = `#${Math.floor(Math.random()*16777215).toString(16)}`;
+  subtitleColor.value = titleColor.value;
+  borderSize.value = Math.floor(Math.random() * 40) + 10;
+  titleSize.value = Math.floor(Math.random() * 30) + 40;
+  subtitleSize.value = Math.floor(Math.random() * 20) + 18;
   draw();
 };
-
-window.addEventListener('resize', resizeCanvas);
 </script>
+
 </body>
 </html>
