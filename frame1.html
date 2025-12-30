@@ -3,306 +3,386 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>AI Image Frame Tool (Browser-Only)</title>
-
+<title>Browser Image Frame Tool</title>
 <style>
   :root {
-    --bg: #f5f6f8;
+    --bg: #f4f6f8;
     --panel: #ffffff;
-    --text: #222;
-    --muted: #666;
-    --primary: #2563eb;
-    --shadow: 0 8px 24px rgba(0,0,0,0.08);
-  }
-
-  * {
-    box-sizing: border-box;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
-                 "Helvetica Neue", Arial, sans-serif;
+    --accent: #2563eb;
+    --shadow: 0 10px 25px rgba(0,0,0,0.08);
+    --radius: 14px;
+    --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI",
+               Roboto, "Helvetica Neue", Arial, sans-serif;
   }
 
   body {
     margin: 0;
+    font-family: var(--font-ui);
     background: var(--bg);
-    color: var(--text);
+    color: #111;
   }
 
   header {
     padding: 16px 20px;
-    font-size: 18px;
+    text-align: center;
     font-weight: 600;
+    font-size: 18px;
   }
 
-  .container {
+  main {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
     max-width: 1100px;
     margin: 0 auto;
-    padding: 16px;
+  }
+
+  .workspace {
     display: grid;
-    grid-template-columns: 320px 1fr;
-    gap: 20px;
+    grid-template-columns: 1fr 320px;
+    gap: 16px;
   }
 
   @media (max-width: 900px) {
-    .container {
+    .workspace {
       grid-template-columns: 1fr;
     }
   }
 
-  .panel {
+  .canvas-panel {
     background: var(--panel);
-    border-radius: 12px;
-    padding: 16px;
-    box-shadow: var(--shadow);
-  }
-
-  .panel h3 {
-    margin: 0 0 12px 0;
-    font-size: 15px;
-  }
-
-  .control {
-    margin-bottom: 12px;
-  }
-
-  .control label {
-    display: block;
-    font-size: 12px;
-    color: var(--muted);
-    margin-bottom: 4px;
-  }
-
-  .control input[type="text"],
-  .control input[type="number"],
-  .control select {
-    width: 100%;
-    padding: 8px;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    font-size: 14px;
-  }
-
-  .control input[type="color"] {
-    width: 100%;
-    height: 36px;
-    border: none;
-    padding: 0;
-    background: none;
-  }
-
-  .row {
-    display: flex;
-    gap: 8px;
-  }
-
-  button {
-    width: 100%;
-    padding: 10px;
-    border-radius: 10px;
-    border: none;
-    background: var(--primary);
-    color: #fff;
-    font-size: 14px;
-    cursor: pointer;
-  }
-
-  button.secondary {
-    background: #111;
-  }
-
-  button:active {
-    transform: translateY(1px);
-  }
-
-  .canvas-wrap {
-    background: #fff;
-    border-radius: 12px;
+    border-radius: var(--radius);
     box-shadow: var(--shadow);
     padding: 12px;
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow: auto;
   }
 
   canvas {
     max-width: 100%;
     height: auto;
-    border-radius: 8px;
+    background: #ddd;
+    border-radius: 6px;
+    touch-action: none;
   }
 
-  footer {
-    text-align: center;
+  .controls {
+    background: var(--panel);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .controls h3 {
+    margin: 0;
+    font-size: 15px;
+  }
+
+  .row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  label {
+    font-size: 13px;
+    color: #444;
+  }
+
+  input[type="text"],
+  input[type="number"] {
+    padding: 6px 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    flex: 1;
+  }
+
+  input[type="color"] {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: none;
+    padding: 0;
+  }
+
+  input[type="range"] {
+    flex: 1;
+  }
+
+  button {
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 6px 14px rgba(37,99,235,0.25);
+  }
+
+  button.secondary {
+    background: #64748b;
+    box-shadow: 0 6px 14px rgba(100,116,139,0.25);
+  }
+
+  .small {
     font-size: 12px;
-    color: var(--muted);
-    padding: 12px;
+    color: #555;
+  }
+
+  .hint {
+    font-size: 12px;
+    color: #666;
   }
 </style>
 </head>
-
 <body>
-<header>🖼️ AI-Style Image Frame Tool (Browser-Only)</header>
 
-<div class="container">
-  <!-- Controls -->
-  <div class="panel">
-    <h3>Image</h3>
-    <div class="control">
-      <input type="file" accept="image/*" id="imageInput">
-    </div>
+<header>
+  🖼️ Browser-Only Image Frame Tool
+</header>
 
-    <h3>Text</h3>
-    <div class="control">
-      <label>Title</label>
-      <input type="text" id="titleInput" placeholder="Main title">
-    </div>
-    <div class="control">
-      <label>Subtitle</label>
-      <input type="text" id="subtitleInput" placeholder="Subtitle">
+<main>
+  <div class="workspace">
+    <div class="canvas-panel">
+      <canvas id="canvas" width="800" height="600"></canvas>
     </div>
 
-    <h3>Frame</h3>
-    <div class="control">
-      <label>Frame Color</label>
-      <input type="color" id="frameColor" value="#000000">
-    </div>
-    <div class="control">
-      <label>Frame Thickness (px)</label>
-      <input type="number" id="frameThickness" min="0" max="100" value="20">
-    </div>
+    <div class="controls">
+      <h3>Image</h3>
+      <input type="file" accept="image/*" id="imageInput" />
 
-    <h3>AI-Like Helpers</h3>
-    <div class="control">
-      <button id="randomStyle">✨ Random Style</button>
-    </div>
-    <div class="control">
-      <button id="randomCaption" class="secondary">💡 Inspire Me</button>
-    </div>
+      <h3>Frame</h3>
+      <div class="row">
+        <label>Color</label>
+        <input type="color" id="frameColor" value="#000000" />
+        <label>Thickness</label>
+        <input type="range" id="frameThickness" min="0" max="60" value="20" />
+      </div>
 
-    <h3>Export</h3>
-    <div class="control">
-      <button id="downloadBtn">⬇️ Download PNG</button>
+      <h3>Title</h3>
+      <input type="text" id="titleText" placeholder="Title text" />
+      <div class="row">
+        <label>Color</label>
+        <input type="color" id="titleColor" value="#ffffff" />
+        <label>Size</label>
+        <input type="number" id="titleSize" value="48" />
+      </div>
+
+      <h3>Subtitle</h3>
+      <input type="text" id="subtitleText" placeholder="Subtitle text" />
+      <div class="row">
+        <label>Color</label>
+        <input type="color" id="subtitleColor" value="#ffffff" />
+        <label>Size</label>
+        <input type="number" id="subtitleSize" value="28" />
+      </div>
+
+      <h3>AI-like Helpers</h3>
+      <button id="autoLayout">Auto-Center & Smart Size</button>
+      <button id="randomStyle" class="secondary">Random Style</button>
+
+      <h3>Export</h3>
+      <button id="downloadBtn">Download PNG</button>
+
+      <div class="hint">
+        • Drag title or subtitle directly on the image<br />
+        • Works in Chrome & Safari<br />
+        • Everything runs locally in your browser
+      </div>
     </div>
   </div>
-
-  <!-- Canvas -->
-  <div class="canvas-wrap">
-    <canvas id="canvas"></canvas>
-  </div>
-</div>
-
-<footer>
-  Runs 100% in your browser · No backend · GitHub Pages ready
-</footer>
+</main>
 
 <script>
-  const canvas = document.getElementById("canvas");
-  const ctx = canvas.getContext("2d");
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
 
-  const imageInput = document.getElementById("imageInput");
-  const titleInput = document.getElementById("titleInput");
-  const subtitleInput = document.getElementById("subtitleInput");
-  const frameColorInput = document.getElementById("frameColor");
-  const frameThicknessInput = document.getElementById("frameThickness");
+let image = null;
+let imageRatio = 1;
 
-  const randomStyleBtn = document.getElementById("randomStyle");
-  const randomCaptionBtn = document.getElementById("randomCaption");
-  const downloadBtn = document.getElementById("downloadBtn");
+let title = {
+  text: "",
+  x: canvas.width / 2,
+  y: canvas.height * 0.2,
+  color: "#ffffff",
+  size: 48,
+  dragging: false
+};
 
-  let image = null;
+let subtitle = {
+  text: "",
+  x: canvas.width / 2,
+  y: canvas.height * 0.3,
+  color: "#ffffff",
+  size: 28,
+  dragging: false
+};
 
-  const captions = [
-    "Faith over fear",
-    "Stay humble, stay hungry",
-    "Created for a purpose",
-    "Light in the darkness",
-    "One step at a time"
-  ];
+function resizeCanvasForImage(img) {
+  const maxW = 1000;
+  const maxH = 800;
+  let w = img.width;
+  let h = img.height;
+  const ratio = w / h;
 
-  function resizeCanvasToImage(img) {
-    canvas.width = img.naturalWidth;
-    canvas.height = img.naturalHeight;
+  if (w > maxW) {
+    w = maxW;
+    h = w / ratio;
   }
+  if (h > maxH) {
+    h = maxH;
+    w = h * ratio;
+  }
+  canvas.width = w;
+  canvas.height = h;
+}
 
-  function draw() {
-    if (!image) return;
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const thickness = parseInt(frameThicknessInput.value, 10) || 0;
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Image
+  if (image) {
     ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-
-    // Frame
-    if (thickness > 0) {
-      ctx.strokeStyle = frameColorInput.value;
-      ctx.lineWidth = thickness;
-      ctx.strokeRect(
-        thickness / 2,
-        thickness / 2,
-        canvas.width - thickness,
-        canvas.height - thickness
-      );
-    }
-
-    // Text (auto-center + smart sizing)
-    ctx.textAlign = "center";
-    ctx.fillStyle = "#ffffff";
-    ctx.shadowColor = "rgba(0,0,0,0.5)";
-    ctx.shadowBlur = 6;
-
-    const maxWidth = canvas.width * 0.8;
-
-    let titleFontSize = Math.min(canvas.width / 10, 64);
-    ctx.font = `600 ${titleFontSize}px sans-serif`;
-    while (ctx.measureText(titleInput.value).width > maxWidth && titleFontSize > 20) {
-      titleFontSize -= 2;
-      ctx.font = `600 ${titleFontSize}px sans-serif`;
-    }
-
-    ctx.fillText(titleInput.value, canvas.width / 2, canvas.height * 0.15);
-
-    let subtitleFontSize = titleFontSize * 0.5;
-    ctx.font = `${subtitleFontSize}px sans-serif`;
-    ctx.fillText(subtitleInput.value, canvas.width / 2, canvas.height * 0.15 + titleFontSize + 10);
-
-    ctx.shadowBlur = 0;
   }
 
-  imageInput.addEventListener("change", e => {
-    const file = e.target.files[0];
-    if (!file) return;
+  const frameThickness = +frameThicknessInput.value;
+  if (frameThickness > 0) {
+    ctx.strokeStyle = frameColorInput.value;
+    ctx.lineWidth = frameThickness;
+    ctx.strokeRect(
+      frameThickness / 2,
+      frameThickness / 2,
+      canvas.width - frameThickness,
+      canvas.height - frameThickness
+    );
+  }
 
-    const img = new Image();
-    img.onload = () => {
-      image = img;
-      resizeCanvasToImage(img);
-      draw();
-    };
-    img.src = URL.createObjectURL(file);
-  });
+  drawText(title);
+  drawText(subtitle);
+}
 
-  [titleInput, subtitleInput, frameColorInput, frameThicknessInput]
-    .forEach(el => el.addEventListener("input", draw));
+function drawText(t) {
+  if (!t.text) return;
+  ctx.font = `bold ${t.size}px sans-serif`;
+  ctx.fillStyle = t.color;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(t.text, t.x, t.y);
+}
 
-  randomCaptionBtn.addEventListener("click", () => {
-    titleInput.value = captions[Math.floor(Math.random() * captions.length)];
-    subtitleInput.value = "";
+const imageInput = document.getElementById("imageInput");
+imageInput.addEventListener("change", e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const img = new Image();
+  img.onload = () => {
+    image = img;
+    resizeCanvasForImage(img);
+    autoLayout();
     draw();
-  });
+  };
+  img.src = URL.createObjectURL(file);
+});
 
-  randomStyleBtn.addEventListener("click", () => {
-    frameColorInput.value =
-      "#" + Math.floor(Math.random() * 16777215).toString(16).padStart(6, "0");
-    frameThicknessInput.value = Math.floor(Math.random() * 40) + 10;
-    draw();
-  });
+const frameColorInput = document.getElementById("frameColor");
+const frameThicknessInput = document.getElementById("frameThickness");
 
-  downloadBtn.addEventListener("click", () => {
-    const link = document.createElement("a");
-    link.download = "framed-image.png";
-    link.href = canvas.toDataURL("image/png");
-    link.click();
-  });
+const titleInput = document.getElementById("titleText");
+const subtitleInput = document.getElementById("subtitleText");
+const titleColorInput = document.getElementById("titleColor");
+const subtitleColorInput = document.getElementById("subtitleColor");
+const titleSizeInput = document.getElementById("titleSize");
+const subtitleSizeInput = document.getElementById("subtitleSize");
+
+function bindInputs() {
+  titleInput.oninput = e => { title.text = e.target.value; draw(); };
+  subtitleInput.oninput = e => { subtitle.text = e.target.value; draw(); };
+  titleColorInput.oninput = e => { title.color = e.target.value; draw(); };
+  subtitleColorInput.oninput = e => { subtitle.color = e.target.value; draw(); };
+  titleSizeInput.oninput = e => { title.size = +e.target.value; draw(); };
+  subtitleSizeInput.oninput = e => { subtitle.size = +e.target.value; draw(); };
+  frameColorInput.oninput = draw;
+  frameThicknessInput.oninput = draw;
+}
+bindInputs();
+
+function autoLayout() {
+  title.x = canvas.width / 2;
+  subtitle.x = canvas.width / 2;
+  title.y = canvas.height * 0.2;
+  subtitle.y = canvas.height * 0.3;
+
+  title.size = Math.round(canvas.width / 12);
+  subtitle.size = Math.round(canvas.width / 22);
+
+  titleSizeInput.value = title.size;
+  subtitleSizeInput.value = subtitle.size;
+}
+
+document.getElementById("autoLayout").onclick = () => {
+  autoLayout();
+  draw();
+};
+
+document.getElementById("randomStyle").onclick = () => {
+  const colors = ["#ffffff", "#facc15", "#38bdf8", "#f472b6"];
+  title.color = colors[Math.floor(Math.random() * colors.length)];
+  subtitle.color = colors[Math.floor(Math.random() * colors.length)];
+  frameColorInput.value = colors[Math.floor(Math.random() * colors.length)];
+  frameThicknessInput.value = Math.floor(Math.random() * 40) + 10;
+  draw();
+};
+
+canvas.addEventListener("pointerdown", e => {
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  if (Math.abs(x - title.x) < 150 && Math.abs(y - title.y) < 40) {
+    title.dragging = true;
+  } else if (Math.abs(x - subtitle.x) < 150 && Math.abs(y - subtitle.y) < 30) {
+    subtitle.dragging = true;
+  }
+});
+
+canvas.addEventListener("pointermove", e => {
+  if (!title.dragging && !subtitle.dragging) return;
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  if (title.dragging) {
+    title.x = x;
+    title.y = y;
+  }
+  if (subtitle.dragging) {
+    subtitle.x = x;
+    subtitle.y = y;
+  }
+  draw();
+});
+
+canvas.addEventListener("pointerup", () => {
+  title.dragging = false;
+  subtitle.dragging = false;
+});
+
+document.getElementById("downloadBtn").onclick = () => {
+  const link = document.createElement("a");
+  link.download = "framed-image.png";
+  link.href = canvas.toDataURL("image/png");
+  link.click();
+};
+
+draw();
 </script>
+
 </body>
 </html>
