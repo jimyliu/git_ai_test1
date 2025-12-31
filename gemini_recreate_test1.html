@@ -1,300 +1,395 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AI Image Frame Tool — 2025-12-30 20:17:07</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Image Frame Tool — 2025-12-30 20:23:45</title>
     <style>
         :root {
-            --bg: #f4f4f7;
+            --bg: #f4f4f9;
             --panel: #ffffff;
-            --accent: #007aff;
-            --text: #1d1d1f;
+            --accent: #2563eb;
+            --text: #1e293b;
         }
 
         body {
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif;
+            font-family: system-ui, -apple-system, sans-serif;
             background-color: var(--bg);
             color: var(--text);
+            margin: 0;
             display: flex;
+            flex-direction: column;
             height: 100vh;
             overflow: hidden;
         }
 
-        /* Sidebar UI */
+        header {
+            background: #fff;
+            padding: 1rem 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 { margin: 0; font-size: 1.25rem; }
+
+        main {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
         #controls {
-            width: 320px;
+            width: 350px;
             background: var(--panel);
-            border-right: 1px solid #d2d2d7;
-            padding: 20px;
+            border-right: 1px solid #ddd;
+            padding: 1.5rem;
             overflow-y: auto;
             box-shadow: 2px 0 10px rgba(0,0,0,0.05);
-            z-index: 10;
         }
 
-        h1 { font-size: 1.2rem; margin-bottom: 20px; color: var(--accent); }
-        .group { margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
-        .group label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 8px; color: #86868b; }
-        
-        input[type="text"], input[type="range"], select {
-            width: 100%;
-            margin-bottom: 10px;
-            padding: 8px;
-            border: 1px solid #d2d2d7;
-            border-radius: 6px;
-            box-sizing: border-box;
-        }
-
-        .row { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
-        .row input[type="color"] { width: 40px; height: 40px; border: none; padding: 0; background: none; cursor: pointer; }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: none;
-            background: var(--accent);
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-            margin-bottom: 10px;
-            transition: opacity 0.2s;
-        }
-        button:hover { opacity: 0.9; }
-        button.secondary { background: #5e5e62; }
-        button.random { background: #34c759; }
-
-        /* Workspace */
-        #workspace {
-            flex-grow: 1;
-            position: relative;
+        #canvas-container {
+            flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            background-image: 
-                linear-gradient(45deg, #e5e5e5 25%, transparent 25%), 
-                linear-gradient(-45deg, #e5e5e5 25%, transparent 25%), 
-                linear-gradient(45deg, transparent 75%, #e5e5e5 75%), 
-                linear-gradient(-45deg, transparent 75%, #e5e5e5 75%);
-            background-size: 20px 20px;
-            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
-            overflow: hidden;
-            touch-action: none;
+            padding: 2rem;
+            background: #e5e7eb;
+            position: relative;
+            cursor: grab;
         }
+
+        #canvas-container:active { cursor: grabbing; }
 
         canvas {
-            max-width: 90%;
-            max-height: 90%;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
-            cursor: crosshair;
+            max-width: 100%;
+            max-height: 100%;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            background: white;
         }
 
-        #fileInput { display: none; }
+        .control-group {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .control-group h3 {
+            margin: 0 0 1rem 0;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #64748b;
+        }
+
+        label { display: block; margin-bottom: 0.5rem; font-size: 0.85rem; font-weight: 600; }
+
+        input[type="text"], select, input[type="number"] {
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 0.75rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .flex-row { display: flex; gap: 10px; align-items: center; margin-bottom: 0.75rem; }
+        .flex-row input { flex: 1; margin-bottom: 0; }
+
+        button {
+            cursor: pointer;
+            padding: 0.6rem 1rem;
+            border-radius: 6px;
+            border: none;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-primary { background: var(--accent); color: white; width: 100%; margin-top: 1rem; }
+        .btn-primary:hover { background: #1d4ed8; }
+        .btn-secondary { background: #64748b; color: white; flex: 1; font-size: 0.8rem; }
+
+        .hint { font-size: 0.75rem; color: #94a3b8; margin-top: 0.5rem; }
     </style>
 </head>
 <body>
 
-<div id="controls">
-    <h1>AI Image Frame Tool — 2025-12-30 20:17:07</h1>
-    
-    <button onclick="document.getElementById('fileInput').click()">Upload Image</button>
-    <input type="file" id="fileInput" accept="image/*">
+<header>
+    <h1>AI Image Frame Tool — 2025-12-30 20:23:45</h1>
+    <button onclick="exportImage()" class="btn-primary" style="margin:0; width: auto;">Export PNG</button>
+</header>
 
-    <div class="group">
-        <label>Image Border & Opacity</label>
-        <div class="row">
-            <input type="color" id="borderColor" value="#ffffff">
-            <input type="range" id="borderWidth" min="0" max="200" value="40">
+<main>
+    <div id="controls">
+        <div class="control-group">
+            <h3>1. Image Source</h3>
+            <input type="file" id="imageInput" accept="image/*">
+            <label>Image Opacity (20-100%)</label>
+            <input type="range" id="imgOpacity" min="0.2" max="1" step="0.01" value="1" style="width:100%">
         </div>
-        <label>Opacity: <span id="opacityVal">100</span>%</label>
-        <input type="range" id="imgOpacity" min="20" max="100" value="100">
-    </div>
 
-    <div class="group">
-        <label>Title Layer</label>
-        <input type="text" id="titleText" placeholder="Enter Title..." value="Project Title">
-        <div class="row">
-            <input type="color" id="titleColor" value="#000000">
-            <input type="range" id="titleSize" min="14" max="800" value="60">
+        <div class="control-group">
+            <h3>2. Frame / Border</h3>
+            <label>Border Color</label>
+            <input type="color" id="borderColor" value="#000000" style="width:100%; height:40px;">
+            <label>Thickness</label>
+            <input type="range" id="borderWidth" min="0" max="200" value="40" style="width:100%">
+        </div>
+
+        <div class="control-group">
+            <h3>3. Title Overlay</h3>
+            <input type="text" id="titleText" placeholder="Enter Title..." value="Your Title Here">
+            <div class="flex-row">
+                <input type="color" id="titleColor" value="#ffffff">
+                <input type="number" id="titleSize" min="14" max="800" value="60">
+            </div>
+            <select id="titleFont">
+                <option value='"PingFang TC","PingFangTC-Regular","Heiti TC",sans-serif'>PingFang TC（繁）</option>
+                <option value='"Heiti TC","Heiti TC Light",sans-serif'>Heiti TC（繁）</option>
+                <option value='"Songti TC","Songti TC Regular",serif'>Songti TC（繁）</option>
+                <option value='"Kaiti TC",serif'>Kaiti TC（繁）</option>
+                <option value='system-ui, sans-serif'>System UI</option>
+                <option value='Arial, sans-serif'>Arial</option>
+                <option value='Helvetica, sans-serif'>Helvetica</option>
+            </select>
+        </div>
+
+        <div class="control-group">
+            <h3>4. Subtitle Overlay</h3>
+            <input type="text" id="subText" placeholder="Enter Subtitle..." value="Sub-header text goes here">
+            <div class="flex-row">
+                <input type="color" id="subColor" value="#ffffff">
+                <input type="number" id="subSize" min="14" max="800" value="30">
+            </div>
+            <select id="subFont">
+                <option value='"PingFang TC","PingFangTC-Regular","Heiti TC",sans-serif'>PingFang TC（繁）</option>
+                <option value='"Heiti TC","Heiti TC Light",sans-serif'>Heiti TC（繁）</option>
+                <option value='"Songti TC","Songti TC Regular",serif'>Songti TC（繁）</option>
+                <option value='"Kaiti TC",serif'>Kaiti TC（繁）</option>
+                <option value='system-ui, sans-serif'>System UI</option>
+                <option value='Arial, sans-serif'>Arial</option>
+                <option value='Helvetica, sans-serif'>Helvetica</option>
+            </select>
+        </div>
+
+        <div class="control-group">
+            <h3>5. Styles</h3>
+            <div class="flex-row">
+                <button onclick="randomStyle()" class="btn-secondary">🎲 Random Style</button>
+                <button onclick="centerAll()" class="btn-secondary">🎯 Recenter</button>
+            </div>
+            <p class="hint">Tip: Drag items directly on the canvas to reposition.</p>
         </div>
     </div>
 
-    <div class="group">
-        <label>Subtitle Layer</label>
-        <input type="text" id="subText" placeholder="Enter Subtitle..." value="Sub-description text goes here">
-        <div class="row">
-            <input type="color" id="subColor" value="#333333">
-            <input type="range" id="subSize" min="14" max="800" value="30">
-        </div>
+    <div id="canvas-container">
+        <canvas id="mainCanvas"></canvas>
     </div>
-
-    <div class="group">
-        <label>Typography</label>
-        <select id="fontFamily">
-            <option value='-apple-system, "PingFang TC", sans-serif'>PingFang TC (System)</option>
-            <option value='"Songti TC", serif'>Songti TC</option>
-            <option value='"Kaiti TC", cursive'>Kaiti TC</option>
-            <option value='"Heiti TC", sans-serif'>Heiti TC</option>
-            <option value='system-ui, Arial'>Standard Sans</option>
-        </select>
-    </div>
-
-    <button class="random" onclick="randomize()">Random Style</button>
-    <button class="secondary" onclick="exportImage()">Export PNG</button>
-</div>
-
-<div id="workspace">
-    <canvas id="mainCanvas"></canvas>
-</div>
+</main>
 
 <script>
     const canvas = document.getElementById('mainCanvas');
     const ctx = canvas.getContext('2d');
-    const fileInput = document.getElementById('fileInput');
-    
-    let img = new Image();
-    let imgLoaded = false;
+    const imageInput = document.getElementById('imageInput');
 
     // State Management
-    const state = {
-        img: { x: 0, y: 0, scale: 1 },
-        title: { x: 50, y: 100, text: "Project Title" },
-        sub: { x: 50, y: 160, text: "Sub-description text goes here" },
-        dragging: null,
-        offsetX: 0,
-        offsetY: 0
+    let img = new Image();
+    let imgLoaded = false;
+    
+    let state = {
+        imgPos: { x: 0, y: 0 },
+        titlePos: { x: 0, y: 0 },
+        subPos: { x: 0, y: 0 },
+        dragTarget: null,
+        isDragging: false,
+        lastMouse: { x: 0, y: 0 }
     };
 
-    // UI Elements
-    const inputs = ['borderColor', 'borderWidth', 'imgOpacity', 'titleText', 'titleColor', 'titleSize', 'subText', 'subColor', 'subSize', 'fontFamily'];
+    const presets = [
+        "Capture the Moment", "Stay Wild", "City Lights", "Nature's Whispers", 
+        "Endless Summer", "The Art of Living", "Minimalist Soul"
+    ];
+
+    // Initialize
+    window.onload = () => {
+        canvas.width = 800;
+        canvas.height = 600;
+        draw();
+    };
+
+    // UI Listeners
+    const inputs = ['titleText', 'titleColor', 'titleSize', 'titleFont', 
+                    'subText', 'subColor', 'subSize', 'subFont', 
+                    'borderColor', 'borderWidth', 'imgOpacity'];
     
-    function updateCanvas() {
-        if (!imgLoaded) return;
+    inputs.forEach(id => {
+        document.getElementById(id).addEventListener('input', draw);
+    });
 
-        const border = parseInt(document.getElementById('borderWidth').value);
-        const opacity = document.getElementById('imgOpacity').value / 100;
-        
-        // Clear
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // Draw Border/Background Frame
-        ctx.fillStyle = document.getElementById('borderColor').value;
-        ctx.fillRect(state.img.x, state.img.y, (img.width + border * 2), (img.height + border * 2));
-
-        // Draw Image
-        ctx.globalAlpha = opacity;
-        ctx.drawImage(img, state.img.x + border, state.img.y + border);
-        ctx.globalAlpha = 1.0;
-
-        // Text Config
-        const font = document.getElementById('fontFamily').value;
-        
-        // Title
-        ctx.fillStyle = document.getElementById('titleColor').value;
-        ctx.font = `bold ${document.getElementById('titleSize').value}pt ${font}`;
-        ctx.fillText(document.getElementById('titleText').value, state.title.x, state.title.y);
-
-        // Subtitle
-        ctx.fillStyle = document.getElementById('subColor').value;
-        ctx.font = `${document.getElementById('subSize').value}pt ${font}`;
-        ctx.fillText(document.getElementById('subText').value, state.sub.x, state.sub.y);
-        
-        document.getElementById('opacityVal').innerText = document.getElementById('imgOpacity').value;
-    }
-
-    fileInput.onchange = (e) => {
+    imageInput.addEventListener('change', function(e) {
         const reader = new FileReader();
-        reader.onload = (event) => {
-            img.onload = () => {
-                canvas.width = img.width * 1.5;
-                canvas.height = img.height * 1.5;
-                
-                // Smart auto-center
-                state.img.x = (canvas.width - img.width) / 2 - 40;
-                state.img.y = (canvas.height - img.height) / 2 - 40;
-                
-                // Smart font sizing
-                const autoSize = Math.round(img.width / 15);
-                document.getElementById('titleSize').value = autoSize;
-                document.getElementById('subSize').value = Math.round(autoSize * 0.5);
-                
-                state.title.x = state.img.x;
-                state.title.y = state.img.y - 20;
-                state.sub.x = state.img.x;
-                state.sub.y = state.img.y + img.height + (parseInt(document.getElementById('borderWidth').value) * 2) + 40;
-                
+        reader.onload = function(event) {
+            img.onload = function() {
+                canvas.width = img.width;
+                canvas.height = img.height;
                 imgLoaded = true;
-                updateCanvas();
+                centerAll();
+                draw();
             };
             img.src = event.target.result;
         };
         reader.readAsDataURL(e.target.files[0]);
-    };
+    });
 
-    function getMousePos(e) {
+    function centerAll() {
+        state.imgPos = { x: 0, y: 0 };
+        state.titlePos = { x: canvas.width / 2, y: canvas.height / 2 - 20 };
+        state.subPos = { x: canvas.width / 2, y: canvas.height / 2 + 50 };
+        
+        // Smart sizing
+        const baseSize = Math.min(canvas.width, canvas.height);
+        document.getElementById('titleSize').value = Math.floor(baseSize * 0.08);
+        document.getElementById('subSize').value = Math.floor(baseSize * 0.04);
+        document.getElementById('borderWidth').value = Math.floor(baseSize * 0.05);
+        draw();
+    }
+
+    function randomStyle() {
+        const colors = ['#ffffff', '#000000', '#facc15', '#f87171', '#60a5fa', '#4ade80'];
+        const fonts = document.getElementById('titleFont').options;
+        
+        document.getElementById('titleColor').value = colors[Math.floor(Math.random() * colors.length)];
+        document.getElementById('subColor').value = colors[Math.floor(Math.random() * colors.length)];
+        document.getElementById('titleFont').selectedIndex = Math.floor(Math.random() * fonts.length);
+        document.getElementById('subFont').selectedIndex = Math.floor(Math.random() * fonts.length);
+        document.getElementById('titleText').value = presets[Math.floor(Math.random() * presets.length)];
+        draw();
+    }
+
+    // Drawing Logic
+    function draw() {
+        if (!ctx) return;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const bWidth = parseInt(document.getElementById('borderWidth').value);
+        const bColor = document.getElementById('borderColor').value;
+        const opacity = parseFloat(document.getElementById('imgOpacity').value);
+
+        // 1. Draw Image with opacity (Moved with frame)
+        if (imgLoaded) {
+            ctx.save();
+            ctx.globalAlpha = opacity;
+            ctx.drawImage(img, state.imgPos.x, state.imgPos.y);
+            ctx.restore();
+        }
+
+        // 2. Draw Frame (Follows image position)
+        if (bWidth > 0) {
+            ctx.strokeStyle = bColor;
+            ctx.lineWidth = bWidth * 2; // Drawn from center of line, so double for inner/outer overlap
+            ctx.strokeRect(state.imgPos.x, state.imgPos.y, canvas.width, canvas.height);
+        }
+
+        // 3. Draw Title
+        drawText(
+            document.getElementById('titleText').value,
+            state.titlePos.x,
+            state.titlePos.y,
+            document.getElementById('titleSize').value,
+            document.getElementById('titleColor').value,
+            document.getElementById('titleFont').value
+        );
+
+        // 4. Draw Subtitle
+        drawText(
+            document.getElementById('subText').value,
+            state.subPos.x,
+            state.subPos.y,
+            document.getElementById('subSize').value,
+            document.getElementById('subColor').value,
+            document.getElementById('subFont').value
+        );
+    }
+
+    function drawText(text, x, y, size, color, font) {
+        ctx.save();
+        ctx.font = `${size}pt ${font}`;
+        ctx.fillStyle = color;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(text, x, y);
+        ctx.restore();
+    }
+
+    // Interaction Logic
+    function getCoords(e) {
         const rect = canvas.getBoundingClientRect();
-        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
         const scaleX = canvas.width / rect.width;
         const scaleY = canvas.height / rect.height;
-        return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        return {
+            x: (clientX - rect.left) * scaleX,
+            y: (clientY - rect.top) * scaleY
+        };
     }
 
     function handleStart(e) {
-        const pos = getMousePos(e);
-        // Check Title
-        if (pos.x > state.title.x - 50 && pos.y < state.title.y + 10 && pos.y > state.title.y - 100) {
-            state.dragging = 'title';
-        } else if (pos.x > state.sub.x - 50 && pos.y < state.sub.y + 10 && pos.y > state.sub.y - 60) {
-            state.dragging = 'sub';
-        } else {
-            state.dragging = 'img';
-        }
-        state.offsetX = pos.x - state[state.dragging].x;
-        state.offsetY = pos.y - state[state.dragging].y;
+        const coords = getCoords(e);
+        state.isDragging = true;
+        state.lastMouse = coords;
+
+        // Hit Detection (Reverse order for layering)
+        const subDist = Math.hypot(coords.x - state.subPos.x, coords.y - state.subPos.y);
+        const titleDist = Math.hypot(coords.x - state.titlePos.x, coords.y - state.titlePos.y);
+
+        if (subDist < 50) state.dragTarget = 'sub';
+        else if (titleDist < 50) state.dragTarget = 'title';
+        else state.dragTarget = 'image';
     }
 
     function handleMove(e) {
-        if (!state.dragging || !imgLoaded) return;
+        if (!state.isDragging) return;
         e.preventDefault();
-        const pos = getMousePos(e);
-        state[state.dragging].x = pos.x - state.offsetX;
-        state[state.dragging].y = pos.y - state.offsetY;
-        updateCanvas();
+        const coords = getCoords(e);
+        const dx = coords.x - state.lastMouse.x;
+        const dy = coords.y - state.lastMouse.y;
+
+        if (state.dragTarget === 'title') {
+            state.titlePos.x += dx;
+            state.titlePos.y += dy;
+        } else if (state.dragTarget === 'sub') {
+            state.subPos.x += dx;
+            state.subPos.y += dy;
+        } else if (state.dragTarget === 'image') {
+            state.imgPos.x += dx;
+            state.imgPos.y += dy;
+        }
+
+        state.lastMouse = coords;
+        draw();
     }
 
-    function handleEnd() { state.dragging = null; }
-
-    function randomize() {
-        const colors = ['#FF3B30', '#34C759', '#007AFF', '#5856D6', '#FF9500', '#000000', '#FFFFFF'];
-        const fonts = document.getElementById('fontFamily').options;
-        document.getElementById('titleColor').value = colors[Math.floor(Math.random() * colors.length)];
-        document.getElementById('subColor').value = colors[Math.floor(Math.random() * colors.length)];
-        document.getElementById('fontFamily').selectedIndex = Math.floor(Math.random() * fonts.length);
-        document.getElementById('titleSize').value = Math.floor(Math.random() * 150) + 40;
-        updateCanvas();
+    function handleEnd() {
+        state.isDragging = false;
+        state.dragTarget = null;
     }
 
-    function exportImage() {
-        const link = document.createElement('a');
-        link.download = `framed-image-${Date.now()}.png`;
-        link.href = canvas.toDataURL('image/png', 1.0);
-        link.click();
-    }
-
-    // Event Listeners
     canvas.addEventListener('mousedown', handleStart);
     window.addEventListener('mousemove', handleMove);
     window.addEventListener('mouseup', handleEnd);
+
     canvas.addEventListener('touchstart', handleStart, {passive: false});
     window.addEventListener('touchmove', handleMove, {passive: false});
     window.addEventListener('touchend', handleEnd);
 
-    inputs.forEach(id => {
-        document.getElementById(id).addEventListener('input', updateCanvas);
-    });
+    function exportImage() {
+        const link = document.createElement('a');
+        link.download = `frame-export-${Date.now()}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    }
 </script>
 
 </body>
