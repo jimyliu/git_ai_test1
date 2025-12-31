@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI Image Frame Tool — 2025-12-30 19:34:55</title>
+    <style>
+        :root {
+            --bg-color: #f4f4f7;
+            --panel-bg: #ffffff;
+            --text-color: #333333;
+            --accent-color: #ff3b30; /* Holiday Red accent for this version */
+            --border-color: #e0e0e0;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --radius: 12px;
+            --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            font-family: var(--font-ui);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        header {
+            background: var(--panel-bg);
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            z-index: 10;
+        }
+
+        h1 {
+            font-size: 18px;
+            margin: 0;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .version-tag {
+            font-size: 12px;
+            color: #888;
+            font-family: monospace;
+        }
+
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Canvas Area */
+        .canvas-area {
+            flex: 1;
+            background-color: #e5e5e5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow: auto;
+            background-image: radial-gradient(#ccc 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        canvas {
+            background: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-width: 100%;
+            max-height: 100%;
+            cursor: crosshair;
+            touch-action: none; 
+        }
+
+        /* Controls Sidebar */
+        .controls {
+            width: 340px;
+            background: var(--panel-bg);
+            border-left: 1px solid var(--border-color);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            padding-bottom: 40px;
+        }
+
+        .control-section {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .control-section h3 {
+            margin: 0 0 15px 0;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #666;
+        }
+
+        /* Form Elements */
+        .input-group {
+            margin-bottom: 12px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+            font-family: var(--font-ui);
+        }
+
+        input[type="color"] {
+            -webkit-appearance: none;
+            border: none;
+            width: 100%;
+            height: 36px;
+            border-radius: 6px;
+            cursor: pointer;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+        input[type="color"]::-webkit-color-swatch {
+            border: none;
+        }
+
+        .slider-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            accent-color: var(--accent-color);
+        }
+
+        input[type="number"] {
+            width: 60px;
+            padding: 4px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #d63025;
+        }
+
+        .btn-secondary {
+            background-color: #f0f0f5;
+            color: #333;
+        }
+        .btn-secondary:hover {
+            background-color: #e0e0e5;
+        }
+
+        .file-upload-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-upload-wrapper input[type=file] {
+            font-size: 100px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            body {
+                height: auto;
+                overflow-y: auto;
+            }
+            .main-container {
+                flex-direction: column;
+            }
+            .canvas-area {
+                height: 50vh;
+                min-height: 300px;
+                order: 1;
+            }
+            .controls {
+                width: 100%;
+                height: auto;
+                order: 2;
+                border-left: none;
+                border-top: 1px solid var(--border-color);
+            }
+        }
+
+        optgroup { font-style: normal; font-weight: bold; color: #666; }
+        option { color: #000; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div>
+        <h1>AI Image Frame Tool</h1>
+        <span class="version-tag">2025-12-30 19:34:55</span>
+    </div>
+</header>
+
+<div class="main-container">
+    <div class="canvas-area">
+        <canvas id="mainCanvas"></canvas>
+    </div>
+
+    <div class="controls">
+        <div class="control-section">
+            <h3>1. Main Photo</h3>
+            <div class="input-group">
+                <div class="file-upload-wrapper">
+                    <button class="btn btn-primary">📂 Upload Main Photo</button>
+                    <input type="file" id="imageUpload" accept="image/*">
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label>Photo Scale (Inset)</label>
+                <div class="slider-group">
+                    <input type="range" id="insetScale" min="0" max="40" value="10">
+                    <input type="number" id="insetScaleNum" value="10" min="0" max="40">
+                </div>
+                <small style="color:#888; font-size:11px;">Reduce scale to reveal background frame.</small>
+            </div>
+        </div>
+
+        <div class="control-section">
+            <h3>2. Background Frame</h3>
+            <div class="input-group">
+                <div class="file-upload-wrapper">
+                    <button class="btn btn-secondary">🎄 Upload Frame Image</button>
+                    <input type="file" id="bgUpload" accept="image/*">
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label>Or Solid Color (Fallback)</label>
+                <input type="color" id="bgColor" value="#ffffff">
+            </div>
+        </div>
+
+        <div class="control-section">
+            <h3>3. Title Text</h3>
+            <div class="input-group">
+                <input type="text" id="titleText" value="Merry Christmas">
+            </div>
+            
+            <div class="input-group">
+                <label>Font</label>
+                <select id="titleFont">
+                    <optgroup label="Traditional Chinese - UI/Web">
+                        <option value="'PingFang TC', 'PingFangTC-Regular', sans-serif">PingFang TC (Standard)</option>
+                        <option value="'PingFangTC-Medium', 'PingFang TC', sans-serif">PingFang TC Medium</option>
+                        <option value="'PingFangTC-Semibold', 'PingFang TC', sans-serif">PingFang TC Semibold</option>
+                        <option value="'Heiti TC', 'Heiti TC Light', sans-serif">Heiti TC</option>
+                        <option value="'Heiti TC Medium', 'Heiti TC', sans-serif">Heiti TC Medium</option>
+                    </optgroup>
+                    <optgroup label="Traditional Chinese - Serif/Classic">
+                        <option value="'Songti TC', 'Songti TC Regular', serif">Songti TC Regular</option>
+                        <option value="'Songti TC Bold', 'Songti TC', serif">Songti TC Bold</option>
+                        <option value="'Kaiti TC', serif">Kaiti TC (Calligraphy)</option>
+                    </optgroup>
+                    <optgroup label="Latin / System">
+                        <option value="system-ui, -apple-system, sans-serif">System UI</option>
+                        <option value="Arial, sans-serif">Arial</option>
+                        <option value="Helvetica, sans-serif">Helvetica</option>
+                    </optgroup>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>Size (pt)</label>
+                <div class="slider-group">
+                    <input type="range" id="titleSize" min="14" max="800" value="80">
+                    <input type="number" id="titleSizeNum" value="80" min="14" max="800">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Color</label>
+                <input type="color" id="titleColor" value="#000000">
+            </div>
+        </div>
+
+        <div class="control-section">
+            <h3>4. Subtitle Text</h3>
+            <div class="input-group">
+                <input type="text" id="subtitleText" value="2025 Memories">
+            </div>
+
+            <div class="input-group">
+                <label>Font</label>
+                <select id="subtitleFont">
+                    <optgroup label="Traditional Chinese - UI/Web">
+                        <option value="'PingFang TC', 'PingFangTC-Regular', sans-serif">PingFang TC (Standard)</option>
+                        <option value="'PingFangTC-Medium', 'PingFang TC', sans-serif">PingFang TC Medium</option>
+                        <option value="'Heiti TC', 'Heiti TC Light', sans-serif">Heiti TC</option>
+                    </optgroup>
+                    <optgroup label="Traditional Chinese - Serif/Classic">
+                        <option value="'Songti TC', 'Songti TC Regular', serif">Songti TC Regular</option>
+                        <option value="'Kaiti TC', serif">Kaiti TC (Calligraphy)</option>
+                    </optgroup>
+                    <optgroup label="Latin / System">
+                        <option value="system-ui, -apple-system, sans-serif" selected>System UI</option>
+                        <option value="Arial, sans-serif">Arial</option>
+                        <option value="Helvetica, sans-serif">Helvetica</option>
+                    </optgroup>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>Size (pt)</label>
+                <div class="slider-group">
+                    <input type="range" id="subtitleSize" min="14" max="800" value="32">
+                    <input type="number" id="subtitleSizeNum" value="32" min="14" max="800">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Color</label>
+                <input type="color" id="subtitleColor" value="#666666">
+            </div>
+        </div>
+
+        <div class="control-section">
+            <h3>⚡️ Tools</h3>
+            <button class="btn btn-secondary" id="btnPresets">💡 Inspirational Caption</button>
+            <button class="btn btn-secondary" id="btnRandomStyle">🎨 Randomize Style</button>
+            <button class="btn btn-secondary" id="btnCenterText">🎯 Auto-Center Text</button>
+            <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 15px 0;">
+            <button class="btn btn-primary" id="btnExport">📥 Download PNG</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const canvas = document.getElementById('mainCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    // --- State ---
+    let state = {
+        mainImage: new Image(),
+        mainImageLoaded: false,
+        bgImage: new Image(),
+        bgImageLoaded: false,
+        bgColor: '#ffffff',
+        insetPercent: 10, // 0 to 50
+        
+        title: {
+            text: 'Merry Christmas',
+            font: "'PingFang TC', 'PingFangTC-Regular', sans-serif",
+            size: 80,
+            color: '#000000',
+            x: 0,
+            y: 0,
+            isDragging: false
+        },
+        subtitle: {
+            text: '2025 Memories',
+            font: "system-ui, -apple-system, sans-serif",
+            size: 32,
+            color: '#666666',
+            x: 0,
+            y: 0,
+            isDragging: false
+        }
+    };
+
+    // --- Placeholder / Init ---
+    function initPlaceholder() {
+        canvas.width = 1200;
+        canvas.height = 800;
+        
+        // Draw placeholder background
+        ctx.fillStyle = "#eee";
+        ctx.fillRect(0,0,1200,800);
+        
+        // Draw simulated "photo" area
+        ctx.fillStyle = "#ddd";
+        ctx.fillRect(100, 100, 1000, 600);
+        
+        ctx.font = "40px sans-serif";
+        ctx.fillStyle = "#888";
+        ctx.textAlign = "center";
+        ctx.fillText("1. Upload Main Photo", 600, 380);
+        ctx.fillText("2. Upload Background Image", 600, 440);
+
+        // Initial text pos
+        state.title.x = 600;
+        state.title.y = 650;
+        state.subtitle.x = 600;
+        state.subtitle.y = 700;
+    }
+
+    initPlaceholder();
+
+    // --- Drawing Logic ---
+    function draw() {
+        if (!state.mainImageLoaded) return;
+
+        // 1. Canvas Dimensions follow Main Image (to preserve photo aspect ratio)
+        canvas.width = state.mainImage.naturalWidth;
+        canvas.height = state.mainImage.naturalHeight;
+        
+        const w = canvas.width;
+        const h = canvas.height;
+
+        // 2. Draw Background Layer (Frame)
+        if (state.bgImageLoaded) {
+            // Stretch background to fill the canvas
+            ctx.drawImage(state.bgImage, 0, 0, w, h);
+        } else {
+            // Fallback solid color
+            ctx.fillStyle = state.bgColor;
+            ctx.fillRect(0, 0, w, h);
+        }
+
+        // 3. Draw Main Image (Scaled) on Top
+        // Calculate inset based on percentage
+        const insetFactor = state.insetPercent / 100; // e.g. 0.1
+        const insetX = w * insetFactor;
+        const insetY = h * insetFactor;
+        
+        const photoW = w - (insetX * 2);
+        const photoH = h - (insetY * 2);
+
+        // Optional: Drop shadow for the photo to make it pop against the background
+        ctx.save();
+        ctx.shadowColor = "rgba(0,0,0,0.3)";
+        ctx.shadowBlur = 20;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 5;
+        
+        ctx.drawImage(state.mainImage, insetX, insetY, photoW, photoH);
+        ctx.restore();
+
+        // 4. Draw Text
+        drawTextObj(state.title);
+        drawTextObj(state.subtitle);
+    }
+
+    function drawTextObj(obj) {
+        ctx.save();
+        ctx.font = `${obj.size}px ${obj.font}`;
+        ctx.fillStyle = obj.color;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(obj.text, obj.x, obj.y);
+        ctx.restore();
+    }
+
+    // --- Inputs & DOM ---
+    const dom = {
+        imgUpload: document.getElementById('imageUpload'),
+        bgUpload: document.getElementById('bgUpload'),
+        bgColor: document.getElementById('bgColor'),
+        
+        insetScale: document.getElementById('insetScale'),
+        insetScaleNum: document.getElementById('insetScaleNum'),
+        
+        titleText: document.getElementById('titleText'),
+        titleFont: document.getElementById('titleFont'),
+        titleSize: document.getElementById('titleSize'),
+        titleSizeNum: document.getElementById('titleSizeNum'),
+        titleColor: document.getElementById('titleColor'),
+        
+        subText: document.getElementById('subtitleText'),
+        subFont: document.getElementById('subtitleFont'),
+        subSize: document.getElementById('subtitleSize'),
+        subSizeNum: document.getElementById('subtitleSizeNum'),
+        subColor: document.getElementById('subtitleColor'),
+        
+        btnExport: document.getElementById('btnExport'),
+        btnCenter: document.getElementById('btnCenterText'),
+        btnPresets: document.getElementById('btnPresets'),
+        btnRandom: document.getElementById('btnRandomStyle')
+    };
+
+    function syncInputs(slider, number, key, subKey) {
+        slider.addEventListener('input', (e) => {
+            number.value = e.target.value;
+            if(subKey) state[key][subKey] = parseInt(e.target.value);
+            else state[key] = parseInt(e.target.value);
+            draw();
+        });
+        number.addEventListener('input', (e) => {
+            slider.value = e.target.value;
+            if(subKey) state[key][subKey] = parseInt(e.target.value);
+            else state[key] = parseInt(e.target.value);
+            draw();
+        });
+    }
+
+    // 1. Main Image Upload
+    dom.imgUpload.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            state.mainImage = new Image();
+            state.mainImage.onload = () => {
+                state.mainImageLoaded = true;
+                
+                // Set intelligent defaults based on resolution
+                const h = state.mainImage.naturalHeight;
+                state.title.size = Math.floor(h * 0.08);
+                dom.titleSize.value = state.title.size;
+                dom.titleSizeNum.value = state.title.size;
+
+                state.subtitle.size = Math.floor(h * 0.035);
+                dom.subtitleSize.value = state.subtitle.size;
+                dom.subtitleSizeNum.value = state.subtitle.size;
+
+                centerText();
+                draw();
+            };
+            state.mainImage.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+
+    // 2. Background Upload
+    dom.bgUpload.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            state.bgImage = new Image();
+            state.bgImage.onload = () => {
+                state.bgImageLoaded = true;
+                draw();
+            };
+            state.bgImage.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+
+    // Background Color (Fallback)
+    dom.bgColor.addEventListener('input', (e) => {
+        state.bgColor = e.target.value;
+        draw();
+    });
+
+    // Inset Scale
+    syncInputs(dom.insetScale, dom.insetScaleNum, 'insetPercent');
+
+    // Text Inputs
+    dom.titleText.addEventListener('input', (e) => { state.title.text = e.target.value; draw(); });
+    dom.titleFont.addEventListener('change', (e) => { state.title.font = e.target.value; draw(); });
+    dom.titleColor.addEventListener('input', (e) => { state.title.color = e.target.value; draw(); });
+    syncInputs(dom.titleSize, dom.titleSizeNum, 'title', 'size');
+
+    dom.subText.addEventListener('input', (e) => { state.subtitle.text = e.target.value; draw(); });
+    dom.subFont.addEventListener('change', (e) => { state.subtitle.font = e.target.value; draw(); });
+    dom.subColor.addEventListener('input', (e) => { state.subtitle.color = e.target.value; draw(); });
+    syncInputs(dom.subSize, dom.subSizeNum, 'subtitle', 'size');
+
+    // --- Interactions ---
+
+    function getCanvasCoords(e) {
+        const rect = canvas.getBoundingClientRect();
+        let clientX, clientY;
+        if (e.touches && e.touches.length > 0) {
+            clientX = e.touches[0].clientX;
+            clientY = e.touches[0].clientY;
+        } else {
+            clientX = e.clientX;
+            clientY = e.clientY;
+        }
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        return {
+            x: (clientX - rect.left) * scaleX,
+            y: (clientY - rect.top) * scaleY
+        };
+    }
+
+    function isHit(obj, x, y) {
+        ctx.font = `${obj.size}px ${obj.font}`;
+        const metrics = ctx.measureText(obj.text);
+        const width = metrics.width;
+        const height = obj.size; 
+        const left = obj.x - width / 2;
+        const right = obj.x + width / 2;
+        const top = obj.y - height / 2;
+        const bottom = obj.y + height / 2;
+        return (x >= left && x <= right && y >= top && y <= bottom);
+    }
+
+    let dragTarget = null;
+    let dragStart = { x: 0, y: 0 };
+    let objStart = { x: 0, y: 0 };
+
+    function handleStart(e) {
+        if (!state.mainImageLoaded) return;
+        const coords = getCanvasCoords(e);
+        if (isHit(state.subtitle, coords.x, coords.y)) {
+            dragTarget = state.subtitle;
+        } else if (isHit(state.title, coords.x, coords.y)) {
+            dragTarget = state.title;
+        }
+        if (dragTarget) {
+            dragTarget.isDragging = true;
+            dragStart = coords;
+            objStart = { x: dragTarget.x, y: dragTarget.y };
+        }
+    }
+
+    function handleMove(e) {
+        if (!dragTarget || !state.mainImageLoaded) return;
+        e.preventDefault();
+        const coords = getCanvasCoords(e);
+        const dx = coords.x - dragStart.x;
+        const dy = coords.y - dragStart.y;
+        dragTarget.x = objStart.x + dx;
+        dragTarget.y = objStart.y + dy;
+        draw();
+    }
+
+    function handleEnd() {
+        if (dragTarget) {
+            dragTarget.isDragging = false;
+            dragTarget = null;
+        }
+    }
+
+    canvas.addEventListener('mousedown', handleStart);
+    canvas.addEventListener('mousemove', handleMove);
+    canvas.addEventListener('mouseup', handleEnd);
+    canvas.addEventListener('mouseleave', handleEnd);
+    canvas.addEventListener('touchstart', handleStart, { passive: false });
+    canvas.addEventListener('touchmove', handleMove, { passive: false });
+    canvas.addEventListener('touchend', handleEnd);
+
+    // --- Tools ---
+    function centerText() {
+        if (!state.mainImageLoaded) return;
+        const w = canvas.width;
+        const h = canvas.height;
+        state.title.x = w / 2;
+        state.title.y = h * 0.85;
+        state.subtitle.x = w / 2;
+        state.subtitle.y = h * 0.92;
+        draw();
+    }
+    
+    dom.btnCenter.addEventListener('click', centerText);
+
+    const captions = [
+        "Holiday Vibes",
+        "Winter Wonderland",
+        "Merry & Bright",
+        "Family Moments",
+        "Joy to the World",
+        "Cozy Nights",
+        "Festive Spirit"
+    ];
+
+    dom.btnPresets.addEventListener('click', () => {
+        const r = Math.floor(Math.random() * captions.length);
+        state.subtitle.text = captions[r];
+        dom.subText.value = captions[r];
+        draw();
+    });
+
+    const colors = ['#000000', '#FFFFFF', '#D63031', '#0984E3', '#FDCB6E', '#6C5CE7'];
+    dom.btnRandom.addEventListener('click', () => {
+        const c1 = colors[Math.floor(Math.random() * colors.length)];
+        state.title.color = c1;
+        dom.titleColor.value = c1;
+        const c2 = colors[Math.floor(Math.random() * colors.length)];
+        state.subtitle.color = c2;
+        dom.subColor.value = c2;
+        draw();
+    });
+
+    dom.btnExport.addEventListener('click', () => {
+        if (!state.mainImageLoaded) {
+            alert("Please upload an image first.");
+            return;
+        }
+        const link = document.createElement('a');
+        link.download = `holiday-frame-${Date.now()}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    });
+
+</script>
+</body>
+</html>
