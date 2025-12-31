@@ -1,329 +1,173 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Image Frame Tool — 2025-12-30 20:23:45</title>
-    <style>
-        :root {
-            --bg: #f4f4f9;
-            --panel: #ffffff;
-            --accent: #2563eb;
-            --text: #1e293b;
-        }
 
-        body {
-            font-family: system-ui, -apple-system, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
-        }
+<html lang="en"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>AI Image Frame Tool — 2025-12-30 20:28:10</title> <style> :root { --bg-color: #f0f2f5; --panel-bg: #ffffff; --accent: #2563eb; --text: #1e293b; } body { font-family: system-ui, -apple-system, sans-serif; background-color: var(--bg-color); color: var(--text); margin: 0; display: flex; flex-direction: column; align-items: center; padding: 20px; } .container { display: flex; flex-wrap: wrap; gap: 20px; max-width: 1200px; width: 100%; justify-content: center; } #canvas-container { background: white; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden; position: sticky; top: 20px; line-height: 0; cursor: crosshair; touch-action: none; } canvas { max-width: 100%; height: auto; } .controls { flex: 1; min-width: 320px; max-width: 450px; background: var(--panel-bg); padding: 24px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 16px; } h1 { margin: 0 0 10px 0; font-size: 1.25rem; color: var(--accent); } .section { border-bottom: 1px solid #e2e8f0; padding-bottom: 16px; margin-bottom: 8px; } .section-title { font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; display: block; color: #64748b; } .control-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; } .row { display: flex; gap: 10px; align-items: center; } .row label { flex: 1; font-size: 0.9rem; } input[type="text"], select { padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; width: 100%; } input[type="range"] { flex: 2; } .num-input { width: 60px; } button { padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.2s; } .btn-primary { background: var(--accent); color: white; width: 100%; font-size: 1rem; } .btn-primary:hover { background: #1d4ed8; } .btn-secondary { background: #e2e8f0; color: var(--text); } .btn-random { background: #8b5cf6; color: white; } </style> </head> <body>
 
-        header {
-            background: #fff;
-            padding: 1rem 2rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+<h1>AI Image Frame Tool — 2025-12-30 20:28:10</h1>
 
-        h1 { margin: 0; font-size: 1.25rem; }
-
-        main {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
-
-        #controls {
-            width: 350px;
-            background: var(--panel);
-            border-right: 1px solid #ddd;
-            padding: 1.5rem;
-            overflow-y: auto;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
-        }
-
-        #canvas-container {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-            background: #e5e7eb;
-            position: relative;
-            cursor: grab;
-        }
-
-        #canvas-container:active { cursor: grabbing; }
-
-        canvas {
-            max-width: 100%;
-            max-height: 100%;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            background: white;
-        }
-
-        .control-group {
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid #eee;
-        }
-
-        .control-group h3 {
-            margin: 0 0 1rem 0;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: #64748b;
-        }
-
-        label { display: block; margin-bottom: 0.5rem; font-size: 0.85rem; font-weight: 600; }
-
-        input[type="text"], select, input[type="number"] {
-            width: 100%;
-            padding: 0.5rem;
-            margin-bottom: 0.75rem;
-            border: 1px solid #cbd5e1;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-
-        .flex-row { display: flex; gap: 10px; align-items: center; margin-bottom: 0.75rem; }
-        .flex-row input { flex: 1; margin-bottom: 0; }
-
-        button {
-            cursor: pointer;
-            padding: 0.6rem 1rem;
-            border-radius: 6px;
-            border: none;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-
-        .btn-primary { background: var(--accent); color: white; width: 100%; margin-top: 1rem; }
-        .btn-primary:hover { background: #1d4ed8; }
-        .btn-secondary { background: #64748b; color: white; flex: 1; font-size: 0.8rem; }
-
-        .hint { font-size: 0.75rem; color: #94a3b8; margin-top: 0.5rem; }
-    </style>
-</head>
-<body>
-
-<header>
-    <h1>AI Image Frame Tool — 2025-12-30 20:23:45</h1>
-    <button onclick="exportImage()" class="btn-primary" style="margin:0; width: auto;">Export PNG</button>
-</header>
-
-<main>
-    <div id="controls">
-        <div class="control-group">
-            <h3>1. Image Source</h3>
-            <input type="file" id="imageInput" accept="image/*">
-            <label>Image Opacity (20-100%)</label>
-            <input type="range" id="imgOpacity" min="0.2" max="1" step="0.01" value="1" style="width:100%">
-        </div>
-
-        <div class="control-group">
-            <h3>2. Frame / Border</h3>
-            <label>Border Color</label>
-            <input type="color" id="borderColor" value="#000000" style="width:100%; height:40px;">
-            <label>Thickness</label>
-            <input type="range" id="borderWidth" min="0" max="200" value="40" style="width:100%">
-        </div>
-
-        <div class="control-group">
-            <h3>3. Title Overlay</h3>
-            <input type="text" id="titleText" placeholder="Enter Title..." value="Your Title Here">
-            <div class="flex-row">
-                <input type="color" id="titleColor" value="#ffffff">
-                <input type="number" id="titleSize" min="14" max="800" value="60">
-            </div>
-            <select id="titleFont">
-                <option value='"PingFang TC","PingFangTC-Regular","Heiti TC",sans-serif'>PingFang TC（繁）</option>
-                <option value='"Heiti TC","Heiti TC Light",sans-serif'>Heiti TC（繁）</option>
-                <option value='"Songti TC","Songti TC Regular",serif'>Songti TC（繁）</option>
-                <option value='"Kaiti TC",serif'>Kaiti TC（繁）</option>
-                <option value='system-ui, sans-serif'>System UI</option>
-                <option value='Arial, sans-serif'>Arial</option>
-                <option value='Helvetica, sans-serif'>Helvetica</option>
-            </select>
-        </div>
-
-        <div class="control-group">
-            <h3>4. Subtitle Overlay</h3>
-            <input type="text" id="subText" placeholder="Enter Subtitle..." value="Sub-header text goes here">
-            <div class="flex-row">
-                <input type="color" id="subColor" value="#ffffff">
-                <input type="number" id="subSize" min="14" max="800" value="30">
-            </div>
-            <select id="subFont">
-                <option value='"PingFang TC","PingFangTC-Regular","Heiti TC",sans-serif'>PingFang TC（繁）</option>
-                <option value='"Heiti TC","Heiti TC Light",sans-serif'>Heiti TC（繁）</option>
-                <option value='"Songti TC","Songti TC Regular",serif'>Songti TC（繁）</option>
-                <option value='"Kaiti TC",serif'>Kaiti TC（繁）</option>
-                <option value='system-ui, sans-serif'>System UI</option>
-                <option value='Arial, sans-serif'>Arial</option>
-                <option value='Helvetica, sans-serif'>Helvetica</option>
-            </select>
-        </div>
-
-        <div class="control-group">
-            <h3>5. Styles</h3>
-            <div class="flex-row">
-                <button onclick="randomStyle()" class="btn-secondary">🎲 Random Style</button>
-                <button onclick="centerAll()" class="btn-secondary">🎯 Recenter</button>
-            </div>
-            <p class="hint">Tip: Drag items directly on the canvas to reposition.</p>
-        </div>
-    </div>
-
+<div class="container">
     <div id="canvas-container">
         <canvas id="mainCanvas"></canvas>
     </div>
-</main>
+
+    <div class="controls">
+        <div class="section">
+            <span class="section-title">1. Background Layer</span>
+            <input type="file" id="bgInput" accept="image/*" class="control-group">
+            <div class="row">
+                <label>Opacity</label>
+                <input type="range" id="bgOpacity" min="20" max="100" value="100">
+            </div>
+        </div>
+
+        <div class="section">
+            <span class="section-title">2. Main Image & Frame</span>
+            <input type="file" id="mainInput" accept="image/*" class="control-group">
+            <div class="row">
+                <label>Opacity</label>
+                <input type="range" id="mainOpacity" min="20" max="100" value="100">
+            </div>
+            <div class="row">
+                <label>Frame Color</label>
+                <input type="color" id="frameColor" value="#ffffff">
+            </div>
+            <div class="row">
+                <label>Thickness</label>
+                <input type="range" id="frameWidth" min="0" max="100" value="20">
+            </div>
+        </div>
+
+        <div class="section">
+            <span class="section-title">3. Title Text Layer</span>
+            <input type="text" id="titleText" placeholder="Enter Title..." value="Memorable Moment">
+            <div class="row">
+                <select id="titleFont">
+                    <optgroup label="Traditional Chinese">
+                        <option value="'PingFang TC', 'PingFangTC-Regular', sans-serif">PingFang TC</option>
+                        <option value="'Heiti TC', 'Heiti TC Light', sans-serif">Heiti TC</option>
+                        <option value="'Songti TC', 'Songti TC Regular', serif">Songti TC</option>
+                        <option value="'Kaiti TC', 'Kaiti TC Regular', serif">Kaiti TC</option>
+                    </optgroup>
+                    <optgroup label="System">
+                        <option value="system-ui">System UI</option>
+                        <option value="Arial">Arial</option>
+                        <option value="Helvetica">Helvetica</option>
+                    </optgroup>
+                </select>
+            </div>
+            <div class="row">
+                <input type="color" id="titleColor" value="#000000">
+                <input type="range" id="titleSizeSlider" min="14" max="800" value="60">
+                <input type="number" id="titleSizeNum" class="num-input" value="60">
+            </div>
+        </div>
+
+        <div class="section">
+            <span class="section-title">4. Subtitle Text Layer</span>
+            <input type="text" id="subtitleText" placeholder="Enter Subtitle..." value="Dec 2025">
+            <div class="row">
+                <select id="subtitleFont">
+                    <optgroup label="Traditional Chinese">
+                        <option value="'PingFang TC', 'PingFangTC-Regular', sans-serif">PingFang TC</option>
+                        <option value="'Heiti TC', 'Heiti TC Light', sans-serif">Heiti TC</option>
+                        <option value="'Songti TC', 'Songti TC Regular', serif">Songti TC</option>
+                        <option value="'Kaiti TC', 'Kaiti TC Regular', serif">Kaiti TC</option>
+                    </optgroup>
+                    <optgroup label="System">
+                        <option value="system-ui">System UI</option>
+                        <option value="Arial">Arial</option>
+                        <option value="Helvetica">Helvetica</option>
+                    </optgroup>
+                </select>
+            </div>
+            <div class="row">
+                <input type="color" id="subtitleColor" value="#333333">
+                <input type="range" id="subtitleSizeSlider" min="14" max="800" value="30">
+                <input type="number" id="subtitleSizeNum" class="num-input" value="30">
+            </div>
+        </div>
+
+        <button class="btn-random" id="btnRandom">Random Style</button>
+        <button class="btn-primary" id="btnExport">Export PNG</button>
+    </div>
+</div>
 
 <script>
     const canvas = document.getElementById('mainCanvas');
     const ctx = canvas.getContext('2d');
-    const imageInput = document.getElementById('imageInput');
 
     // State Management
-    let img = new Image();
-    let imgLoaded = false;
-    
-    let state = {
-        imgPos: { x: 0, y: 0 },
-        titlePos: { x: 0, y: 0 },
-        subPos: { x: 0, y: 0 },
-        dragTarget: null,
-        isDragging: false,
-        lastMouse: { x: 0, y: 0 }
+    const state = {
+        bg: { img: null, opacity: 1 },
+        main: { img: null, x: 50, y: 50, w: 600, h: 400, opacity: 1, frameColor: '#ffffff', frameWidth: 20 },
+        title: { text: "Memorable Moment", x: 400, y: 700, size: 60, color: '#000000', font: "'PingFang TC', sans-serif" },
+        subtitle: { text: "Dec 2025", x: 400, y: 760, size: 30, color: '#333333', font: "'PingFang TC', sans-serif" },
+        dragging: null,
+        dragOffset: { x: 0, y: 0 }
     };
 
-    const presets = [
-        "Capture the Moment", "Stay Wild", "City Lights", "Nature's Whispers", 
-        "Endless Summer", "The Art of Living", "Minimalist Soul"
-    ];
+    // Initialize Canvas Size
+    canvas.width = 1080;
+    canvas.height = 1080;
 
-    // Initialize
-    window.onload = () => {
-        canvas.width = 800;
-        canvas.height = 600;
-        draw();
-    };
-
-    // UI Listeners
-    const inputs = ['titleText', 'titleColor', 'titleSize', 'titleFont', 
-                    'subText', 'subColor', 'subSize', 'subFont', 
-                    'borderColor', 'borderWidth', 'imgOpacity'];
-    
-    inputs.forEach(id => {
-        document.getElementById(id).addEventListener('input', draw);
-    });
-
-    imageInput.addEventListener('change', function(e) {
-        const reader = new FileReader();
-        reader.onload = function(event) {
-            img.onload = function() {
-                canvas.width = img.width;
-                canvas.height = img.height;
-                imgLoaded = true;
-                centerAll();
-                draw();
-            };
-            img.src = event.target.result;
-        };
-        reader.readAsDataURL(e.target.files[0]);
-    });
-
-    function centerAll() {
-        state.imgPos = { x: 0, y: 0 };
-        state.titlePos = { x: canvas.width / 2, y: canvas.height / 2 - 20 };
-        state.subPos = { x: canvas.width / 2, y: canvas.height / 2 + 50 };
-        
-        // Smart sizing
-        const baseSize = Math.min(canvas.width, canvas.height);
-        document.getElementById('titleSize').value = Math.floor(baseSize * 0.08);
-        document.getElementById('subSize').value = Math.floor(baseSize * 0.04);
-        document.getElementById('borderWidth').value = Math.floor(baseSize * 0.05);
-        draw();
-    }
-
-    function randomStyle() {
-        const colors = ['#ffffff', '#000000', '#facc15', '#f87171', '#60a5fa', '#4ade80'];
-        const fonts = document.getElementById('titleFont').options;
-        
-        document.getElementById('titleColor').value = colors[Math.floor(Math.random() * colors.length)];
-        document.getElementById('subColor').value = colors[Math.floor(Math.random() * colors.length)];
-        document.getElementById('titleFont').selectedIndex = Math.floor(Math.random() * fonts.length);
-        document.getElementById('subFont').selectedIndex = Math.floor(Math.random() * fonts.length);
-        document.getElementById('titleText').value = presets[Math.floor(Math.random() * presets.length)];
-        draw();
-    }
-
-    // Drawing Logic
-    function draw() {
-        if (!ctx) return;
+    function render() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        const bWidth = parseInt(document.getElementById('borderWidth').value);
-        const bColor = document.getElementById('borderColor').value;
-        const opacity = parseFloat(document.getElementById('imgOpacity').value);
-
-        // 1. Draw Image with opacity (Moved with frame)
-        if (imgLoaded) {
-            ctx.save();
-            ctx.globalAlpha = opacity;
-            ctx.drawImage(img, state.imgPos.x, state.imgPos.y);
-            ctx.restore();
+        // 1. Background Layer
+        if (state.bg.img) {
+            ctx.globalAlpha = state.bg.opacity;
+            const ratio = Math.max(canvas.width / state.bg.img.width, canvas.height / state.bg.img.height);
+            const nw = state.bg.img.width * ratio;
+            const nh = state.bg.img.height * ratio;
+            ctx.drawImage(state.bg.img, (canvas.width - nw) / 2, (canvas.height - nh) / 2, nw, nh);
+        } else {
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
 
-        // 2. Draw Frame (Follows image position)
-        if (bWidth > 0) {
-            ctx.strokeStyle = bColor;
-            ctx.lineWidth = bWidth * 2; // Drawn from center of line, so double for inner/outer overlap
-            ctx.strokeRect(state.imgPos.x, state.imgPos.y, canvas.width, canvas.height);
+        // 2. Main Image Layer + Frame
+        if (state.main.img) {
+            ctx.globalAlpha = state.main.opacity;
+            // Draw Frame
+            if (state.main.frameWidth > 0) {
+                ctx.fillStyle = state.main.frameColor;
+                ctx.fillRect(
+                    state.main.x - state.main.frameWidth,
+                    state.main.y - state.main.frameWidth,
+                    state.main.w + (state.main.frameWidth * 2),
+                    state.main.h + (state.main.frameWidth * 2)
+                );
+            }
+            ctx.drawImage(state.main.img, state.main.x, state.main.y, state.main.w, state.main.h);
         }
 
-        // 3. Draw Title
-        drawText(
-            document.getElementById('titleText').value,
-            state.titlePos.x,
-            state.titlePos.y,
-            document.getElementById('titleSize').value,
-            document.getElementById('titleColor').value,
-            document.getElementById('titleFont').value
-        );
+        // 3. Text Layers
+        ctx.globalAlpha = 1.0;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
 
-        // 4. Draw Subtitle
-        drawText(
-            document.getElementById('subText').value,
-            state.subPos.x,
-            state.subPos.y,
-            document.getElementById('subSize').value,
-            document.getElementById('subColor').value,
-            document.getElementById('subFont').value
-        );
+        ctx.font = `${state.title.size}px ${state.title.font}`;
+        ctx.fillStyle = state.title.color;
+        ctx.fillText(state.title.text, state.title.x, state.title.y);
+
+        ctx.font = `${state.subtitle.size}px ${state.subtitle.font}`;
+        ctx.fillStyle = state.subtitle.color;
+        ctx.fillText(state.subtitle.text, state.subtitle.x, state.subtitle.y);
+
+        requestAnimationFrame(drawLoop);
     }
 
-    function drawText(text, x, y, size, color, font) {
-        ctx.save();
-        ctx.font = `${size}pt ${font}`;
-        ctx.fillStyle = color;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(text, x, y);
-        ctx.restore();
+    let needsUpdate = true;
+    function drawLoop() {
+        if (needsUpdate) {
+            render();
+            needsUpdate = false;
+        }
     }
+
+    function triggerUpdate() { needsUpdate = true; }
 
     // Interaction Logic
-    function getCoords(e) {
+    function getMousePos(e) {
         const rect = canvas.getBoundingClientRect();
         const scaleX = canvas.width / rect.width;
         const scaleY = canvas.height / rect.height;
@@ -335,62 +179,148 @@
         };
     }
 
-    function handleStart(e) {
-        const coords = getCoords(e);
-        state.isDragging = true;
-        state.lastMouse = coords;
+    canvas.addEventListener('mousedown', startDrag);
+    canvas.addEventListener('touchstart', startDrag, {passive: false});
+    window.addEventListener('mousemove', doDrag);
+    window.addEventListener('touchmove', doDrag, {passive: false});
+    window.addEventListener('mouseup', endDrag);
+    window.addEventListener('touchend', endDrag);
 
-        // Hit Detection (Reverse order for layering)
-        const subDist = Math.hypot(coords.x - state.subPos.x, coords.y - state.subPos.y);
-        const titleDist = Math.hypot(coords.x - state.titlePos.x, coords.y - state.titlePos.y);
-
-        if (subDist < 50) state.dragTarget = 'sub';
-        else if (titleDist < 50) state.dragTarget = 'title';
-        else state.dragTarget = 'image';
-    }
-
-    function handleMove(e) {
-        if (!state.isDragging) return;
-        e.preventDefault();
-        const coords = getCoords(e);
-        const dx = coords.x - state.lastMouse.x;
-        const dy = coords.y - state.lastMouse.y;
-
-        if (state.dragTarget === 'title') {
-            state.titlePos.x += dx;
-            state.titlePos.y += dy;
-        } else if (state.dragTarget === 'sub') {
-            state.subPos.x += dx;
-            state.subPos.y += dy;
-        } else if (state.dragTarget === 'image') {
-            state.imgPos.x += dx;
-            state.imgPos.y += dy;
+    function startDrag(e) {
+        const pos = getMousePos(e);
+        
+        // Hit Test Subtitle (on top)
+        if (Math.abs(pos.x - state.subtitle.x) < 150 && Math.abs(pos.y - state.subtitle.y) < 40) {
+            state.dragging = 'subtitle';
+            state.dragOffset = { x: pos.x - state.subtitle.x, y: pos.y - state.subtitle.y };
+        } 
+        // Hit Test Title
+        else if (Math.abs(pos.x - state.title.x) < 200 && Math.abs(pos.y - state.title.y) < 50) {
+            state.dragging = 'title';
+            state.dragOffset = { x: pos.x - state.title.x, y: pos.y - state.title.y };
         }
-
-        state.lastMouse = coords;
-        draw();
+        // Hit Test Main Image + Frame
+        else if (state.main.img && 
+                 pos.x > state.main.x - state.main.frameWidth && 
+                 pos.x < state.main.x + state.main.w + state.main.frameWidth &&
+                 pos.y > state.main.y - state.main.frameWidth && 
+                 pos.y < state.main.y + state.main.h + state.main.frameWidth) {
+            state.dragging = 'main';
+            state.dragOffset = { x: pos.x - state.main.x, y: pos.y - state.main.y };
+        }
+        if (state.dragging) e.preventDefault();
     }
 
-    function handleEnd() {
-        state.isDragging = false;
-        state.dragTarget = null;
+    function doDrag(e) {
+        if (!state.dragging) return;
+        const pos = getMousePos(e);
+        if (state.dragging === 'main') {
+            state.main.x = pos.x - state.dragOffset.x;
+            state.main.y = pos.y - state.dragOffset.y;
+        } else if (state.dragging === 'title') {
+            state.title.x = pos.x - state.dragOffset.x;
+            state.title.y = pos.y - state.dragOffset.y;
+        } else if (state.dragging === 'subtitle') {
+            state.subtitle.x = pos.x - state.dragOffset.x;
+            state.subtitle.y = pos.y - state.dragOffset.y;
+        }
+        triggerUpdate();
     }
 
-    canvas.addEventListener('mousedown', handleStart);
-    window.addEventListener('mousemove', handleMove);
-    window.addEventListener('mouseup', handleEnd);
+    function endDrag() { state.dragging = null; }
 
-    canvas.addEventListener('touchstart', handleStart, {passive: false});
-    window.addEventListener('touchmove', handleMove, {passive: false});
-    window.addEventListener('touchend', handleEnd);
+    // Controls Binding
+    document.getElementById('bgInput').addEventListener('change', (e) => {
+        const reader = new FileReader();
+        reader.onload = (f) => {
+            const img = new Image();
+            img.onload = () => { state.bg.img = img; triggerUpdate(); };
+            img.src = f.target.result;
+        };
+        reader.readAsDataURL(e.target.files[0]);
+    });
 
-    function exportImage() {
+    document.getElementById('mainInput').addEventListener('change', (e) => {
+        const reader = new FileReader();
+        reader.onload = (f) => {
+            const img = new Image();
+            img.onload = () => {
+                state.main.img = img;
+                const scale = Math.min(600 / img.width, 600 / img.height);
+                state.main.w = img.width * scale;
+                state.main.h = img.height * scale;
+                state.main.x = (canvas.width - state.main.w) / 2;
+                state.main.y = (canvas.height - state.main.h) / 2.5;
+                triggerUpdate();
+            };
+            img.src = f.target.result;
+        };
+        reader.readAsDataURL(e.target.files[0]);
+    });
+
+    // Sliders & Inputs
+    const bind = (id, target, prop, isNum = false) => {
+        const el = document.getElementById(id);
+        el.addEventListener('input', (e) => {
+            let val = e.target.value;
+            if (id.includes('Opacity')) val = val / 100;
+            target[prop] = isNum ? parseFloat(val) : val;
+            triggerUpdate();
+        });
+    };
+
+    bind('bgOpacity', state.bg, 'opacity', true);
+    bind('mainOpacity', state.main, 'opacity', true);
+    bind('frameColor', state.main, 'frameColor');
+    bind('frameWidth', state.main, 'frameWidth', true);
+    
+    bind('titleText', state.title, 'text');
+    bind('titleFont', state.title, 'font');
+    bind('titleColor', state.title, 'color');
+    
+    bind('subtitleText', state.subtitle, 'text');
+    bind('subtitleFont', state.subtitle, 'font');
+    bind('subtitleColor', state.subtitle, 'color');
+
+    // Sync Slider + Numeric for Font Size
+    const syncSize = (sliderId, numId, target) => {
+        const s = document.getElementById(sliderId);
+        const n = document.getElementById(numId);
+        s.addEventListener('input', (e) => { n.value = e.target.value; target.size = e.target.value; triggerUpdate(); });
+        n.addEventListener('input', (e) => { s.value = e.target.value; target.size = e.target.value; triggerUpdate(); });
+    };
+    syncSize('titleSizeSlider', 'titleSizeNum', state.title);
+    syncSize('subtitleSizeSlider', 'subtitleSizeNum', state.subtitle);
+
+    // Random Style
+    const captions = [
+        {t: "Hello World", s: "Beautiful Day"},
+        {t: "靜思", s: "心如止水"},
+        {t: "Adventure", s: "Explore the Unknown"},
+        {t: "美好時光", s: "珍藏每一刻"}
+    ];
+    document.getElementById('btnRandom').addEventListener('click', () => {
+        const cap = captions[Math.floor(Math.random() * captions.length)];
+        state.title.text = cap.t;
+        state.subtitle.text = cap.s;
+        state.title.color = `#${Math.floor(Math.random()*16777215).toString(16)}`;
+        state.main.frameColor = "#ffffff";
+        state.title.size = 50 + Math.random() * 50;
+        
+        document.getElementById('titleText').value = cap.t;
+        document.getElementById('subtitleText').value = cap.s;
+        triggerUpdate();
+    });
+
+    // Export
+    document.getElementById('btnExport').addEventListener('click', () => {
         const link = document.createElement('a');
-        link.download = `frame-export-${Date.now()}.png`;
+        link.download = `framed-image-${Date.now()}.png`;
         link.href = canvas.toDataURL('image/png');
         link.click();
-    }
-</script>
+    });
 
-</body>
-</html>
+    // Initial Render
+    triggerUpdate();
+</script>
+</body> </html>
