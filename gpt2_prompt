@@ -1,0 +1,184 @@
+🎯 GOAL (ABSOLUTE)
+Generate a brand-new version of a browser-only image framing tool as a single self-contained HTML file named:
+frame.html
+⚠️ Every generation MUST be a new version.
+🔖 Version Identification (MANDATORY)
+Both:
+the visible tool title, and
+the HTML <title> tag
+MUST include the current generation timestamp, formatted exactly as:
+AI Image Frame Tool — YYYY-MM-DD HH:mm:ss
+(use generation time, never a fixed value)
+
+🧱 CORE ARCHITECTURE (MANDATORY)
+No backend
+No server
+No API
+Runs entirely in the browser
+Pure HTML + CSS + JavaScript
+Deployable on GitHub Pages
+No build step
+No Node.js
+No framework
+No external libraries
+Inline CSS and inline JavaScript only
+
+🖼 LAYERED IMAGE SYSTEM (CRITICAL UPGRADE)
+The canvas must support multiple visual layers, rendered in the following strict order:
+Layer Order (BOTTOM → TOP)
+Background Image Layer
+Main Image Layer
+Frame / Border Layer
+Title Text Layer
+Subtitle Text Layer
+Layer order must never break.
+
+🌄 BACKGROUND IMAGE LAYER (NEW – MANDATORY)
+User can load a separate background image
+Example use case:
+Christmas theme
+Holiday pattern
+Seasonal graphic
+Background image fills the entire canvas
+Aspect ratio preserved
+Can be:
+auto-fit (contain / cover logic allowed)
+
+Background image is NOT draggable by default
+🌫 Background Opacity Control
+Slider to control background image transparency
+Range:
+20% → 100% (higher percentage means more transparency
+
+Changes apply only to background image
+Real-time canvas update
+Exported PNG must match exactly
+
+🖼 MAIN IMAGE LAYER (FOREGROUND IMAGE)
+User uploads a main image (photo / portrait)
+Rendered above background image
+Original aspect ratio preserved
+Main image can be:
+moved
+repositioned
+🖱 Main Image + Frame Movement (CRITICAL)
+Main image and its frame must move together as one unit
+Drag behavior must match Title / Subtitle dragging
+Mouse + touch supported
+Exported PNG must preserve exact position
+🌫 Main Image Opacity Control
+Independent opacity slider
+Range:
+20% → 100% (higher percentage means more transparency or lighter)
+
+Background and text must NOT be affected
+
+🖼 FRAME / BORDER SYSTEM
+Frame drawn using Canvas
+Frame always wraps the main image only
+Frame color adjustable via color picker
+Frame thickness adjustable via slider
+Thickness must be uniform on all sides
+
+✍️ TEXT OVERLAY SYSTEM (CRITICAL)
+Support two fully independent text layers:
+Title
+Subtitle
+Each text layer must be independent in:
+content
+font
+size
+color
+position
+
+Both title, subtitle has background color to select from color picker and the background color can adjust transparency as well with slider
+
+🔤 FONT FAMILY SELECTOR
+(MANDATORY — macOS Safari Safe)
+The font dropdown must work reliably on macOS Safari + Chrome.
+🔹 Traditional Chinese Fonts (繁體中文)
+These fonts MUST remain available for BOTH Title & Subtitle.
+
+Do NOT remove, merge, or simplify them.
+
+Order MUST match exactly:
+PingFang TC（蘋方-繁）— ⭐ Primary
+PingFang TC
+PingFangTC-Regular
+PingFangTC-Medium
+PingFangTC-Semibold
+Heiti TC（黑體-繁）
+Heiti TC
+Heiti TC Light
+Heiti TC Medium
+Songti TC（宋體-繁）
+Songti TC
+Songti TC Regular
+Songti TC Bold
+Kaiti TC（楷體-繁）
+Kaiti TC
+🔹 Latin / System Fonts
+system-ui
+Arial
+Helvetica
+
+🔁 FONT RENDERING RULES
+Selected font applies immediately
+Use fallback chains, e.g.:
+
+"PingFang TC","PingFangTC-Regular","Heiti TC",system-ui,sans-serif
+
+No silent substitution
+
+✏️ TEXT EDITING (Title & Subtitle)
+For both layers:
+Text input (real-time)
+Color picker
+Font size:
+numeric input
+Range: 14pt → 800pt
+Draggable directly on canvas
+Mouse + touch supported
+
+🎨 CANVAS RENDERING RULES
+Use Canvas API (fillText)
+Default alignment: center
+All visuals rendered via Canvas only
+
+📤 EXPORT (MANDATORY)
+Export as PNG
+Pixel-perfect match to canvas
+Includes:
+background image
+main image
+opacity levels
+frame
+text
+positions
+
+🧠 AI-LIKE ENHANCEMENTS (Browser-Only)
+Auto-center content on load
+Smart default font sizing
+Preset inspirational captions
+Random Style button:
+font
+size
+color
+
+🎛 UI / UX REQUIREMENTS
+Clean layout
+Aligned controls
+Subtle shadows
+Responsive design
+Mobile-friendly canvas
+
+🌍 COMPATIBILITY (MANDATORY)
+Chrome (desktop + mobile)
+Safari (desktop + iOS)
+Mouse + touch dragging
+Safari-safe Canvas APIs only
+
+All the controls on the left and right side  while the Canvas Preview in the middle. So easy to see what has been adjusted
+
+
+provide me the whole frame.html file in code block
