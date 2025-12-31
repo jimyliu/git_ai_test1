@@ -3,224 +3,265 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>AI Image Frame Tool — 2025-12-30 22:23:22</title>
+  <title>AI Image Frame Tool — 2025-12-30 22:47:58</title>
   <style>
     :root{
-      --bg:#0b1020;
-      --panel:#101a33;
-      --panel2:#0f1730;
-      --text:#eaf0ff;
-      --muted:#a9b5d6;
-      --border:rgba(255,255,255,.10);
-      --shadow: 0 10px 30px rgba(0,0,0,.25);
-      --shadow2: 0 8px 22px rgba(0,0,0,.22);
-      --radius: 14px;
-      --radius2: 18px;
-      --gap: 12px;
+      --bg:#0b1220;
+      --panel:#0f1b33;
+      --panel2:#0d1730;
+      --text:#e9eefc;
+      --muted:#aab6da;
+      --line:rgba(255,255,255,.12);
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --shadow2: 0 6px 20px rgba(0,0,0,.28);
+      --radius: 16px;
+      --radius2: 12px;
+      --gap: 14px;
+      --accent: #7aa2ff;
+      --danger:#ff6b6b;
+      --ok:#27d9a3;
     }
-    *{ box-sizing:border-box; }
-    html,body{ height:100%; }
+    *{box-sizing:border-box}
+    html,body{height:100%}
     body{
       margin:0;
-      font-family: system-ui, -apple-system, "PingFang TC","PingFangTC-Regular","Heiti TC", Arial, Helvetica, sans-serif;
-      background: radial-gradient(1200px 700px at 25% 10%, #16224a 0%, rgba(22,34,74,0) 60%),
-                  radial-gradient(900px 600px at 70% 30%, #1b2f66 0%, rgba(27,47,102,0) 65%),
-                  var(--bg);
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      background: radial-gradient(1200px 700px at 20% 10%, rgba(122,162,255,.25), transparent 60%),
+                  radial-gradient(900px 600px at 90% 20%, rgba(39,217,163,.18), transparent 55%),
+                  linear-gradient(180deg, #081025, #060b16);
       color:var(--text);
     }
-
-    header{
-      padding: 16px 18px 10px;
-      position: sticky;
-      top: 0;
+    .topbar{
+      position:sticky; top:0; z-index:20;
+      background: rgba(6,11,22,.75);
       backdrop-filter: blur(10px);
-      background: linear-gradient(to bottom, rgba(11,16,32,.85), rgba(11,16,32,.35));
-      border-bottom:1px solid var(--border);
-      z-index: 5;
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
     }
-    .titlebar{
-      display:flex; align-items:flex-end; justify-content:space-between; gap:12px; flex-wrap:wrap;
+    .topbar-inner{
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 14px 16px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
     }
-    h1{
-      margin:0;
-      font-size: 18px;
-      font-weight: 750;
+    .title-wrap{
+      display:flex; flex-direction:column; gap:2px;
+      min-width: 240px;
+    }
+    .tool-title{
+      font-size: 15px;
+      font-weight: 700;
       letter-spacing: .2px;
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow:hidden;
+      text-overflow: ellipsis;
     }
-    .subtitlebar{
-      margin-top:6px;
-      color:var(--muted);
+    .subnote{
       font-size: 12px;
-      line-height: 1.35;
+      color: var(--muted);
     }
-    .kbd{
-      display:inline-block;
-      padding: 2px 7px;
-      border:1px solid var(--border);
-      border-bottom-color: rgba(255,255,255,.18);
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 8px 10px;
+      border: 1px solid var(--line);
       border-radius: 999px;
       background: rgba(255,255,255,.06);
-      box-shadow: 0 1px 0 rgba(255,255,255,.06) inset;
-      font-size: 11px;
-      color: #dfe7ff;
+      box-shadow: var(--shadow2);
+      font-size: 12px;
+      color: var(--muted);
       white-space: nowrap;
     }
-
-    main{
-      padding: 14px 14px 20px;
-      max-width: 1600px;
+    .dot{width:8px;height:8px;border-radius:999px;background: var(--ok); box-shadow:0 0 0 3px rgba(39,217,163,.15)}
+    .app{
+      max-width: 1400px;
       margin: 0 auto;
+      padding: 14px 16px 18px;
     }
-
-    .layout{
+    .grid{
       display:grid;
-      grid-template-columns: 360px minmax(360px, 1fr) 360px;
+      grid-template-columns: 360px minmax(320px, 1fr) 360px;
       gap: var(--gap);
-      align-items: start;
+      align-items:start;
     }
-
     .panel{
-      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
-      border:1px solid var(--border);
-      border-radius: var(--radius2);
-      box-shadow: var(--shadow2);
+      background: rgba(15,27,51,.72);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
       overflow:hidden;
     }
-    .panel .panel-h{
-      padding: 12px 12px 10px;
-      border-bottom:1px solid var(--border);
-      background: rgba(255,255,255,.03);
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-    }
-    .panel .panel-h b{
-      font-size: 13px;
-      letter-spacing:.2px;
-    }
-    .panel .panel-b{
-      padding: 12px;
-    }
-
-    .group{
-      padding: 10px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      background: rgba(0,0,0,.16);
-      box-shadow: 0 1px 0 rgba(255,255,255,.04) inset;
-      margin-bottom: 10px;
-    }
-    .group:last-child{ margin-bottom: 0; }
-    .group h3{
-      margin: 0 0 10px;
-      font-size: 12px;
-      color: #dfe7ff;
-      letter-spacing: .25px;
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-    }
-    .hint{
-      font-size: 11px;
-      color: var(--muted);
-      line-height: 1.35;
-      margin: 6px 0 0;
-    }
-
-    .row{
-      display:grid;
-      grid-template-columns: 1fr;
-      gap: 8px;
-      margin-bottom: 10px;
-    }
-    .row:last-child{ margin-bottom: 0; }
-
-    label{
+    .panel-header{
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap: 10px;
-      font-size: 12px;
-      color: #dce5ff;
     }
-    .small{
+    .panel-title{
+      font-weight: 800;
+      font-size: 13px;
+      letter-spacing: .2px;
+    }
+    .panel-body{
+      padding: 12px 14px 14px;
+    }
+
+    .section{
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: var(--radius2);
+      background: rgba(13,23,48,.55);
+      overflow:hidden;
+      margin-bottom: 12px;
+    }
+    .section:last-child{margin-bottom:0}
+    .section-h{
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+    }
+    .section-h .h{
+      font-weight: 800;
+      font-size: 12px;
+      letter-spacing: .25px;
+      color: #dbe6ff;
+      display:flex; align-items:center; gap:8px;
+    }
+    .badge{
       font-size: 11px;
       color: var(--muted);
-      white-space: nowrap;
+      padding: 4px 8px;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 999px;
+      background: rgba(255,255,255,.05);
+      white-space:nowrap;
     }
+    .section-b{ padding: 10px 12px 12px; }
 
-    input[type="file"]{ width:100%; }
-    input[type="text"], input[type="number"], select, textarea{
-      width: 100%;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background: rgba(12,18,38,.65);
-      color: var(--text);
-      padding: 10px 10px;
-      outline: none;
-      box-shadow: 0 1px 0 rgba(255,255,255,.04) inset;
-    }
-    textarea{ resize: vertical; min-height: 64px; max-height: 160px; }
-
-    input[type="range"]{ width:100%; }
-    input[type="color"]{
-      width: 44px; height: 32px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,.06);
-      padding: 0;
-    }
-
-    .two{
+    .row{
       display:grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
+      margin-top: 10px;
     }
-    .three{
-      display:grid;
-      grid-template-columns: 1.1fr .9fr .9fr;
-      gap: 10px;
-      align-items:end;
+    .row.one{ grid-template-columns: 1fr; }
+    label{
+      display:block;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
     }
-    .inline{
-      display:flex; gap: 10px; align-items:center;
-    }
-
-    .btnrow{
-      display:flex; gap:10px; flex-wrap:wrap;
-    }
-    button{
-      appearance:none;
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.04));
+    input[type="text"], input[type="number"], select{
+      width:100%;
+      padding: 9px 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.22);
       color: var(--text);
-      padding: 10px 12px;
-      font-weight: 650;
+      outline: none;
+    }
+    input[type="text"]::placeholder{ color: rgba(233,238,252,.45) }
+    input[type="color"]{
+      width:100%;
+      height: 38px;
+      padding: 0;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 12px;
+      background: rgba(0,0,0,.22);
       cursor:pointer;
-      box-shadow: var(--shadow);
+    }
+    input[type="range"]{ width:100% }
+    .help{
+      margin-top: 8px;
+      font-size: 12px;
+      color: rgba(233,238,252,.68);
+      line-height: 1.35;
+    }
+    .help b{ color:#ffffff }
+    .btns{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    .btn{
+      flex: 1 1 auto;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      font-weight: 800;
+      font-size: 12px;
+      cursor:pointer;
+      user-select:none;
+      -webkit-user-select:none;
+      box-shadow: 0 8px 18px rgba(0,0,0,.24);
       transition: transform .06s ease, background .15s ease, border-color .15s ease;
     }
-    button:hover{ background: linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.06)); }
-    button:active{ transform: translateY(1px); }
-    button.secondary{
-      background: rgba(255,255,255,.05);
-      box-shadow: none;
+    .btn:hover{ background: rgba(255,255,255,.10); border-color: rgba(255,255,255,.20) }
+    .btn:active{ transform: translateY(1px) }
+    .btn.primary{
+      background: rgba(122,162,255,.20);
+      border-color: rgba(122,162,255,.35);
     }
-    button.danger{
-      background: linear-gradient(180deg, rgba(255,80,80,.22), rgba(255,80,80,.10));
-      border-color: rgba(255,120,120,.35);
+    .btn.danger{
+      background: rgba(255,107,107,.14);
+      border-color: rgba(255,107,107,.28);
     }
 
-    .stage{
+    .center{
+      display:flex;
+      flex-direction:column;
+      gap: var(--gap);
+      align-items:stretch;
+    }
+    .canvas-wrap{
+      background: rgba(15,27,51,.72);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
       padding: 12px;
       display:flex;
       flex-direction:column;
-      gap: 12px;
+      gap: 10px;
     }
-    .canvasWrap{
-      position: relative;
-      border-radius: var(--radius2);
-      border:1px solid var(--border);
-      background: rgba(0,0,0,.20);
-      box-shadow: var(--shadow2);
-      overflow:hidden;
+    .canvas-meta{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      flex-wrap: wrap;
+    }
+    .canvas-meta .left{
+      display:flex; align-items:center; gap:10px; flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .kv{
+      display:inline-flex; align-items:center; gap:6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
+      white-space:nowrap;
+    }
+    .canvas-stage{
+      border-radius: 14px;
+      border: 1px dashed rgba(255,255,255,.18);
+      background: radial-gradient(800px 400px at 50% 50%, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      padding: 10px;
       display:flex;
       align-items:center;
       justify-content:center;
@@ -228,1505 +269,1409 @@
     }
     canvas{
       max-width: 100%;
-      max-height: 72vh;
-      width: auto;
+      width: 100%;
       height: auto;
-      display:block;
-      touch-action: none; /* critical for pointer/touch dragging */
-      background: transparent;
-    }
-    .stageHelp{
-      display:flex; gap:10px; flex-wrap:wrap;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.35;
+      border-radius: 12px;
+      background: rgba(0,0,0,.18);
+      touch-action: none; /* critical for iOS dragging */
     }
 
-    .chip{
-      display:inline-flex;
-      align-items:center;
-      gap: 8px;
-      padding: 8px 10px;
+    .toast{
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,.72);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,.16);
       border-radius: 999px;
-      border:1px solid var(--border);
-      background: rgba(255,255,255,.05);
+      padding: 10px 14px;
+      font-size: 12px;
+      box-shadow: var(--shadow);
+      opacity:0;
+      pointer-events:none;
+      transition: opacity .18s ease, transform .18s ease;
+      z-index: 999;
+      max-width: calc(100vw - 24px);
+      white-space: nowrap;
+      overflow:hidden;
+      text-overflow: ellipsis;
     }
-    .dot{
-      width:10px; height:10px; border-radius:50%;
-      background: rgba(255,255,255,.55);
-      box-shadow: 0 0 0 3px rgba(255,255,255,.06);
-      flex:0 0 auto;
+    .toast.show{
+      opacity:1;
+      transform: translateX(-50%) translateY(-2px);
     }
 
-    .footerNote{
-      color: var(--muted);
+    .mini{
       font-size: 11px;
+      color: rgba(233,238,252,.68);
       margin-top: 8px;
       line-height: 1.35;
     }
+    .divider{
+      height: 1px;
+      background: rgba(255,255,255,.10);
+      margin: 10px 0;
+    }
+    .hint{
+      font-size: 12px;
+      color: rgba(233,238,252,.70);
+      line-height: 1.35;
+    }
+    .hint kbd{
+      font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+      font-size: 11px;
+      padding: 2px 6px;
+      border: 1px solid rgba(255,255,255,.16);
+      border-bottom-width: 2px;
+      border-radius: 8px;
+      background: rgba(255,255,255,.06);
+      color: #fff;
+      white-space: nowrap;
+    }
+    .mono{ font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace; }
 
-    @media (max-width: 1100px){
-      .layout{ grid-template-columns: 1fr; }
-      .canvasWrap{ min-height: 360px; }
+    @media (max-width: 1180px){
+      .grid{ grid-template-columns: 320px minmax(280px,1fr) 320px; }
+    }
+    @media (max-width: 1020px){
+      .grid{ grid-template-columns: 1fr; }
+      .panel{ order: 1; }
+      .center{ order: 0; }
+      .canvas-stage{ min-height: 340px; }
     }
   </style>
 </head>
+
 <body>
-<header>
-  <div class="titlebar">
-    <h1>AI Image Frame Tool — 2025-12-30 22:23:22</h1>
-    <div class="btnrow">
-      <button id="btnRandom">🎲 Random Style</button>
-      <button id="btnCenter" class="secondary">🎯 Auto-Center</button>
-      <button id="btnExport">⬇️ Export PNG</button>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="title-wrap">
+        <div class="tool-title" id="visibleTitle">AI Image Frame Tool — 2025-12-30 22:47:58</div>
+        <div class="subnote">Browser-only • Safari + Chrome compatible • Canvas multi-layer renderer</div>
+      </div>
+      <div class="chip" title="Everything runs in your browser. No backend.">
+        <span class="dot"></span>
+        <span>Layer order locked: Background → Main → Frame → Title → Subtitle</span>
+      </div>
     </div>
   </div>
-  <div class="subtitlebar">
-    Drag directly on the canvas:
-    <span class="kbd">Main Image + Frame</span>
-    <span class="kbd">Title</span>
-    <span class="kbd">Subtitle</span>
-    • Works in <b>Safari</b> + <b>Chrome</b> • Browser-only • Canvas-only rendering
+
+  <div class="app">
+    <div class="grid">
+      <!-- LEFT CONTROLS -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">Layers • Images</div>
+          <span class="badge">Left</span>
+        </div>
+        <div class="panel-body">
+
+          <div class="section">
+            <div class="section-h">
+              <div class="h">🌄 Background Image Layer</div>
+              <span class="badge" id="bgStatus">Not loaded</span>
+            </div>
+            <div class="section-b">
+              <div class="row one">
+                <div>
+                  <label>Load background image</label>
+                  <input id="bgFile" type="file" accept="image/*" />
+                </div>
+              </div>
+
+              <div class="row">
+                <div>
+                  <label>Background Fit</label>
+                  <select id="bgFit">
+                    <option value="cover">Cover (fill canvas)</option>
+                    <option value="contain">Contain (no crop)</option>
+                  </select>
+                </div>
+                <div>
+                  <label>Background Transparency (20% → 100%)</label>
+                  <input id="bgTrans" type="range" min="20" max="100" value="35" />
+                  <div class="mini"><span class="mono" id="bgTransVal">35%</span> (higher = more transparent)</div>
+                </div>
+              </div>
+
+              <div class="btns">
+                <button class="btn danger" id="bgClear" type="button">Clear Background</button>
+                <button class="btn" id="bgAutoTheme" type="button" title="Quick preset colors & captions">Holiday Preset</button>
+              </div>
+
+              <div class="help">
+                Background is <b>not draggable</b> by default. Opacity controls affect <b>only</b> the background layer.
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-h">
+              <div class="h">🖼 Main Image Layer</div>
+              <span class="badge" id="mainStatus">Not loaded</span>
+            </div>
+            <div class="section-b">
+              <div class="row one">
+                <div>
+                  <label>Load main image (photo / portrait)</label>
+                  <input id="mainFile" type="file" accept="image/*" />
+                </div>
+              </div>
+
+              <div class="row">
+                <div>
+                  <label>Main Transparency (20% → 100%)</label>
+                  <input id="mainTrans" type="range" min="20" max="100" value="20" />
+                  <div class="mini"><span class="mono" id="mainTransVal">20%</span> (higher = more transparent)</div>
+                </div>
+                <div>
+                  <label>Main Scale (10% → 200%)</label>
+                  <input id="mainScale" type="range" min="10" max="200" value="100" />
+                  <div class="mini"><span class="mono" id="mainScaleVal">100%</span></div>
+                </div>
+              </div>
+
+              <div class="btns">
+                <button class="btn" id="mainCenter" type="button">Auto-center Main</button>
+                <button class="btn danger" id="mainClear" type="button">Clear Main</button>
+              </div>
+
+              <div class="help">
+                Drag on the canvas to move the <b>main image + frame together</b>.
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-h">
+              <div class="h">🖼 Frame / Border</div>
+              <span class="badge">wraps main image</span>
+            </div>
+            <div class="section-b">
+              <div class="row">
+                <div>
+                  <label>Frame Color</label>
+                  <input id="frameColor" type="color" value="#ffffff" />
+                </div>
+                <div>
+                  <label>Frame Thickness</label>
+                  <input id="frameThickness" type="range" min="1" max="80" value="14" />
+                  <div class="mini"><span class="mono" id="frameThickVal">14</span> px</div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div>
+                  <label>Frame Padding</label>
+                  <input id="framePad" type="range" min="0" max="120" value="24" />
+                  <div class="mini"><span class="mono" id="framePadVal">24</span> px</div>
+                </div>
+                <div>
+                  <label>Frame Visibility</label>
+                  <select id="frameOn">
+                    <option value="on">On</option>
+                    <option value="off">Off</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="help">
+                Frame thickness is <b>uniform</b> on all sides and always follows the main image.
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-h">
+              <div class="h">🧠 AI-like Enhancements</div>
+              <span class="badge">browser-only</span>
+            </div>
+            <div class="section-b">
+              <div class="row">
+                <div>
+                  <label>Preset Captions</label>
+                  <select id="presetCaptions">
+                    <option value="">(choose)</option>
+                    <option value="Peace on Earth|Joy to the World">Peace on Earth / Joy to the World</option>
+                    <option value="Merry Christmas|Warmest Wishes">Merry Christmas / Warmest Wishes</option>
+                    <option value="Hope|Love & Light">Hope / Love & Light</option>
+                    <option value="Be Still|and know that I am God">Be Still / and know that I am God</option>
+                    <option value="一起加油加油!!!|祝福滿滿">一起加油加油!!! / 祝福滿滿</option>
+                    <option value="Thanks for everything|Pray for everything">Thanks / Pray</option>
+                  </select>
+                </div>
+                <div>
+                  <label>Apply Preset To</label>
+                  <select id="presetTarget">
+                    <option value="both">Title + Subtitle</option>
+                    <option value="title">Title only</option>
+                    <option value="subtitle">Subtitle only</option>
+                  </select>
+                </div>
+              </div>
+              <div class="btns">
+                <button class="btn primary" id="applyPreset" type="button">Apply Preset</button>
+                <button class="btn" id="randomStyle" type="button">Random Style</button>
+              </div>
+              <div class="help">
+                Auto-centers content on load and picks smart defaults. Random Style tweaks font, size, and colors — all in-browser.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- CENTER CANVAS -->
+      <div class="center">
+        <div class="canvas-wrap">
+          <div class="canvas-meta">
+            <div class="left">
+              <span class="kv">Canvas: <span class="mono" id="canvasSizeLabel">1080×1080</span></span>
+              <span class="kv">Drag: <span class="mono">Main / Title / Subtitle</span></span>
+              <span class="kv">Export: <span class="mono">PNG</span></span>
+            </div>
+            <div class="btns" style="margin:0; justify-content:flex-end;">
+              <button class="btn" id="resetAll" type="button">Reset</button>
+              <button class="btn primary" id="downloadPng" type="button">Download PNG</button>
+            </div>
+          </div>
+
+          <div class="canvas-stage">
+            <canvas id="c" width="1080" height="1080" aria-label="Canvas Preview"></canvas>
+          </div>
+
+          <div class="hint">
+            Tip: Drag directly on the canvas (mouse or touch). Layer priority: <kbd>Main</kbd> first, then <kbd>Title</kbd>, then <kbd>Subtitle</kbd>.
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">Canvas Settings</div>
+            <span class="badge">Middle</span>
+          </div>
+          <div class="panel-body">
+            <div class="row">
+              <div>
+                <label>Canvas Width (px)</label>
+                <input id="canvasW" type="number" min="256" max="6000" value="1080" />
+              </div>
+              <div>
+                <label>Canvas Height (px)</label>
+                <input id="canvasH" type="number" min="256" max="6000" value="1080" />
+              </div>
+            </div>
+            <div class="btns">
+              <button class="btn" id="applyCanvasSize" type="button">Apply Canvas Size</button>
+              <button class="btn" id="snapSquare" type="button">Quick 1080×1080</button>
+            </div>
+            <div class="mini">
+              Export is pixel-perfect at the canvas size shown above.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT CONTROLS -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">Layers • Text</div>
+          <span class="badge">Right</span>
+        </div>
+        <div class="panel-body">
+
+          <div class="section">
+            <div class="section-h">
+              <div class="h">✍️ Title Text Layer</div>
+              <span class="badge">draggable</span>
+            </div>
+            <div class="section-b">
+
+              <div class="row one">
+                <div>
+                  <label>Title Text (real-time)</label>
+                  <input id="titleText" type="text" placeholder="Enter title..." value="Merry Christmas" />
+                </div>
+              </div>
+
+              <div class="row">
+                <div>
+                  <label>Title Font Family (macOS Safari safe)</label>
+                  <select id="titleFont"></select>
+                </div>
+                <div>
+                  <label>Title Size (14pt → 800pt)</label>
+                  <input id="titleSize" type="number" min="14" max="800" value="92" />
+                </div>
+              </div>
+
+              <div class="row">
+                <div>
+                  <label>Title Text Color</label>
+                  <input id="titleColor" type="color" value="#ffffff" />
+                </div>
+                <div>
+                  <label>Title BG Color</label>
+                  <input id="titleBgColor" type="color" value="#000000" />
+                </div>
+              </div>
+
+              <div class="row">
+                <div>
+                  <label>Title BG Transparency (0% → 100%)</label>
+                  <input id="titleBgTrans" type="range" min="0" max="100" value="70" />
+                  <div class="mini"><span class="mono" id="titleBgTransVal">70%</span> (higher = more transparent)</div>
+                </div>
+                <div>
+                  <label>Title Auto Center</label>
+                  <button class="btn" id="titleCenter" type="button" style="width:100%;">Center Title</button>
+                </div>
+              </div>
+
+              <div class="help">
+                Drag the title directly on the canvas. Default alignment is <b>center</b>.
+              </div>
+
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-h">
+              <div class="h">✍️ Subtitle Text Layer</div>
+              <span class="badge">draggable</span>
+            </div>
+            <div class="section-b">
+
+              <div class="row one">
+                <div>
+                  <label>Subtitle Text (real-time)</label>
+                  <input id="subtitleText" type="text" placeholder="Enter subtitle..." value="Warmest Wishes" />
+                </div>
+              </div>
+
+              <div class="row">
+                <div>
+                  <label>Subtitle Font Family (macOS Safari safe)</label>
+                  <select id="subtitleFont"></select>
+                </div>
+                <div>
+                  <label>Subtitle Size (14pt → 800pt)</label>
+                  <input id="subtitleSize" type="number" min="14" max="800" value="48" />
+                </div>
+              </div>
+
+              <div class="row">
+                <div>
+                  <label>Subtitle Text Color</label>
+                  <input id="subtitleColor" type="color" value="#ffffff" />
+                </div>
+                <div>
+                  <label>Subtitle BG Color</label>
+                  <input id="subtitleBgColor" type="color" value="#000000" />
+                </div>
+              </div>
+
+              <div class="row">
+                <div>
+                  <label>Subtitle BG Transparency (0% → 100%)</label>
+                  <input id="subtitleBgTrans" type="range" min="0" max="100" value="78" />
+                  <div class="mini"><span class="mono" id="subtitleBgTransVal">78%</span> (higher = more transparent)</div>
+                </div>
+                <div>
+                  <label>Subtitle Auto Center</label>
+                  <button class="btn" id="subtitleCenter" type="button" style="width:100%;">Center Subtitle</button>
+                </div>
+              </div>
+
+              <div class="help">
+                Subtitle is always rendered <b>above</b> the main image and frame.
+              </div>
+
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-h">
+              <div class="h">📤 Export</div>
+              <span class="badge">pixel-perfect</span>
+            </div>
+            <div class="section-b">
+              <div class="btns">
+                <button class="btn primary" id="downloadPng2" type="button">Download PNG</button>
+                <button class="btn" id="copyInfo" type="button">Copy Settings</button>
+              </div>
+              <div class="divider"></div>
+              <div class="mini" id="copyDump" style="display:none;"></div>
+              <div class="help">
+                Export includes background, main image, opacity levels, frame, and text positions — exactly as shown.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
   </div>
-</header>
 
-<main>
-  <div class="layout">
-    <!-- LEFT CONTROLS -->
-    <section class="panel">
-      <div class="panel-h">
-        <b>Left Controls</b>
-        <span class="small">Background + Canvas</span>
-      </div>
-      <div class="panel-b">
-        <div class="group">
-          <h3>🌄 Background Image Layer</h3>
+  <div class="toast" id="toast">Saved</div>
 
-          <div class="row">
-            <label>
-              <span>Load Background Image</span>
-              <span class="small">(fills canvas)</span>
-            </label>
-            <input id="bgFile" type="file" accept="image/*" />
-          </div>
+  <script>
+  (function(){
+    // ====== Version / Timestamp (MUST be generation time, not dynamic) ======
+    const GENERATION_TS = "2025-12-30 22:47:58"; // visible + <title> already include this
 
-          <div class="row">
-            <label>
-              <span>Background Fit</span>
-              <span class="small">cover / contain</span>
-            </label>
-            <select id="bgFit">
-              <option value="cover">Cover (fill canvas)</option>
-              <option value="contain">Contain (show whole image)</option>
-            </select>
-          </div>
+    // ====== Canvas setup (HiDPI) ======
+    const canvas = document.getElementById('c');
+    const ctx = canvas.getContext('2d', { alpha: true });
 
-          <div class="row">
-            <label>
-              <span>Background Transparency</span>
-              <span class="small"><span id="bgTVal">20</span>% (higher = more transparent)</span>
-            </label>
-            <input id="bgTransparency" type="range" min="20" max="100" value="20" />
-          </div>
-
-          <div class="row">
-            <div class="btnrow">
-              <button id="btnClearBg" class="secondary">Clear Background</button>
-            </div>
-          </div>
-
-          <p class="hint">
-            Background is <b>not draggable</b>. It always stays at the bottom layer.
-          </p>
-        </div>
-
-        <div class="group">
-          <h3>🧱 Canvas Settings</h3>
-
-          <div class="row">
-            <label>
-              <span>Canvas Size Mode</span>
-              <span class="small">auto / bg / main / custom</span>
-            </label>
-            <select id="canvasMode">
-              <option value="auto">Auto (background &gt; main)</option>
-              <option value="background">Use Background Size</option>
-              <option value="main">Use Main Size</option>
-              <option value="custom">Custom</option>
-            </select>
-          </div>
-
-          <div class="two">
-            <div class="row">
-              <label><span>Width</span><span class="small">px</span></label>
-              <input id="canvasW" type="number" min="64" step="1" />
-            </div>
-            <div class="row">
-              <label><span>Height</span><span class="small">px</span></label>
-              <input id="canvasH" type="number" min="64" step="1" />
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="btnrow">
-              <button id="btnApplyCanvas" class="secondary">Apply Canvas Size</button>
-              <button id="btnResetAll" class="danger">Reset All</button>
-            </div>
-          </div>
-
-          <p class="hint">
-            Exported PNG is <b>pixel-perfect</b> to the canvas dimensions above.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <!-- CANVAS PREVIEW -->
-    <section class="panel">
-      <div class="panel-h">
-        <b>Canvas Preview</b>
-        <span class="small">Layer Order: BG → Main → Frame → Title → Subtitle</span>
-      </div>
-      <div class="stage">
-        <div class="canvasWrap">
-          <canvas id="c"></canvas>
-        </div>
-
-        <div class="stageHelp">
-          <span class="chip"><span class="dot"></span>Tip: drag objects directly on the canvas (mouse or touch).</span>
-          <span class="chip"><span class="dot"></span>Tip: use “Random Style” for quick inspiration.</span>
-          <span class="chip"><span class="dot"></span>Tip: “Auto-Center” snaps main + texts to smart defaults.</span>
-        </div>
-
-        <div class="footerNote">
-          Safari note: If “Export PNG” doesn’t download automatically on iOS, it will open the PNG in a new tab (long-press → Save).
-        </div>
-      </div>
-    </section>
-
-    <!-- RIGHT CONTROLS -->
-    <section class="panel">
-      <div class="panel-h">
-        <b>Right Controls</b>
-        <span class="small">Main + Frame + Text</span>
-      </div>
-      <div class="panel-b">
-
-        <div class="group">
-          <h3>🖼 Main Image Layer</h3>
-
-          <div class="row">
-            <label>
-              <span>Load Main Image (Foreground)</span>
-              <span class="small">(draggable)</span>
-            </label>
-            <input id="mainFile" type="file" accept="image/*" />
-          </div>
-
-          <div class="row">
-            <label>
-              <span>Main Transparency</span>
-              <span class="small"><span id="mainTVal">20</span>% (higher = more transparent)</span>
-            </label>
-            <input id="mainTransparency" type="range" min="20" max="100" value="20" />
-          </div>
-
-          <div class="row">
-            <label>
-              <span>Main Scale</span>
-              <span class="small"><span id="mainScaleVal">100</span>%</span>
-            </label>
-            <input id="mainScale" type="range" min="10" max="250" value="100" />
-          </div>
-
-          <div class="row">
-            <div class="btnrow">
-              <button id="btnClearMain" class="secondary">Clear Main</button>
-              <button id="btnFitMain" class="secondary">Fit Main to Canvas</button>
-            </div>
-          </div>
-
-          <p class="hint">
-            <b>Main image and its frame move together</b> (single drag unit).
-          </p>
-        </div>
-
-        <div class="group">
-          <h3>🖼 Frame / Border</h3>
-
-          <div class="two">
-            <div class="row">
-              <label><span>Frame Color</span><span class="small">wraps main only</span></label>
-              <input id="frameColor" type="color" value="#ffffff" />
-            </div>
-            <div class="row">
-              <label><span>Thickness</span><span class="small"><span id="frameThVal">18</span> px</span></label>
-              <input id="frameThickness" type="range" min="0" max="120" value="18" />
-            </div>
-          </div>
-
-          <div class="row">
-            <label>
-              <span>Frame Corner Radius</span>
-              <span class="small"><span id="frameRadVal">18</span> px</span>
-            </label>
-            <input id="frameRadius" type="range" min="0" max="140" value="18" />
-          </div>
-
-          <p class="hint">
-            Thickness is <b>uniform</b> on all sides.
-          </p>
-        </div>
-
-        <div class="group">
-          <h3>🧠 Preset Captions</h3>
-          <div class="row">
-            <label><span>Pick a preset</span><span class="small">fills Title + Subtitle</span></label>
-            <select id="preset">
-              <option value="">— Choose —</option>
-              <option value="1">Joy to the world • Peace begins here</option>
-              <option value="2">Grace upon grace • Today is a gift</option>
-              <option value="3">一起加油加油!!! • Pray for everything</option>
-              <option value="4">Yes, Virginia • There is a Santa Claus</option>
-              <option value="5">Thankful • Every moment matters</option>
-            </select>
-          </div>
-          <p class="hint">
-            You can still edit, style, and drag text after applying a preset.
-          </p>
-        </div>
-
-        <div class="group">
-          <h3>✍️ Title Text Layer</h3>
-
-          <div class="row">
-            <label><span>Title Text</span><span class="small">real-time</span></label>
-            <textarea id="titleText" placeholder="Enter title...">Merry Christmas</textarea>
-          </div>
-
-          <div class="row">
-            <label><span>Font Family (Title)</span><span class="small">Safari-safe</span></label>
-            <select id="titleFont"></select>
-          </div>
-
-          <div class="three">
-            <div class="row">
-              <label><span>Text Color</span><span class="small">picker</span></label>
-              <input id="titleColor" type="color" value="#ffffff" />
-            </div>
-            <div class="row">
-              <label><span>Size</span><span class="small">pt</span></label>
-              <input id="titleSize" type="range" min="14" max="800" value="14" />
-            </div>
-            <div class="row">
-              <label><span>Size</span><span class="small">pt</span></label>
-              <input id="titleSizeNum" type="number" min="14" max="800" value="14" />
-            </div>
-          </div>
-
-          <div class="two">
-            <div class="row">
-              <label><span>BG Color</span><span class="small">behind text</span></label>
-              <input id="titleBgColor" type="color" value="#000000" />
-            </div>
-            <div class="row">
-              <label><span>BG Transparency</span><span class="small"><span id="titleBgTVal">55</span>%</span></label>
-              <input id="titleBgTransparency" type="range" min="0" max="100" value="55" />
-            </div>
-          </div>
-
-          <div class="row">
-            <label class="inline">
-              <input id="titleAutoFit" type="checkbox" checked />
-              <span>Smart Auto-Fit (keeps title within canvas width)</span>
-            </label>
-          </div>
-
-          <p class="hint">
-            Drag the <b>Title</b> directly on the canvas (mouse or touch).
-          </p>
-        </div>
-
-        <div class="group">
-          <h3>✍️ Subtitle Text Layer</h3>
-
-          <div class="row">
-            <label><span>Subtitle Text</span><span class="small">real-time</span></label>
-            <textarea id="subtitleText" placeholder="Enter subtitle...">Peace • Joy • Hope</textarea>
-          </div>
-
-          <div class="row">
-            <label><span>Font Family (Subtitle)</span><span class="small">Safari-safe</span></label>
-            <select id="subtitleFont"></select>
-          </div>
-
-          <div class="three">
-            <div class="row">
-              <label><span>Text Color</span><span class="small">picker</span></label>
-              <input id="subtitleColor" type="color" value="#ffffff" />
-            </div>
-            <div class="row">
-              <label><span>Size</span><span class="small">pt</span></label>
-              <input id="subtitleSize" type="range" min="14" max="800" value="42" />
-            </div>
-            <div class="row">
-              <label><span>Size</span><span class="small">pt</span></label>
-              <input id="subtitleSizeNum" type="number" min="14" max="800" value="42" />
-            </div>
-          </div>
-
-          <div class="two">
-            <div class="row">
-              <label><span>BG Color</span><span class="small">behind text</span></label>
-              <input id="subtitleBgColor" type="color" value="#000000" />
-            </div>
-            <div class="row">
-              <label><span>BG Transparency</span><span class="small"><span id="subtitleBgTVal">65</span>%</span></label>
-              <input id="subtitleBgTransparency" type="range" min="0" max="100" value="65" />
-            </div>
-          </div>
-
-          <div class="row">
-            <label class="inline">
-              <input id="subtitleAutoFit" type="checkbox" checked />
-              <span>Smart Auto-Fit (keeps subtitle within canvas width)</span>
-            </label>
-          </div>
-
-          <p class="hint">
-            Drag the <b>Subtitle</b> directly on the canvas (mouse or touch).
-          </p>
-        </div>
-
-      </div>
-    </section>
-  </div>
-</main>
-
-<script>
-(() => {
-  "use strict";
-
-  // ---------- DOM ----------
-  const el = (id) => document.getElementById(id);
-
-  const canvas = el("c");
-  const ctx = canvas.getContext("2d", { alpha: true });
-
-  // Left
-  const bgFile = el("bgFile");
-  const bgFit = el("bgFit");
-  const bgTransparency = el("bgTransparency");
-  const bgTVal = el("bgTVal");
-  const btnClearBg = el("btnClearBg");
-
-  const canvasMode = el("canvasMode");
-  const canvasW = el("canvasW");
-  const canvasH = el("canvasH");
-  const btnApplyCanvas = el("btnApplyCanvas");
-  const btnResetAll = el("btnResetAll");
-
-  // Right
-  const mainFile = el("mainFile");
-  const mainTransparency = el("mainTransparency");
-  const mainTVal = el("mainTVal");
-  const mainScale = el("mainScale");
-  const mainScaleVal = el("mainScaleVal");
-  const btnClearMain = el("btnClearMain");
-  const btnFitMain = el("btnFitMain");
-
-  const frameColor = el("frameColor");
-  const frameThickness = el("frameThickness");
-  const frameThVal = el("frameThVal");
-  const frameRadius = el("frameRadius");
-  const frameRadVal = el("frameRadVal");
-
-  const preset = el("preset");
-
-  const titleText = el("titleText");
-  const titleFont = el("titleFont");
-  const titleColor = el("titleColor");
-  const titleSize = el("titleSize");
-  const titleSizeNum = el("titleSizeNum");
-  const titleBgColor = el("titleBgColor");
-  const titleBgTransparency = el("titleBgTransparency");
-  const titleBgTVal = el("titleBgTVal");
-  const titleAutoFit = el("titleAutoFit");
-
-  const subtitleText = el("subtitleText");
-  const subtitleFont = el("subtitleFont");
-  const subtitleColor = el("subtitleColor");
-  const subtitleSize = el("subtitleSize");
-  const subtitleSizeNum = el("subtitleSizeNum");
-  const subtitleBgColor = el("subtitleBgColor");
-  const subtitleBgTransparency = el("subtitleBgTransparency");
-  const subtitleBgTVal = el("subtitleBgTVal");
-  const subtitleAutoFit = el("subtitleAutoFit");
-
-  // Top buttons
-  const btnRandom = el("btnRandom");
-  const btnCenter = el("btnCenter");
-  const btnExport = el("btnExport");
-
-  // ---------- FONT LIST (ORDER MUST MATCH EXACTLY) ----------
-  const FONT_ITEMS = [
-    // Traditional Chinese (exact order)
-    { label: "PingFang TC（蘋方-繁）— ⭐ Primary", value: "\"PingFang TC\",\"PingFangTC-Regular\",\"Heiti TC\",system-ui,sans-serif" },
-    { label: "PingFang TC", value: "\"PingFang TC\",\"PingFangTC-Regular\",\"Heiti TC\",system-ui,sans-serif" },
-    { label: "PingFangTC-Regular", value: "\"PingFangTC-Regular\",\"PingFang TC\",\"Heiti TC\",system-ui,sans-serif" },
-    { label: "PingFangTC-Medium", value: "\"PingFangTC-Medium\",\"PingFang TC\",\"Heiti TC\",system-ui,sans-serif" },
-    { label: "PingFangTC-Semibold", value: "\"PingFangTC-Semibold\",\"PingFang TC\",\"Heiti TC\",system-ui,sans-serif" },
-    { label: "Heiti TC（黑體-繁）", value: "\"Heiti TC\",\"PingFang TC\",system-ui,sans-serif" },
-    { label: "Heiti TC", value: "\"Heiti TC\",\"PingFang TC\",system-ui,sans-serif" },
-    { label: "Heiti TC Light", value: "\"Heiti TC Light\",\"Heiti TC\",\"PingFang TC\",system-ui,sans-serif" },
-    { label: "Heiti TC Medium", value: "\"Heiti TC Medium\",\"Heiti TC\",\"PingFang TC\",system-ui,sans-serif" },
-    { label: "Songti TC（宋體-繁）", value: "\"Songti TC\",\"Songti TC Regular\",\"PingFang TC\",system-ui,serif" },
-    { label: "Songti TC", value: "\"Songti TC\",\"Songti TC Regular\",\"PingFang TC\",system-ui,serif" },
-    { label: "Songti TC Regular", value: "\"Songti TC Regular\",\"Songti TC\",\"PingFang TC\",system-ui,serif" },
-    { label: "Songti TC Bold", value: "\"Songti TC Bold\",\"Songti TC\",\"PingFang TC\",system-ui,serif" },
-    { label: "Kaiti TC（楷體-繁）", value: "\"Kaiti TC\",\"PingFang TC\",\"Songti TC\",system-ui,serif" },
-    { label: "Kaiti TC", value: "\"Kaiti TC\",\"PingFang TC\",\"Songti TC\",system-ui,serif" },
-    // Latin / System
-    { label: "system-ui", value: "system-ui,-apple-system,\"PingFang TC\",\"Heiti TC\",sans-serif" },
-    { label: "Arial", value: "Arial,\"PingFang TC\",\"Heiti TC\",system-ui,sans-serif" },
-    { label: "Helvetica", value: "Helvetica,Arial,\"PingFang TC\",\"Heiti TC\",system-ui,sans-serif" },
-  ];
-
-  function populateFonts(selectEl){
-    selectEl.innerHTML = "";
-    for (const item of FONT_ITEMS){
-      const opt = document.createElement("option");
-      opt.textContent = item.label;
-      opt.value = item.value;
-      selectEl.appendChild(opt);
-    }
-  }
-  populateFonts(titleFont);
-  populateFonts(subtitleFont);
-
-  // ---------- STATE ----------
-  const state = {
-    canvas: { w: 1000, h: 600, mode: "auto" },
-
-    bg: {
-      img: null,
-      fit: "cover",
-      transparencyPct: 20, // higher = more transparent
-    },
-
-    main: {
-      img: null,
-      centerX: 500,
-      centerY: 300,
-      scalePct: 100,
-      transparencyPct: 20, // higher = more transparent
-      naturalW: 0,
-      naturalH: 0,
-    },
-
-    frame: {
-      color: "#ffffff",
-      thickness: 18,
-      radius: 18,
-    },
-
-    title: {
-      text: "Merry Christmas",
-      fontFamily: FONT_ITEMS[0].value,
-      sizePt: 86,
-      color: "#ffffff",
-      bgColor: "#000000",
-      bgTransparencyPct: 55, // 0..100 higher more transparent
-      centerX: 500,
-      centerY: 120,
-      autoFit: true,
-    },
-
-    subtitle: {
-      text: "Peace • Joy • Hope",
-      fontFamily: FONT_ITEMS[0].value,
-      sizePt: 42,
-      color: "#ffffff",
-      bgColor: "#000000",
-      bgTransparencyPct: 65,
-      centerX: 500,
-      centerY: 510,
-      autoFit: true,
-    },
-  };
-
-  // ---------- HELPERS ----------
-  function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
-
-  function hexToRgb(hex){
-    const h = (hex || "").replace("#","").trim();
-    if (h.length === 3){
-      const r = parseInt(h[0]+h[0], 16);
-      const g = parseInt(h[1]+h[1], 16);
-      const b = parseInt(h[2]+h[2], 16);
-      return { r,g,b };
-    }
-    if (h.length === 6){
-      const r = parseInt(h.slice(0,2), 16);
-      const g = parseInt(h.slice(2,4), 16);
-      const b = parseInt(h.slice(4,6), 16);
-      return { r,g,b };
-    }
-    return { r:0, g:0, b:0 };
-  }
-
-  // Slider value is "transparency %", higher = more transparent => alpha decreases
-  function transparencyToAlpha(transparencyPct){
-    const t = clamp(Number(transparencyPct) || 0, 0, 100);
-    return 1 - (t / 100);
-  }
-
-  function setCanvasSize(w,h){
-    const W = Math.max(64, Math.floor(w));
-    const H = Math.max(64, Math.floor(h));
-    state.canvas.w = W;
-    state.canvas.h = H;
-    canvas.width = W;
-    canvas.height = H;
-
-    // Keep UI inputs in sync
-    canvasW.value = W;
-    canvasH.value = H;
-
-    // Recenter defaults sensibly
-    state.main.centerX = clamp(state.main.centerX, 0, W);
-    state.main.centerY = clamp(state.main.centerY, 0, H);
-    state.title.centerX = clamp(state.title.centerX, 0, W);
-    state.title.centerY = clamp(state.title.centerY, 0, H);
-    state.subtitle.centerX = clamp(state.subtitle.centerX, 0, W);
-    state.subtitle.centerY = clamp(state.subtitle.centerY, 0, H);
-
-    smartAutoFitAll();
-    render();
-  }
-
-  function syncCanvasSizeFromMode(){
-    const mode = state.canvas.mode;
-
-    if (mode === "custom"){
-      const w = Number(canvasW.value) || state.canvas.w;
-      const h = Number(canvasH.value) || state.canvas.h;
-      setCanvasSize(w, h);
-      return;
+    function dpr(){
+      return Math.max(1, Math.min(3, window.devicePixelRatio || 1));
     }
 
-    const bg = state.bg.img;
-    const main = state.main.img;
-
-    if (mode === "background"){
-      if (bg) setCanvasSize(bg.naturalWidth || bg.width, bg.naturalHeight || bg.height);
-      return;
-    }
-    if (mode === "main"){
-      if (main) setCanvasSize(main.naturalWidth || main.width, main.naturalHeight || main.height);
-      return;
+    function setCanvasSize(w, h){
+      // Keep internal canvas at exact pixel size (for export)
+      canvas.width = Math.round(w);
+      canvas.height = Math.round(h);
+      document.getElementById('canvasSizeLabel').textContent = `${canvas.width}×${canvas.height}`;
+      render();
     }
 
-    // auto: background > main > keep current
-    if (bg) setCanvasSize(bg.naturalWidth || bg.width, bg.naturalHeight || bg.height);
-    else if (main) setCanvasSize(main.naturalWidth || main.width, main.naturalHeight || main.height);
-    else setCanvasSize(state.canvas.w, state.canvas.h);
-  }
+    // ====== UI elements ======
+    const ui = {
+      // Background
+      bgFile: document.getElementById('bgFile'),
+      bgFit: document.getElementById('bgFit'),
+      bgTrans: document.getElementById('bgTrans'),
+      bgTransVal: document.getElementById('bgTransVal'),
+      bgStatus: document.getElementById('bgStatus'),
+      bgClear: document.getElementById('bgClear'),
+      bgAutoTheme: document.getElementById('bgAutoTheme'),
 
-  function readFileAsDataURL(file){
-    return new Promise((resolve, reject) => {
-      const fr = new FileReader();
-      fr.onerror = () => reject(new Error("Failed to read file."));
-      fr.onload = () => resolve(String(fr.result || ""));
-      fr.readAsDataURL(file);
-    });
-  }
+      // Main
+      mainFile: document.getElementById('mainFile'),
+      mainTrans: document.getElementById('mainTrans'),
+      mainTransVal: document.getElementById('mainTransVal'),
+      mainScale: document.getElementById('mainScale'),
+      mainScaleVal: document.getElementById('mainScaleVal'),
+      mainStatus: document.getElementById('mainStatus'),
+      mainCenter: document.getElementById('mainCenter'),
+      mainClear: document.getElementById('mainClear'),
 
-  async function loadImageFromFile(file){
-    const url = await readFileAsDataURL(file);
-    return await new Promise((resolve, reject) => {
-      const img = new Image();
-      img.onload = () => resolve(img);
-      img.onerror = () => reject(new Error("Failed to load image."));
-      img.src = url;
-    });
-  }
+      // Frame
+      frameColor: document.getElementById('frameColor'),
+      frameThickness: document.getElementById('frameThickness'),
+      frameThickVal: document.getElementById('frameThickVal'),
+      framePad: document.getElementById('framePad'),
+      framePadVal: document.getElementById('framePadVal'),
+      frameOn: document.getElementById('frameOn'),
 
-  function drawRoundedRectPath(ctx, x, y, w, h, r){
-    const rr = clamp(r, 0, Math.min(w, h) / 2);
-    ctx.beginPath();
-    if (rr <= 0){
-      ctx.rect(x, y, w, h);
-      return;
-    }
-    ctx.moveTo(x + rr, y);
-    ctx.arcTo(x + w, y, x + w, y + h, rr);
-    ctx.arcTo(x + w, y + h, x, y + h, rr);
-    ctx.arcTo(x, y + h, x, y, rr);
-    ctx.arcTo(x, y, x + w, y, rr);
-    ctx.closePath();
-  }
+      // Text - Title
+      titleText: document.getElementById('titleText'),
+      titleFont: document.getElementById('titleFont'),
+      titleSize: document.getElementById('titleSize'),
+      titleColor: document.getElementById('titleColor'),
+      titleBgColor: document.getElementById('titleBgColor'),
+      titleBgTrans: document.getElementById('titleBgTrans'),
+      titleBgTransVal: document.getElementById('titleBgTransVal'),
+      titleCenter: document.getElementById('titleCenter'),
 
-  // ---------- LAYOUT / FIT ----------
-  function computeBgDrawRect(){
-    const W = state.canvas.w, H = state.canvas.h;
-    const img = state.bg.img;
-    if (!img) return null;
+      // Text - Subtitle
+      subtitleText: document.getElementById('subtitleText'),
+      subtitleFont: document.getElementById('subtitleFont'),
+      subtitleSize: document.getElementById('subtitleSize'),
+      subtitleColor: document.getElementById('subtitleColor'),
+      subtitleBgColor: document.getElementById('subtitleBgColor'),
+      subtitleBgTrans: document.getElementById('subtitleBgTrans'),
+      subtitleBgTransVal: document.getElementById('subtitleBgTransVal'),
+      subtitleCenter: document.getElementById('subtitleCenter'),
 
-    const iw = img.naturalWidth || img.width;
-    const ih = img.naturalHeight || img.height;
-    if (!iw || !ih) return null;
+      // AI enhancements
+      presetCaptions: document.getElementById('presetCaptions'),
+      presetTarget: document.getElementById('presetTarget'),
+      applyPreset: document.getElementById('applyPreset'),
+      randomStyle: document.getElementById('randomStyle'),
 
-    const canvasAR = W / H;
-    const imgAR = iw / ih;
+      // Canvas settings
+      canvasW: document.getElementById('canvasW'),
+      canvasH: document.getElementById('canvasH'),
+      applyCanvasSize: document.getElementById('applyCanvasSize'),
+      snapSquare: document.getElementById('snapSquare'),
 
-    let dw, dh;
-    if (state.bg.fit === "cover"){
-      if (imgAR > canvasAR){
-        dh = H;
-        dw = Math.ceil(H * imgAR);
-      } else {
-        dw = W;
-        dh = Math.ceil(W / imgAR);
-      }
-    } else { // contain
-      if (imgAR > canvasAR){
-        dw = W;
-        dh = Math.ceil(W / imgAR);
-      } else {
-        dh = H;
-        dw = Math.ceil(H * imgAR);
-      }
-    }
-    const dx = Math.floor((W - dw) / 2);
-    const dy = Math.floor((H - dh) / 2);
-    return { dx, dy, dw, dh };
-  }
+      // Export / actions
+      downloadPng: document.getElementById('downloadPng'),
+      downloadPng2: document.getElementById('downloadPng2'),
+      resetAll: document.getElementById('resetAll'),
+      copyInfo: document.getElementById('copyInfo'),
+      copyDump: document.getElementById('copyDump'),
 
-  function computeMainDrawRect(){
-    const img = state.main.img;
-    if (!img) return null;
-
-    const iw = state.main.naturalW || (img.naturalWidth || img.width);
-    const ih = state.main.naturalH || (img.naturalHeight || img.height);
-    if (!iw || !ih) return null;
-
-    const s = clamp(state.main.scalePct, 10, 250) / 100;
-    const dw = iw * s;
-    const dh = ih * s;
-    const dx = state.main.centerX - dw/2;
-    const dy = state.main.centerY - dh/2;
-    return { dx, dy, dw, dh };
-  }
-
-  function fitMainToCanvas(){
-    const img = state.main.img;
-    if (!img) return;
-
-    const W = state.canvas.w, H = state.canvas.h;
-    const iw = img.naturalWidth || img.width;
-    const ih = img.naturalHeight || img.height;
-    if (!iw || !ih) return;
-
-    // Fit inside with margin
-    const margin = Math.min(W,H) * 0.06;
-    const maxW = Math.max(1, W - margin*2);
-    const maxH = Math.max(1, H - margin*2);
-    const s = Math.min(maxW/iw, maxH/ih);
-
-    state.main.scalePct = clamp(Math.floor(s*100), 10, 250);
-    mainScale.value = state.main.scalePct;
-    mainScaleVal.textContent = String(state.main.scalePct);
-
-    state.main.centerX = W/2;
-    state.main.centerY = H/2;
-
-    render();
-  }
-
-  function autoCenterAll(){
-    const W = state.canvas.w, H = state.canvas.h;
-
-    state.main.centerX = W/2;
-    state.main.centerY = H/2;
-
-    state.title.centerX = W/2;
-    state.title.centerY = Math.max(10, H*0.16);
-
-    state.subtitle.centerX = W/2;
-    state.subtitle.centerY = Math.max(10, H*0.86);
-
-    // Smart sizes
-    smartAutoFitAll();
-    render();
-  }
-
-  // ---------- TEXT MEASURE / HIT TEST ----------
-  function setTextStyleFor(ctx, layer){
-    // Use pt as px for consistent browser-only behavior
-    ctx.font = `${layer.sizePt}px ${layer.fontFamily}`;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-  }
-
-  function getTextBox(layer){
-    const text = (layer.text || "").toString();
-    if (!text) return { x: layer.centerX, y: layer.centerY, w: 0, h: 0, padX: 0, padY: 0 };
-
-    ctx.save();
-    setTextStyleFor(ctx, layer);
-    const metrics = ctx.measureText(text);
-    ctx.restore();
-
-    const w = Math.ceil(metrics.width);
-    const h = Math.ceil(layer.sizePt * 1.15);
-    const padX = Math.ceil(Math.max(8, layer.sizePt * 0.18));
-    const padY = Math.ceil(Math.max(6, layer.sizePt * 0.14));
-
-    return {
-      x: layer.centerX - (w/2) - padX,
-      y: layer.centerY - (h/2) - padY,
-      w: w + padX*2,
-      h: h + padY*2,
-      padX, padY
+      toast: document.getElementById('toast')
     };
-  }
 
-  function pointInRect(px, py, r){
-    return px >= r.x && px <= r.x + r.w && py >= r.y && py <= r.y + r.h;
-  }
+    // ====== Fonts (Order MUST match exactly) ======
+    const FONT_OPTIONS = [
+      // Traditional Chinese Fonts (繁體中文) — must remain available for BOTH Title & Subtitle
+      { label: 'PingFang TC（蘋方-繁）— ⭐ Primary', value: '"PingFang TC","PingFangTC-Regular","PingFangTC-Medium","PingFangTC-Semibold","Heiti TC",system-ui,sans-serif' },
+      { label: 'PingFang TC', value: '"PingFang TC","PingFangTC-Regular","Heiti TC",system-ui,sans-serif' },
+      { label: 'PingFangTC-Regular', value: '"PingFangTC-Regular","PingFang TC","Heiti TC",system-ui,sans-serif' },
+      { label: 'PingFangTC-Medium', value: '"PingFangTC-Medium","PingFang TC","Heiti TC",system-ui,sans-serif' },
+      { label: 'PingFangTC-Semibold', value: '"PingFangTC-Semibold","PingFang TC","Heiti TC",system-ui,sans-serif' },
+      { label: 'Heiti TC（黑體-繁）', value: '"Heiti TC","Heiti TC Medium","Heiti TC Light","PingFang TC",system-ui,sans-serif' },
+      { label: 'Heiti TC', value: '"Heiti TC","PingFang TC",system-ui,sans-serif' },
+      { label: 'Heiti TC Light', value: '"Heiti TC Light","Heiti TC","PingFang TC",system-ui,sans-serif' },
+      { label: 'Heiti TC Medium', value: '"Heiti TC Medium","Heiti TC","PingFang TC",system-ui,sans-serif' },
+      { label: 'Songti TC（宋體-繁）', value: '"Songti TC","Songti TC Regular","Songti TC Bold","PingFang TC",system-ui,serif' },
+      { label: 'Songti TC', value: '"Songti TC","PingFang TC",system-ui,serif' },
+      { label: 'Songti TC Regular', value: '"Songti TC Regular","Songti TC","PingFang TC",system-ui,serif' },
+      { label: 'Songti TC Bold', value: '"Songti TC Bold","Songti TC","PingFang TC",system-ui,serif' },
+      { label: 'Kaiti TC（楷體-繁）', value: '"Kaiti TC","Songti TC","PingFang TC",system-ui,serif' },
+      { label: 'Kaiti TC', value: '"Kaiti TC","Songti TC","PingFang TC",system-ui,serif' },
+      // Latin / System Fonts
+      { label: 'system-ui', value: 'system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif' },
+      { label: 'Arial', value: 'Arial,system-ui,sans-serif' },
+      { label: 'Helvetica', value: 'Helvetica,Arial,system-ui,sans-serif' },
+    ];
 
-  function hitTest(px, py){
-    // Interaction priority (topmost first): Subtitle, Title, Main (frame+image)
-    const subBox = getTextBox(state.subtitle);
-    if (state.subtitle.text && pointInRect(px, py, subBox)) return "subtitle";
-
-    const titleBox = getTextBox(state.title);
-    if (state.title.text && pointInRect(px, py, titleBox)) return "title";
-
-    const mainRect = computeMainDrawRect();
-    if (mainRect && pointInRect(px, py, { x: mainRect.dx, y: mainRect.dy, w: mainRect.dw, h: mainRect.dh })) return "main";
-
-    return null;
-  }
-
-  // ---------- SMART AUTOFIT ----------
-  function smartFitTextToWidth(layer, maxWidthPx){
-    const text = (layer.text || "").toString().trim();
-    if (!text) return;
-
-    // Leave padding room
-    const target = Math.max(60, maxWidthPx * 0.92);
-
-    let size = clamp(layer.sizePt, 14, 800);
-    let loops = 0;
-
-    ctx.save();
-    while (loops++ < 40){
-      ctx.font = `${size}px ${layer.fontFamily}`;
-      const w = ctx.measureText(text).width;
-      if (w > target && size > 14){
-        size = Math.max(14, Math.floor(size * 0.90));
-        continue;
+    function populateFonts(selectEl){
+      selectEl.innerHTML = '';
+      for (const opt of FONT_OPTIONS){
+        const o = document.createElement('option');
+        o.textContent = opt.label;
+        o.value = opt.value;
+        selectEl.appendChild(o);
       }
-      if (w < target * 0.70 && size < 800){
-        // gently increase if too small
-        const newSize = Math.min(800, Math.ceil(size * 1.06));
-        if (newSize === size) break;
-        size = newSize;
-        continue;
-      }
-      break;
     }
-    ctx.restore();
+    populateFonts(ui.titleFont);
+    populateFonts(ui.subtitleFont);
 
-    layer.sizePt = clamp(size, 14, 800);
-  }
+    // Default fonts (Primary)
+    ui.titleFont.value = FONT_OPTIONS[0].value;
+    ui.subtitleFont.value = FONT_OPTIONS[0].value;
 
-  function smartAutoFitAll(){
-    const W = state.canvas.w;
-    if (state.title.autoFit) smartFitTextToWidth(state.title, W);
-    if (state.subtitle.autoFit) smartFitTextToWidth(state.subtitle, W);
+    // ====== State ======
+    const state = {
+      bg: {
+        img: null,
+        fit: 'cover',
+        transparency: 35, // 20..100 (higher = more transparent)
+      },
+      main: {
+        img: null,
+        transparency: 20, // 20..100 (higher = more transparent)
+        scalePct: 100,    // 10..200
+        x: 540,
+        y: 540,
+        baseW: 0, // computed display size at scalePct=100
+        baseH: 0
+      },
+      frame: {
+        on: true,
+        color: '#ffffff',
+        thickness: 14,
+        pad: 24
+      },
+      title: {
+        text: 'Merry Christmas',
+        font: ui.titleFont.value,
+        size: 92,
+        color: '#ffffff',
+        bgColor: '#000000',
+        bgTrans: 70, // 0..100 (higher = more transparent)
+        x: 540,
+        y: 160,
+        rect: null
+      },
+      subtitle: {
+        text: 'Warmest Wishes',
+        font: ui.subtitleFont.value,
+        size: 48,
+        color: '#ffffff',
+        bgColor: '#000000',
+        bgTrans: 78,
+        x: 540,
+        y: 260,
+        rect: null
+      },
+      dragging: {
+        active: false,
+        target: null, // 'main' | 'title' | 'subtitle' | null
+        pointerId: null,
+        startX: 0,
+        startY: 0,
+        origX: 0,
+        origY: 0
+      }
+    };
 
-    // Sync UI
-    titleSize.value = String(state.title.sizePt);
-    titleSizeNum.value = String(state.title.sizePt);
-    subtitleSize.value = String(state.subtitle.sizePt);
-    subtitleSizeNum.value = String(state.subtitle.sizePt);
-  }
+    // ====== Utilities ======
+    function toast(msg){
+      ui.toast.textContent = msg;
+      ui.toast.classList.add('show');
+      clearTimeout(toast._t);
+      toast._t = setTimeout(()=>ui.toast.classList.remove('show'), 1400);
+    }
 
-  // ---------- RENDER (STRICT LAYER ORDER) ----------
-  function clear(){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-  }
+    function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
 
-  function render(){
-    const W = state.canvas.w, H = state.canvas.h;
+    function parseTransparencyToAlpha(transPct){
+      // Spec: higher percentage means more transparency
+      // transparency 20% => alpha 0.80, 100% => alpha 0.00
+      return clamp(1 - (transPct/100), 0, 1);
+    }
 
-    clear();
+    function parseBgTransToAlpha(transPct){
+      // 0..100; higher = more transparent
+      return clamp(1 - (transPct/100), 0, 1);
+    }
 
-    // 1) Background Image Layer
-    if (state.bg.img){
-      const r = computeBgDrawRect();
-      if (r){
+    function hexToRgb(hex){
+      const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      if(!m) return {r:0,g:0,b:0};
+      return { r: parseInt(m[1],16), g: parseInt(m[2],16), b: parseInt(m[3],16) };
+    }
+
+    function rgba(hex, alpha){
+      const {r,g,b} = hexToRgb(hex);
+      return `rgba(${r},${g},${b},${alpha})`;
+    }
+
+    function getCanvasPointFromEvent(ev){
+      const rect = canvas.getBoundingClientRect();
+      const x = (ev.clientX - rect.left) * (canvas.width / rect.width);
+      const y = (ev.clientY - rect.top) * (canvas.height / rect.height);
+      return {x, y};
+    }
+
+    function fitRect(imgW, imgH, boxW, boxH, mode){
+      // returns {w,h, x,y} for drawing into box (0..boxW/boxH) centered
+      const rImg = imgW / imgH;
+      const rBox = boxW / boxH;
+      let w, h;
+      if(mode === 'contain'){
+        if(rImg > rBox){ w = boxW; h = boxW / rImg; }
+        else { h = boxH; w = boxH * rImg; }
+      }else{ // cover
+        if(rImg > rBox){ h = boxH; w = boxH * rImg; }
+        else { w = boxW; h = boxW / rImg; }
+      }
+      const x = (boxW - w) / 2;
+      const y = (boxH - h) / 2;
+      return {w,h,x,y};
+    }
+
+    function computeSmartDefaults(){
+      const w = canvas.width, h = canvas.height;
+
+      // Title + Subtitle positions
+      state.title.x = w/2;
+      state.subtitle.x = w/2;
+
+      // Smart default sizing by canvas
+      state.title.size = clamp(Math.round(Math.min(w, h) * 0.085), 14, 800);
+      state.subtitle.size = clamp(Math.round(Math.min(w, h) * 0.045), 14, 800);
+
+      // Place text near top with spacing
+      state.title.y = Math.round(h * 0.15);
+      state.subtitle.y = Math.round(h * 0.24);
+
+      // Center main image
+      state.main.x = w/2;
+      state.main.y = h/2;
+
+      // If main image loaded: compute base size to fit nicely
+      if(state.main.img){
+        computeMainBaseSize();
+      }
+
+      syncUIFromState();
+      render();
+    }
+
+    function computeMainBaseSize(){
+      if(!state.main.img) return;
+      const w = canvas.width, h = canvas.height;
+
+      // Fit main image within canvas with margins so there is room for text
+      const topSafe = Math.round(h * 0.30);
+      const bottomSafe = Math.round(h * 0.06);
+      const usableH = Math.max(200, h - topSafe - bottomSafe);
+      const usableW = Math.max(200, Math.round(w * 0.92));
+
+      const f = fitRect(state.main.img.naturalWidth, state.main.img.naturalHeight, usableW, usableH, 'contain');
+      // baseW/baseH are the "100%" size
+      state.main.baseW = Math.round(f.w);
+      state.main.baseH = Math.round(f.h);
+
+      // If we haven't moved it, center inside canvas
+      state.main.x = w/2;
+      state.main.y = topSafe + usableH/2;
+    }
+
+    function mainDrawRect(){
+      if(!state.main.img) return null;
+      const s = state.main.scalePct / 100;
+      const w = state.main.baseW * s;
+      const h = state.main.baseH * s;
+      return { x: state.main.x - w/2, y: state.main.y - h/2, w, h };
+    }
+
+    function updateTextRect(which){
+      const t = state[which];
+      const paddingX = Math.max(10, Math.round(t.size * 0.25));
+      const paddingY = Math.max(8, Math.round(t.size * 0.18));
+      ctx.save();
+      ctx.font = `${t.size}px ${t.font}`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      const metrics = ctx.measureText(t.text || " ");
+      const textW = metrics.width;
+      const textH = Math.round(t.size * 1.18);
+      const w = Math.round(textW + paddingX * 2);
+      const h = Math.round(textH + paddingY * 2);
+      const x = Math.round(t.x - w/2);
+      const y = Math.round(t.y - h/2);
+      ctx.restore();
+      t.rect = {x, y, w, h};
+      return t.rect;
+    }
+
+    function pointInRect(px, py, r){
+      return r && px >= r.x && px <= r.x + r.w && py >= r.y && py <= r.y + r.h;
+    }
+
+    // ====== Rendering (Layer Order MUST NOT break) ======
+    function render(){
+      const W = canvas.width, H = canvas.height;
+
+      // Clear
+      ctx.clearRect(0, 0, W, H);
+
+      // Optional subtle base background so transparent PNG looks ok while editing
+      ctx.save();
+      ctx.fillStyle = 'rgba(0,0,0,0.0)';
+      ctx.fillRect(0,0,W,H);
+      ctx.restore();
+
+      // 1) Background Image Layer (BOTTOM)
+      if(state.bg.img){
+        const alpha = parseTransparencyToAlpha(state.bg.transparency);
+        const r = fitRect(state.bg.img.naturalWidth, state.bg.img.naturalHeight, W, H, state.bg.fit);
         ctx.save();
-        ctx.globalAlpha = transparencyToAlpha(state.bg.transparencyPct);
-        ctx.drawImage(state.bg.img, r.dx, r.dy, r.dw, r.dh);
+        ctx.globalAlpha = alpha;
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(state.bg.img, r.x, r.y, r.w, r.h);
         ctx.restore();
       }
+
+      // 2) Main Image Layer
+      if(state.main.img){
+        const alpha = parseTransparencyToAlpha(state.main.transparency);
+        const r = mainDrawRect();
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(state.main.img, r.x, r.y, r.w, r.h);
+        ctx.restore();
+
+        // 3) Frame / Border Layer (wrap main image only)
+        if(state.frame.on){
+          const pad = state.frame.pad;
+          const fx = r.x - pad;
+          const fy = r.y - pad;
+          const fw = r.w + pad*2;
+          const fh = r.h + pad*2;
+
+          ctx.save();
+          ctx.strokeStyle = state.frame.color;
+          ctx.lineWidth = state.frame.thickness;
+          ctx.lineJoin = 'miter';
+          ctx.lineCap = 'butt';
+          // keep crisp: draw at half-pixel alignment for odd lineWidth
+          const adj = (state.frame.thickness % 2) ? 0.5 : 0;
+          ctx.strokeRect(Math.round(fx)+adj, Math.round(fy)+adj, Math.round(fw), Math.round(fh));
+          ctx.restore();
+        }
+      }
+
+      // 4) Title Text Layer
+      drawTextLayer('title');
+
+      // 5) Subtitle Text Layer (TOP)
+      drawTextLayer('subtitle');
     }
 
-    // 2) Main Image Layer
-    const mainRect = computeMainDrawRect();
-    if (state.main.img && mainRect){
+    function drawTextLayer(which){
+      const t = state[which];
+      if(!t.text && t.text !== "") return;
+
+      // Update rect for hit testing
+      const rect = updateTextRect(which);
+
+      // Background box
+      const bgAlpha = parseBgTransToAlpha(t.bgTrans);
+      if(bgAlpha > 0){
+        ctx.save();
+        ctx.fillStyle = rgba(t.bgColor, bgAlpha);
+        roundRect(ctx, rect.x, rect.y, rect.w, rect.h, Math.max(10, Math.round(t.size * 0.22)));
+        ctx.fill();
+        ctx.restore();
+      }
+
+      // Text
       ctx.save();
-      ctx.globalAlpha = transparencyToAlpha(state.main.transparencyPct);
-      ctx.drawImage(state.main.img, mainRect.dx, mainRect.dy, mainRect.dw, mainRect.dh);
+      ctx.font = `${t.size}px ${t.font}`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = t.color;
+      ctx.fillText(t.text, t.x, t.y);
       ctx.restore();
     }
 
-    // 3) Frame / Border Layer (wraps main image only)
-    if (mainRect && state.frame.thickness > 0){
-      ctx.save();
-      ctx.lineWidth = state.frame.thickness;
-      ctx.strokeStyle = state.frame.color;
-      ctx.lineJoin = "round";
-      ctx.lineCap = "round";
-
-      // Draw stroke fully visible inside/outside with half-thickness padding
-      const half = state.frame.thickness / 2;
-      const x = mainRect.dx - half;
-      const y = mainRect.dy - half;
-      const w = mainRect.dw + state.frame.thickness;
-      const h = mainRect.dh + state.frame.thickness;
-
-      drawRoundedRectPath(ctx, x, y, w, h, state.frame.radius);
-      ctx.stroke();
-      ctx.restore();
+    function roundRect(c, x, y, w, h, r){
+      const rr = Math.max(0, Math.min(r, Math.min(w,h)/2));
+      c.beginPath();
+      c.moveTo(x+rr, y);
+      c.arcTo(x+w, y, x+w, y+h, rr);
+      c.arcTo(x+w, y+h, x, y+h, rr);
+      c.arcTo(x, y+h, x, y, rr);
+      c.arcTo(x, y, x+w, y, rr);
+      c.closePath();
     }
 
-    // 4) Title Text Layer
-    drawTextLayer(state.title);
-
-    // 5) Subtitle Text Layer
-    drawTextLayer(state.subtitle);
-  }
-
-  function drawTextLayer(layer){
-    const text = (layer.text || "").toString();
-    if (!text) return;
-
-    // Background rect
-    const box = getTextBox(layer);
-    if (box.w > 0 && box.h > 0){
-      const rgb = hexToRgb(layer.bgColor);
-      const alpha = transparencyToAlpha(layer.bgTransparencyPct); // higher transparency => lower alpha
-      ctx.save();
-      ctx.globalAlpha = alpha;
-      ctx.fillStyle = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
-      // subtle rounding
-      drawRoundedRectPath(ctx, box.x, box.y, box.w, box.h, Math.min(16, Math.max(8, layer.sizePt * 0.18)));
-      ctx.fill();
-      ctx.restore();
-    }
-
-    // Text
-    ctx.save();
-    setTextStyleFor(ctx, layer);
-    ctx.fillStyle = layer.color;
-    ctx.globalAlpha = 1; // text not affected by image opacity sliders
-    ctx.fillText(text, layer.centerX, layer.centerY);
-    ctx.restore();
-  }
-
-  // ---------- EXPORT ----------
-  async function exportPNG(){
-    try{
-      // render ensures up-to-date
-      render();
-
-      const dataUrl = canvas.toDataURL("image/png");
-      // Prefer blob for large canvases
-      if (canvas.toBlob){
-        canvas.toBlob((blob) => {
-          if (!blob){
-            fallbackOpen(dataUrl);
-            return;
-          }
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement("a");
-          a.href = url;
-          a.download = "framed.png";
-          document.body.appendChild(a);
-          a.click();
-          a.remove();
-          setTimeout(() => URL.revokeObjectURL(url), 1500);
-        }, "image/png");
-      } else {
-        fallbackOpen(dataUrl);
-      }
-    } catch (e){
-      // As last resort, open in new tab
-      fallbackOpen(canvas.toDataURL("image/png"));
-    }
-  }
-
-  function fallbackOpen(dataUrl){
-    const w = window.open();
-    if (w){
-      w.document.write(`<title>PNG Export</title><img src="${dataUrl}" style="max-width:100%;height:auto;display:block;margin:0 auto;">`);
-      w.document.close();
-    } else {
-      // If pop-up blocked, try direct navigation
-      window.location.href = dataUrl;
-    }
-  }
-
-  // ---------- DRAGGING (Mouse + Touch via Pointer Events) ----------
-  const drag = {
-    active: false,
-    target: null, // "main" | "title" | "subtitle"
-    startX: 0,
-    startY: 0,
-    origX: 0,
-    origY: 0,
-    pointerId: null,
-  };
-
-  function canvasPointFromEvent(ev){
-    const rect = canvas.getBoundingClientRect();
-    const sx = canvas.width / rect.width;
-    const sy = canvas.height / rect.height;
-    const x = (ev.clientX - rect.left) * sx;
-    const y = (ev.clientY - rect.top) * sy;
-    return { x, y };
-  }
-
-  function beginDrag(target, x, y, pointerId){
-    drag.active = true;
-    drag.target = target;
-    drag.startX = x;
-    drag.startY = y;
-    drag.pointerId = pointerId;
-
-    if (target === "main"){
-      drag.origX = state.main.centerX;
-      drag.origY = state.main.centerY;
-    } else if (target === "title"){
-      drag.origX = state.title.centerX;
-      drag.origY = state.title.centerY;
-    } else if (target === "subtitle"){
-      drag.origX = state.subtitle.centerX;
-      drag.origY = state.subtitle.centerY;
-    }
-  }
-
-  function updateDrag(x, y){
-    if (!drag.active || !drag.target) return;
-    const dx = x - drag.startX;
-    const dy = y - drag.startY;
-
-    if (drag.target === "main"){
-      state.main.centerX = drag.origX + dx;
-      state.main.centerY = drag.origY + dy;
-    } else if (drag.target === "title"){
-      state.title.centerX = drag.origX + dx;
-      state.title.centerY = drag.origY + dy;
-    } else if (drag.target === "subtitle"){
-      state.subtitle.centerX = drag.origX + dx;
-      state.subtitle.centerY = drag.origY + dy;
-    }
-    render();
-  }
-
-  function endDrag(){
-    drag.active = false;
-    drag.target = null;
-    drag.pointerId = null;
-  }
-
-  canvas.addEventListener("pointerdown", (ev) => {
-    ev.preventDefault();
-    const p = canvasPointFromEvent(ev);
-    const t = hitTest(p.x, p.y);
-    if (!t) return;
-
-    canvas.setPointerCapture(ev.pointerId);
-    beginDrag(t, p.x, p.y, ev.pointerId);
-  }, { passive: false });
-
-  canvas.addEventListener("pointermove", (ev) => {
-    if (!drag.active) return;
-    if (drag.pointerId !== null && ev.pointerId !== drag.pointerId) return;
-    ev.preventDefault();
-    const p = canvasPointFromEvent(ev);
-    updateDrag(p.x, p.y);
-  }, { passive: false });
-
-  canvas.addEventListener("pointerup", (ev) => {
-    if (drag.pointerId !== null && ev.pointerId !== drag.pointerId) return;
-    ev.preventDefault();
-    endDrag();
-  }, { passive: false });
-
-  canvas.addEventListener("pointercancel", (ev) => {
-    if (drag.pointerId !== null && ev.pointerId !== drag.pointerId) return;
-    endDrag();
-  });
-
-  // ---------- UI BINDINGS ----------
-  function bind(){
-    // Background
-    bgFit.addEventListener("change", () => {
-      state.bg.fit = bgFit.value;
-      render();
-    });
-
-    bgTransparency.addEventListener("input", () => {
-      state.bg.transparencyPct = Number(bgTransparency.value);
-      bgTVal.textContent = String(state.bg.transparencyPct);
-      render();
-    });
-
-    bgFile.addEventListener("change", async () => {
-      const f = bgFile.files && bgFile.files[0];
-      if (!f) return;
-      try{
-        const img = await loadImageFromFile(f);
-        state.bg.img = img;
-
-        // If auto or background mode, update canvas size
-        syncCanvasSizeFromMode();
-        smartAutoFitAll();
-        render();
-      } catch (e){
-        alert("Background image failed to load.");
-      } finally {
-        bgFile.value = "";
-      }
-    });
-
-    btnClearBg.addEventListener("click", () => {
-      state.bg.img = null;
-      render();
-    });
-
-    // Canvas
-    canvasMode.addEventListener("change", () => {
-      state.canvas.mode = canvasMode.value;
-      syncCanvasSizeFromMode();
-    });
-
-    btnApplyCanvas.addEventListener("click", () => {
-      state.canvas.mode = canvasMode.value;
-      if (state.canvas.mode !== "custom"){
-        // Switch to custom if user wants to force values
-        state.canvas.mode = "custom";
-        canvasMode.value = "custom";
-      }
-      const w = Number(canvasW.value) || state.canvas.w;
-      const h = Number(canvasH.value) || state.canvas.h;
-      setCanvasSize(w, h);
-    });
-
-    // Main
-    mainTransparency.addEventListener("input", () => {
-      state.main.transparencyPct = Number(mainTransparency.value);
-      mainTVal.textContent = String(state.main.transparencyPct);
-      render();
-    });
-
-    mainScale.addEventListener("input", () => {
-      state.main.scalePct = Number(mainScale.value);
-      mainScaleVal.textContent = String(state.main.scalePct);
-      render();
-    });
-
-    mainFile.addEventListener("change", async () => {
-      const f = mainFile.files && mainFile.files[0];
-      if (!f) return;
-      try{
-        const img = await loadImageFromFile(f);
-        state.main.img = img;
-        state.main.naturalW = img.naturalWidth || img.width;
-        state.main.naturalH = img.naturalHeight || img.height;
-
-        // If auto or main mode, update canvas size
-        syncCanvasSizeFromMode();
-
-        // Center + fit nicely by default
-        state.main.centerX = state.canvas.w / 2;
-        state.main.centerY = state.canvas.h / 2;
-        fitMainToCanvas();
-
-        smartAutoFitAll();
-        render();
-      } catch (e){
-        alert("Main image failed to load.");
-      } finally {
-        mainFile.value = "";
-      }
-    });
-
-    btnClearMain.addEventListener("click", () => {
-      state.main.img = null;
-      render();
-    });
-
-    btnFitMain.addEventListener("click", () => {
-      fitMainToCanvas();
-    });
-
-    // Frame
-    frameColor.addEventListener("input", () => {
-      state.frame.color = frameColor.value;
-      render();
-    });
-
-    frameThickness.addEventListener("input", () => {
-      state.frame.thickness = Number(frameThickness.value);
-      frameThVal.textContent = String(state.frame.thickness);
-      render();
-    });
-
-    frameRadius.addEventListener("input", () => {
-      state.frame.radius = Number(frameRadius.value);
-      frameRadVal.textContent = String(state.frame.radius);
-      render();
-    });
-
-    // Presets
-    preset.addEventListener("change", () => {
-      const v = preset.value;
-      if (!v) return;
-
-      const presets = {
-        "1": { t: "Joy to the world", s: "Peace begins here" },
-        "2": { t: "Grace upon grace", s: "Today is a gift" },
-        "3": { t: "一起加油加油!!!", s: "Pray for everything" },
-        "4": { t: "Yes, Virginia", s: "There is a Santa Claus" },
-        "5": { t: "Thankful", s: "Every moment matters" },
+    // ====== File loading (Safari safe) ======
+    function loadImageFromFile(file, onLoad){
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      // no crossOrigin needed for local object URLs
+      img.onload = function(){
+        URL.revokeObjectURL(url);
+        onLoad(img);
       };
-      const p = presets[v];
-      if (!p) return;
-
-      state.title.text = p.t;
-      state.subtitle.text = p.s;
-      titleText.value = state.title.text;
-      subtitleText.value = state.subtitle.text;
-
-      smartAutoFitAll();
-      render();
-    });
-
-    // Title
-    titleText.addEventListener("input", () => {
-      state.title.text = titleText.value;
-      smartAutoFitAll();
-      render();
-    });
-
-    titleFont.addEventListener("change", () => {
-      state.title.fontFamily = titleFont.value;
-      smartAutoFitAll();
-      render();
-    });
-
-    titleColor.addEventListener("input", () => {
-      state.title.color = titleColor.value;
-      render();
-    });
-
-    function syncTitleSizeFrom(val){
-      const n = clamp(Number(val) || 14, 14, 800);
-      state.title.sizePt = n;
-      titleSize.value = String(n);
-      titleSizeNum.value = String(n);
-      smartAutoFitAll();
-      render();
+      img.onerror = function(){
+        URL.revokeObjectURL(url);
+        toast('Failed to load image');
+      };
+      img.src = url;
     }
-    titleSize.addEventListener("input", () => syncTitleSizeFrom(titleSize.value));
-    titleSizeNum.addEventListener("input", () => syncTitleSizeFrom(titleSizeNum.value));
 
-    titleBgColor.addEventListener("input", () => {
-      state.title.bgColor = titleBgColor.value;
-      render();
-    });
-
-    titleBgTransparency.addEventListener("input", () => {
-      state.title.bgTransparencyPct = Number(titleBgTransparency.value);
-      titleBgTVal.textContent = String(state.title.bgTransparencyPct);
-      render();
-    });
-
-    titleAutoFit.addEventListener("change", () => {
-      state.title.autoFit = !!titleAutoFit.checked;
-      smartAutoFitAll();
-      render();
-    });
-
-    // Subtitle
-    subtitleText.addEventListener("input", () => {
-      state.subtitle.text = subtitleText.value;
-      smartAutoFitAll();
-      render();
-    });
-
-    subtitleFont.addEventListener("change", () => {
-      state.subtitle.fontFamily = subtitleFont.value;
-      smartAutoFitAll();
-      render();
-    });
-
-    subtitleColor.addEventListener("input", () => {
-      state.subtitle.color = subtitleColor.value;
-      render();
-    });
-
-    function syncSubtitleSizeFrom(val){
-      const n = clamp(Number(val) || 14, 14, 800);
-      state.subtitle.sizePt = n;
-      subtitleSize.value = String(n);
-      subtitleSizeNum.value = String(n);
-      smartAutoFitAll();
-      render();
+    // ====== Dragging (Pointer Events: mouse + touch) ======
+    function pickDragTarget(px, py){
+      // Priority: Main > Title > Subtitle (as requested)
+      const mainR = mainDrawRect();
+      if(mainR && pointInRect(px, py, mainR)){
+        return 'main';
+      }
+      // then title
+      updateTextRect('title');
+      if(state.title.text && pointInRect(px, py, state.title.rect)){
+        return 'title';
+      }
+      // then subtitle
+      updateTextRect('subtitle');
+      if(state.subtitle.text && pointInRect(px, py, state.subtitle.rect)){
+        return 'subtitle';
+      }
+      return null;
     }
-    subtitleSize.addEventListener("input", () => syncSubtitleSizeFrom(subtitleSize.value));
-    subtitleSizeNum.addEventListener("input", () => syncSubtitleSizeFrom(subtitleSizeNum.value));
 
-    subtitleBgColor.addEventListener("input", () => {
-      state.subtitle.bgColor = subtitleBgColor.value;
+    canvas.addEventListener('pointerdown', (ev)=>{
+      const p = getCanvasPointFromEvent(ev);
+      const target = pickDragTarget(p.x, p.y);
+      if(!target) return;
+
+      state.dragging.active = true;
+      state.dragging.target = target;
+      state.dragging.pointerId = ev.pointerId;
+      state.dragging.startX = p.x;
+      state.dragging.startY = p.y;
+
+      if(target === 'main'){
+        state.dragging.origX = state.main.x;
+        state.dragging.origY = state.main.y;
+      }else{
+        state.dragging.origX = state[target].x;
+        state.dragging.origY = state[target].y;
+      }
+
+      canvas.setPointerCapture(ev.pointerId);
+      ev.preventDefault();
+    }, { passive: false });
+
+    canvas.addEventListener('pointermove', (ev)=>{
+      if(!state.dragging.active) return;
+      if(state.dragging.pointerId !== ev.pointerId) return;
+
+      const p = getCanvasPointFromEvent(ev);
+      const dx = p.x - state.dragging.startX;
+      const dy = p.y - state.dragging.startY;
+
+      const target = state.dragging.target;
+      if(target === 'main'){
+        state.main.x = state.dragging.origX + dx;
+        state.main.y = state.dragging.origY + dy;
+      }else if(target === 'title' || target === 'subtitle'){
+        state[target].x = state.dragging.origX + dx;
+        state[target].y = state.dragging.origY + dy;
+      }
+
+      render();
+      ev.preventDefault();
+    }, { passive: false });
+
+    function endDrag(ev){
+      if(!state.dragging.active) return;
+      if(state.dragging.pointerId !== ev.pointerId) return;
+      state.dragging.active = false;
+      state.dragging.target = null;
+      state.dragging.pointerId = null;
+      toast('Moved');
+      ev.preventDefault();
+    }
+    canvas.addEventListener('pointerup', endDrag, { passive: false });
+    canvas.addEventListener('pointercancel', endDrag, { passive: false });
+
+    // ====== UI bindings ======
+    function syncUIFromState(){
+      ui.bgFit.value = state.bg.fit;
+      ui.bgTrans.value = state.bg.transparency;
+      ui.bgTransVal.textContent = `${state.bg.transparency}%`;
+
+      ui.mainTrans.value = state.main.transparency;
+      ui.mainTransVal.textContent = `${state.main.transparency}%`;
+      ui.mainScale.value = state.main.scalePct;
+      ui.mainScaleVal.textContent = `${state.main.scalePct}%`;
+
+      ui.frameColor.value = state.frame.color;
+      ui.frameThickness.value = state.frame.thickness;
+      ui.frameThickVal.textContent = `${state.frame.thickness}`;
+      ui.framePad.value = state.frame.pad;
+      ui.framePadVal.textContent = `${state.frame.pad}`;
+      ui.frameOn.value = state.frame.on ? 'on' : 'off';
+
+      ui.titleText.value = state.title.text;
+      ui.titleFont.value = state.title.font;
+      ui.titleSize.value = state.title.size;
+      ui.titleColor.value = state.title.color;
+      ui.titleBgColor.value = state.title.bgColor;
+      ui.titleBgTrans.value = state.title.bgTrans;
+      ui.titleBgTransVal.textContent = `${state.title.bgTrans}%`;
+
+      ui.subtitleText.value = state.subtitle.text;
+      ui.subtitleFont.value = state.subtitle.font;
+      ui.subtitleSize.value = state.subtitle.size;
+      ui.subtitleColor.value = state.subtitle.color;
+      ui.subtitleBgColor.value = state.subtitle.bgColor;
+      ui.subtitleBgTrans.value = state.subtitle.bgTrans;
+      ui.subtitleBgTransVal.textContent = `${state.subtitle.bgTrans}%`;
+
+      ui.canvasW.value = canvas.width;
+      ui.canvasH.value = canvas.height;
+    }
+
+    function setStatus(el, loaded, extra){
+      el.textContent = loaded ? (extra || 'Loaded') : 'Not loaded';
+      el.style.color = loaded ? '#d6ffe9' : 'rgba(233,238,252,.70)';
+      el.style.borderColor = loaded ? 'rgba(39,217,163,.35)' : 'rgba(255,255,255,.12)';
+    }
+
+    // Background controls
+    ui.bgFile.addEventListener('change', ()=>{
+      const f = ui.bgFile.files && ui.bgFile.files[0];
+      if(!f) return;
+      loadImageFromFile(f, (img)=>{
+        state.bg.img = img;
+        setStatus(ui.bgStatus, true, 'Loaded');
+        // Keep smart default positions / sizes
+        computeSmartDefaults();
+        toast('Background loaded');
+      });
+    });
+
+    ui.bgFit.addEventListener('change', ()=>{
+      state.bg.fit = ui.bgFit.value;
       render();
     });
 
-    subtitleBgTransparency.addEventListener("input", () => {
-      state.subtitle.bgTransparencyPct = Number(subtitleBgTransparency.value);
-      subtitleBgTVal.textContent = String(state.subtitle.bgTransparencyPct);
+    ui.bgTrans.addEventListener('input', ()=>{
+      state.bg.transparency = parseInt(ui.bgTrans.value, 10);
+      ui.bgTransVal.textContent = `${state.bg.transparency}%`;
       render();
     });
 
-    subtitleAutoFit.addEventListener("change", () => {
-      state.subtitle.autoFit = !!subtitleAutoFit.checked;
-      smartAutoFitAll();
+    ui.bgClear.addEventListener('click', ()=>{
+      state.bg.img = null;
+      ui.bgFile.value = '';
+      setStatus(ui.bgStatus, false);
+      render();
+      toast('Background cleared');
+    });
+
+    ui.bgAutoTheme.addEventListener('click', ()=>{
+      // Quick "Christmas-like" feel without any external assets:
+      // Adjust frame color, and text colors + backgrounds
+      state.frame.color = '#ffffff';
+      state.frame.thickness = clamp(state.frame.thickness, 10, 22);
+      state.title.color = '#ffffff';
+      state.subtitle.color = '#ffffff';
+      state.title.bgColor = '#b3001b'; // festive red
+      state.subtitle.bgColor = '#0b6b3a'; // festive green
+      state.title.bgTrans = 35;
+      state.subtitle.bgTrans = 45;
+      state.title.font = FONT_OPTIONS[0].value;
+      state.subtitle.font = FONT_OPTIONS[0].value;
+      syncUIFromState();
+      render();
+      toast('Holiday preset applied');
+    });
+
+    // Main controls
+    ui.mainFile.addEventListener('change', ()=>{
+      const f = ui.mainFile.files && ui.mainFile.files[0];
+      if(!f) return;
+      loadImageFromFile(f, (img)=>{
+        state.main.img = img;
+        setStatus(ui.mainStatus, true, 'Loaded');
+        computeMainBaseSize();
+        // Auto-center on load
+        state.main.x = canvas.width/2;
+        state.main.y = canvas.height/2;
+        // Smart defaults
+        computeSmartDefaults();
+        toast('Main image loaded');
+      });
+    });
+
+    ui.mainTrans.addEventListener('input', ()=>{
+      state.main.transparency = parseInt(ui.mainTrans.value, 10);
+      ui.mainTransVal.textContent = `${state.main.transparency}%`;
       render();
     });
 
-    // Top buttons
-    btnCenter.addEventListener("click", () => autoCenterAll());
-    btnExport.addEventListener("click", () => exportPNG());
-    btnRandom.addEventListener("click", () => randomStyle());
+    ui.mainScale.addEventListener('input', ()=>{
+      state.main.scalePct = parseInt(ui.mainScale.value, 10);
+      ui.mainScaleVal.textContent = `${state.main.scalePct}%`;
+      render();
+    });
+
+    ui.mainCenter.addEventListener('click', ()=>{
+      state.main.x = canvas.width/2;
+      state.main.y = canvas.height/2;
+      render();
+      toast('Main centered');
+    });
+
+    ui.mainClear.addEventListener('click', ()=>{
+      state.main.img = null;
+      ui.mainFile.value = '';
+      setStatus(ui.mainStatus, false);
+      render();
+      toast('Main cleared');
+    });
+
+    // Frame controls
+    ui.frameColor.addEventListener('input', ()=>{
+      state.frame.color = ui.frameColor.value;
+      render();
+    });
+    ui.frameThickness.addEventListener('input', ()=>{
+      state.frame.thickness = parseInt(ui.frameThickness.value, 10);
+      ui.frameThickVal.textContent = `${state.frame.thickness}`;
+      render();
+    });
+    ui.framePad.addEventListener('input', ()=>{
+      state.frame.pad = parseInt(ui.framePad.value, 10);
+      ui.framePadVal.textContent = `${state.frame.pad}`;
+      render();
+    });
+    ui.frameOn.addEventListener('change', ()=>{
+      state.frame.on = (ui.frameOn.value === 'on');
+      render();
+    });
+
+    // Title controls
+    ui.titleText.addEventListener('input', ()=>{
+      state.title.text = ui.titleText.value;
+      render();
+    });
+    ui.titleFont.addEventListener('change', ()=>{
+      state.title.font = ui.titleFont.value;
+      render();
+    });
+    ui.titleSize.addEventListener('input', ()=>{
+      state.title.size = clamp(parseInt(ui.titleSize.value || '14', 10), 14, 800);
+      ui.titleSize.value = state.title.size;
+      render();
+    });
+    ui.titleColor.addEventListener('input', ()=>{
+      state.title.color = ui.titleColor.value;
+      render();
+    });
+    ui.titleBgColor.addEventListener('input', ()=>{
+      state.title.bgColor = ui.titleBgColor.value;
+      render();
+    });
+    ui.titleBgTrans.addEventListener('input', ()=>{
+      state.title.bgTrans = parseInt(ui.titleBgTrans.value, 10);
+      ui.titleBgTransVal.textContent = `${state.title.bgTrans}%`;
+      render();
+    });
+    ui.titleCenter.addEventListener('click', ()=>{
+      state.title.x = canvas.width/2;
+      state.title.y = Math.round(canvas.height * 0.15);
+      render();
+      toast('Title centered');
+    });
+
+    // Subtitle controls
+    ui.subtitleText.addEventListener('input', ()=>{
+      state.subtitle.text = ui.subtitleText.value;
+      render();
+    });
+    ui.subtitleFont.addEventListener('change', ()=>{
+      state.subtitle.font = ui.subtitleFont.value;
+      render();
+    });
+    ui.subtitleSize.addEventListener('input', ()=>{
+      state.subtitle.size = clamp(parseInt(ui.subtitleSize.value || '14', 10), 14, 800);
+      ui.subtitleSize.value = state.subtitle.size;
+      render();
+    });
+    ui.subtitleColor.addEventListener('input', ()=>{
+      state.subtitle.color = ui.subtitleColor.value;
+      render();
+    });
+    ui.subtitleBgColor.addEventListener('input', ()=>{
+      state.subtitle.bgColor = ui.subtitleBgColor.value;
+      render();
+    });
+    ui.subtitleBgTrans.addEventListener('input', ()=>{
+      state.subtitle.bgTrans = parseInt(ui.subtitleBgTrans.value, 10);
+      ui.subtitleBgTransVal.textContent = `${state.subtitle.bgTrans}%`;
+      render();
+    });
+    ui.subtitleCenter.addEventListener('click', ()=>{
+      state.subtitle.x = canvas.width/2;
+      state.subtitle.y = Math.round(canvas.height * 0.24);
+      render();
+      toast('Subtitle centered');
+    });
+
+    // Presets / Random style
+    ui.applyPreset.addEventListener('click', ()=>{
+      const v = ui.presetCaptions.value;
+      if(!v){ toast('Pick a preset first'); return; }
+      const parts = v.split('|');
+      const t = parts[0] || '';
+      const s = parts[1] || '';
+
+      const target = ui.presetTarget.value;
+      if(target === 'both'){
+        state.title.text = t;
+        state.subtitle.text = s;
+      }else if(target === 'title'){
+        state.title.text = t;
+      }else{
+        state.subtitle.text = s;
+      }
+
+      syncUIFromState();
+      render();
+      toast('Preset applied');
+    });
+
+    function randInt(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+    function randColor(){
+      // bias toward bright readable colors
+      const palette = ['#ffffff','#f6f0ff','#ffe8e8','#e9fff7','#fff4d6','#dbe6ff','#ffd9f5','#e0f0ff'];
+      return palette[randInt(0,palette.length-1)];
+    }
+    function randBgColor(){
+      const palette = ['#000000','#0b1a33','#0f2a2a','#2a0f1d','#1b2a0f','#2a1b0f','#121212'];
+      return palette[randInt(0,palette.length-1)];
+    }
+
+    ui.randomStyle.addEventListener('click', ()=>{
+      // Randomize fonts (from required list), sizes, colors
+      const f1 = FONT_OPTIONS[randInt(0, FONT_OPTIONS.length-1)].value;
+      const f2 = FONT_OPTIONS[randInt(0, FONT_OPTIONS.length-1)].value;
+
+      state.title.font = f1;
+      state.subtitle.font = f2;
+
+      const base = Math.min(canvas.width, canvas.height);
+      state.title.size = clamp(randInt(Math.round(base*0.06), Math.round(base*0.11)), 14, 800);
+      state.subtitle.size = clamp(randInt(Math.round(base*0.03), Math.round(base*0.07)), 14, 800);
+
+      state.title.color = randColor();
+      state.subtitle.color = randColor();
+
+      state.title.bgColor = randBgColor();
+      state.subtitle.bgColor = randBgColor();
+
+      state.title.bgTrans = randInt(15, 85);
+      state.subtitle.bgTrans = randInt(15, 85);
+
+      // Frame tweaks
+      state.frame.color = randColor();
+      state.frame.thickness = clamp(randInt(6, 26), 1, 80);
+      state.frame.pad = clamp(randInt(10, 50), 0, 120);
+
+      // Background transparency tweak
+      state.bg.transparency = clamp(randInt(25, 65), 20, 100);
+
+      syncUIFromState();
+      render();
+      toast('Random style');
+    });
+
+    // Canvas settings
+    ui.applyCanvasSize.addEventListener('click', ()=>{
+      const w = clamp(parseInt(ui.canvasW.value || '1080', 10), 256, 6000);
+      const h = clamp(parseInt(ui.canvasH.value || '1080', 10), 256, 6000);
+      setCanvasSize(w, h);
+      computeSmartDefaults();
+      toast(`Canvas ${w}×${h}`);
+    });
+
+    ui.snapSquare.addEventListener('click', ()=>{
+      ui.canvasW.value = 1080;
+      ui.canvasH.value = 1080;
+      setCanvasSize(1080, 1080);
+      computeSmartDefaults();
+      toast('Canvas 1080×1080');
+    });
 
     // Reset
-    btnResetAll.addEventListener("click", () => {
-      if (!confirm("Reset everything to defaults?")) return;
-      resetAll();
+    ui.resetAll.addEventListener('click', ()=>{
+      // keep timestamp; reset state
+      state.bg.img = null;
+      state.bg.fit = 'cover';
+      state.bg.transparency = 35;
+
+      state.main.img = null;
+      state.main.transparency = 20;
+      state.main.scalePct = 100;
+      state.main.x = canvas.width/2;
+      state.main.y = canvas.height/2;
+      state.main.baseW = 0;
+      state.main.baseH = 0;
+
+      state.frame.on = true;
+      state.frame.color = '#ffffff';
+      state.frame.thickness = 14;
+      state.frame.pad = 24;
+
+      state.title.text = 'Merry Christmas';
+      state.title.font = FONT_OPTIONS[0].value;
+      state.title.size = clamp(Math.round(Math.min(canvas.width, canvas.height) * 0.085), 14, 800);
+      state.title.color = '#ffffff';
+      state.title.bgColor = '#000000';
+      state.title.bgTrans = 70;
+      state.title.x = canvas.width/2;
+      state.title.y = Math.round(canvas.height * 0.15);
+
+      state.subtitle.text = 'Warmest Wishes';
+      state.subtitle.font = FONT_OPTIONS[0].value;
+      state.subtitle.size = clamp(Math.round(Math.min(canvas.width, canvas.height) * 0.045), 14, 800);
+      state.subtitle.color = '#ffffff';
+      state.subtitle.bgColor = '#000000';
+      state.subtitle.bgTrans = 78;
+      state.subtitle.x = canvas.width/2;
+      state.subtitle.y = Math.round(canvas.height * 0.24);
+
+      ui.bgFile.value = '';
+      ui.mainFile.value = '';
+      setStatus(ui.bgStatus, false);
+      setStatus(ui.mainStatus, false);
+
+      syncUIFromState();
+      render();
+      toast('Reset');
     });
 
-    // Keep labels synced
-    frameThVal.textContent = String(state.frame.thickness);
-    frameRadVal.textContent = String(state.frame.radius);
-    bgTVal.textContent = String(state.bg.transparencyPct);
-    mainTVal.textContent = String(state.main.transparencyPct);
-    mainScaleVal.textContent = String(state.main.scalePct);
-    titleBgTVal.textContent = String(state.title.bgTransparencyPct);
-    subtitleBgTVal.textContent = String(state.subtitle.bgTransparencyPct);
-  }
+    // Copy Settings (helpful for sharing)
+    ui.copyInfo.addEventListener('click', async ()=>{
+      const payload = {
+        generated_at: GENERATION_TS,
+        canvas: { w: canvas.width, h: canvas.height },
+        bg: { loaded: !!state.bg.img, fit: state.bg.fit, transparency: state.bg.transparency },
+        main: { loaded: !!state.main.img, transparency: state.main.transparency, scalePct: state.main.scalePct, x: Math.round(state.main.x), y: Math.round(state.main.y) },
+        frame: { on: state.frame.on, color: state.frame.color, thickness: state.frame.thickness, pad: state.frame.pad },
+        title: { text: state.title.text, font: state.title.font, size: state.title.size, color: state.title.color, bgColor: state.title.bgColor, bgTrans: state.title.bgTrans, x: Math.round(state.title.x), y: Math.round(state.title.y) },
+        subtitle: { text: state.subtitle.text, font: state.subtitle.font, size: state.subtitle.size, color: state.subtitle.color, bgColor: state.subtitle.bgColor, bgTrans: state.subtitle.bgTrans, x: Math.round(state.subtitle.x), y: Math.round(state.subtitle.y) },
+        layer_order: ["Background Image Layer","Main Image Layer","Frame / Border Layer","Title Text Layer","Subtitle Text Layer"]
+      };
+      const text = JSON.stringify(payload, null, 2);
+      try{
+        await navigator.clipboard.writeText(text);
+        toast('Settings copied');
+        ui.copyDump.style.display = 'none';
+      }catch(e){
+        // Fallback: show in UI
+        ui.copyDump.style.display = 'block';
+        ui.copyDump.textContent = text;
+        toast('Copy blocked — shown below');
+      }
+    });
 
-  // ---------- RANDOM STYLE (Browser-only) ----------
-  function randInt(a,b){ return Math.floor(a + Math.random()*(b-a+1)); }
-  function randHex(){
-    const n = randInt(0, 0xFFFFFF);
-    return "#" + n.toString(16).padStart(6,"0");
-  }
-  function randomPick(arr){ return arr[randInt(0, arr.length-1)]; }
+    // Export
+    function downloadPNG(){
+      // Ensure latest render
+      render();
 
-  function randomStyle(){
-    // Random fonts from provided list (kept)
-    state.title.fontFamily = randomPick(FONT_ITEMS).value;
-    state.subtitle.fontFamily = randomPick(FONT_ITEMS).value;
-    titleFont.value = state.title.fontFamily;
-    subtitleFont.value = state.subtitle.fontFamily;
+      const safeTs = GENERATION_TS.replace(/[: ]/g,'-');
+      const filename = `framed-${safeTs}.png`;
 
-    // Sizes (smart-ish)
-    state.title.sizePt = clamp(randInt(44, 160), 14, 800);
-    state.subtitle.sizePt = clamp(randInt(24, 96), 14, 800);
-    titleSize.value = String(state.title.sizePt);
-    titleSizeNum.value = String(state.title.sizePt);
-    subtitleSize.value = String(state.subtitle.sizePt);
-    subtitleSizeNum.value = String(state.subtitle.sizePt);
+      try{
+        const url = canvas.toDataURL('image/png');
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        toast('Downloading PNG');
+      }catch(err){
+        // iOS Safari sometimes blocks auto-download
+        toast('Export blocked — try screenshot / share');
+      }
+    }
+    ui.downloadPng.addEventListener('click', downloadPNG);
+    ui.downloadPng2.addEventListener('click', downloadPNG);
 
-    // Colors
-    state.frame.color = randHex();
-    frameColor.value = state.frame.color;
+    // ====== Initial statuses + defaults ======
+    setStatus(ui.bgStatus, false);
+    setStatus(ui.mainStatus, false);
 
-    state.title.color = randHex();
-    titleColor.value = state.title.color;
+    // Keep UI labels synced
+    function bindLabelRange(rangeEl, labelEl, fmt){
+      rangeEl.addEventListener('input', ()=>{
+        labelEl.textContent = fmt(rangeEl.value);
+      });
+      labelEl.textContent = fmt(rangeEl.value);
+    }
+    bindLabelRange(ui.bgTrans, ui.bgTransVal, v => `${v}%`);
+    bindLabelRange(ui.mainTrans, ui.mainTransVal, v => `${v}%`);
+    bindLabelRange(ui.mainScale, ui.mainScaleVal, v => `${v}%`);
+    bindLabelRange(ui.frameThickness, ui.frameThickVal, v => `${v}`);
+    bindLabelRange(ui.framePad, ui.framePadVal, v => `${v}`);
+    bindLabelRange(ui.titleBgTrans, ui.titleBgTransVal, v => `${v}%`);
+    bindLabelRange(ui.subtitleBgTrans, ui.subtitleBgTransVal, v => `${v}%`);
 
-    state.subtitle.color = randHex();
-    subtitleColor.value = state.subtitle.color;
-
-    // Text backgrounds
-    state.title.bgColor = randHex();
-    titleBgColor.value = state.title.bgColor;
-    state.subtitle.bgColor = randHex();
-    subtitleBgColor.value = state.subtitle.bgColor;
-
-    state.title.bgTransparencyPct = randInt(20, 85);
-    titleBgTransparency.value = String(state.title.bgTransparencyPct);
-    titleBgTVal.textContent = String(state.title.bgTransparencyPct);
-
-    state.subtitle.bgTransparencyPct = randInt(20, 85);
-    subtitleBgTransparency.value = String(state.subtitle.bgTransparencyPct);
-    subtitleBgTVal.textContent = String(state.subtitle.bgTransparencyPct);
-
-    // Frame thickness & radius
-    state.frame.thickness = randInt(6, 42);
-    frameThickness.value = String(state.frame.thickness);
-    frameThVal.textContent = String(state.frame.thickness);
-
-    state.frame.radius = randInt(0, 46);
-    frameRadius.value = String(state.frame.radius);
-    frameRadVal.textContent = String(state.frame.radius);
-
-    // Image transparency
-    state.bg.transparencyPct = randInt(20, 70);
-    bgTransparency.value = String(state.bg.transparencyPct);
-    bgTVal.textContent = String(state.bg.transparencyPct);
-
-    state.main.transparencyPct = randInt(20, 70);
-    mainTransparency.value = String(state.main.transparencyPct);
-    mainTVal.textContent = String(state.main.transparencyPct);
-
-    // Positions
-    autoCenterAll();
+    // Smart defaults on load
+    setCanvasSize(1080, 1080);
+    computeSmartDefaults();
+    syncUIFromState();
     render();
-  }
 
-  // ---------- RESET ----------
-  function resetAll(){
-    state.canvas.mode = "auto";
-    canvasMode.value = "auto";
+    // Responsive re-render on resize (for crisp interactions; export unaffected)
+    window.addEventListener('resize', ()=>{ render(); });
 
-    state.bg.img = null;
-    state.bg.fit = "cover";
-    bgFit.value = "cover";
-    state.bg.transparencyPct = 20;
-    bgTransparency.value = "20";
-    bgTVal.textContent = "20";
-
-    state.main.img = null;
-    state.main.scalePct = 100;
-    mainScale.value = "100";
-    mainScaleVal.textContent = "100";
-    state.main.transparencyPct = 20;
-    mainTransparency.value = "20";
-    mainTVal.textContent = "20";
-
-    state.frame.color = "#ffffff";
-    frameColor.value = "#ffffff";
-    state.frame.thickness = 18;
-    frameThickness.value = "18";
-    frameThVal.textContent = "18";
-    state.frame.radius = 18;
-    frameRadius.value = "18";
-    frameRadVal.textContent = "18";
-
-    state.title.text = "Merry Christmas";
-    titleText.value = state.title.text;
-    state.title.fontFamily = FONT_ITEMS[0].value;
-    titleFont.value = state.title.fontFamily;
-    state.title.sizePt = 86;
-    titleSize.value = "86";
-    titleSizeNum.value = "86";
-    state.title.color = "#ffffff";
-    titleColor.value = "#ffffff";
-    state.title.bgColor = "#000000";
-    titleBgColor.value = "#000000";
-    state.title.bgTransparencyPct = 55;
-    titleBgTransparency.value = "55";
-    titleBgTVal.textContent = "55";
-    state.title.autoFit = true;
-    titleAutoFit.checked = true;
-
-    state.subtitle.text = "Peace • Joy • Hope";
-    subtitleText.value = state.subtitle.text;
-    state.subtitle.fontFamily = FONT_ITEMS[0].value;
-    subtitleFont.value = state.subtitle.fontFamily;
-    state.subtitle.sizePt = 42;
-    subtitleSize.value = "42";
-    subtitleSizeNum.value = "42";
-    state.subtitle.color = "#ffffff";
-    subtitleColor.value = "#ffffff";
-    state.subtitle.bgColor = "#000000";
-    subtitleBgColor.value = "#000000";
-    state.subtitle.bgTransparencyPct = 65;
-    subtitleBgTransparency.value = "65";
-    subtitleBgTVal.textContent = "65";
-    state.subtitle.autoFit = true;
-    subtitleAutoFit.checked = true;
-
-    // default canvas size
-    setCanvasSize(1000, 600);
-    autoCenterAll();
-    render();
-  }
-
-  // ---------- INIT ----------
-  function init(){
-    // Defaults
-    state.canvas.mode = "auto";
-    canvasMode.value = "auto";
-
-    // Set default font selections to the "Primary" option
-    titleFont.value = state.title.fontFamily;
-    subtitleFont.value = state.subtitle.fontFamily;
-
-    // Initialize canvas inputs and size
-    canvasW.value = String(state.canvas.w);
-    canvasH.value = String(state.canvas.h);
-    setCanvasSize(state.canvas.w, state.canvas.h);
-
-    // Fill UI from state
-    bgFit.value = state.bg.fit;
-    bgTransparency.value = String(state.bg.transparencyPct);
-    bgTVal.textContent = String(state.bg.transparencyPct);
-
-    mainTransparency.value = String(state.main.transparencyPct);
-    mainTVal.textContent = String(state.main.transparencyPct);
-    mainScale.value = String(state.main.scalePct);
-    mainScaleVal.textContent = String(state.main.scalePct);
-
-    frameColor.value = state.frame.color;
-    frameThickness.value = String(state.frame.thickness);
-    frameThVal.textContent = String(state.frame.thickness);
-    frameRadius.value = String(state.frame.radius);
-    frameRadVal.textContent = String(state.frame.radius);
-
-    titleText.value = state.title.text;
-    titleColor.value = state.title.color;
-    titleSize.value = String(state.title.sizePt);
-    titleSizeNum.value = String(state.title.sizePt);
-    titleBgColor.value = state.title.bgColor;
-    titleBgTransparency.value = String(state.title.bgTransparencyPct);
-    titleBgTVal.textContent = String(state.title.bgTransparencyPct);
-    titleAutoFit.checked = state.title.autoFit;
-
-    subtitleText.value = state.subtitle.text;
-    subtitleColor.value = state.subtitle.color;
-    subtitleSize.value = String(state.subtitle.sizePt);
-    subtitleSizeNum.value = String(state.subtitle.sizePt);
-    subtitleBgColor.value = state.subtitle.bgColor;
-    subtitleBgTransparency.value = String(state.subtitle.bgTransparencyPct);
-    subtitleBgTVal.textContent = String(state.subtitle.bgTransparencyPct);
-    subtitleAutoFit.checked = state.subtitle.autoFit;
-
-    bind();
-    autoCenterAll();
-    render();
-  }
-
-  init();
-})();
-</script>
+  })();
+  </script>
 </body>
 </html>
