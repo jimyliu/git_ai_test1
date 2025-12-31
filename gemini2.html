@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AI Image Frame Tool — Chinese Font Support</title>
+    <title>AI Image Frame Tool — Transparancy Support</title>
     <style>
         :root {
             --bg-color: #f4f4f7;
@@ -190,12 +190,21 @@
             <h3>2. Background Layer</h3>
             <div class="input-group">
                 <div class="file-upload-wrapper">
-                    <button class="btn btn-secondary">🎄 Upload Frame/BG Image</button>
+                    <button class="btn btn-secondary">🎄 Upload BG Image</button>
                     <input type="file" id="bgUpload" accept="image/*">
                 </div>
             </div>
+            
             <div class="input-group">
-                <label>Fallback Color</label>
+                <label>BG Image Transparency</label>
+                <div class="slider-group">
+                    <input type="range" id="bgOpacity" min="20" max="100" value="100">
+                    <input type="number" id="bgOpacityNum" value="100">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Canvas Fallback Color</label>
                 <input type="color" id="bgColor" value="#f0f0f0">
             </div>
         </div>
@@ -265,6 +274,7 @@
         bgImg: new Image(),
         bgLoaded: false,
         bgColor: '#f0f0f0',
+        bgOpacity: 100, // Percentage
         
         photo: { x: 600, y: 350, scale: 75, frameWidth: 30, frameColor: '#ffffff' },
         title: { text: '祝 聖誕快樂', font: "'PingFang TC', sans-serif", size: 80, color: '#000000', x: 600, y: 620 },
@@ -280,15 +290,19 @@
     function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // 1. Background
+        // 1. Bottom Canvas Color
+        ctx.fillStyle = state.bgColor;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // 2. Background Image with Transparency
         if (state.bgLoaded) {
+            ctx.save();
+            ctx.globalAlpha = state.bgOpacity / 100;
             ctx.drawImage(state.bgImg, 0, 0, canvas.width, canvas.height);
-        } else {
-            ctx.fillStyle = state.bgColor;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.restore();
         }
 
-        // 2. Photo & Frame
+        // 3. Photo & Inner Frame
         if (state.mainLoaded) {
             const p = state.photo;
             const aspect = state.mainImg.width / state.mainImg.height;
@@ -308,7 +322,7 @@
             ctx.fillText("Please upload a Main Photo", canvas.width/2, canvas.height/2);
         }
 
-        // 3. Text Layers
+        // 4. Text Layers
         drawText(state.title);
         drawText(state.subtitle);
     }
@@ -323,7 +337,7 @@
         ctx.restore();
     }
 
-    // Interaction
+    // Interaction (Dragging)
     let dragTarget = null;
     let offset = { x: 0, y: 0 };
 
@@ -368,7 +382,7 @@
 
     window.addEventListener('mouseup', () => dragTarget = null);
 
-    // Controls
+    // Inputs & Bindings
     document.getElementById('imageUpload').addEventListener('change', (e) => {
         const reader = new FileReader();
         reader.onload = (ev) => {
@@ -403,12 +417,17 @@
     bind('frameWidth', state.photo, 'frameWidth', true);
     bind('frameWidthNum', state.photo, 'frameWidth', true);
     bind('frameColor', state.photo, 'frameColor');
+    
+    bind('bgOpacity', state, 'bgOpacity', true);
+    bind('bgOpacityNum', state, 'bgOpacity', true);
     bind('bgColor', state, 'bgColor');
+    
     bind('titleText', state.title, 'text');
     bind('titleFont', state.title, 'font');
     bind('titleSize', state.title, 'size', true);
     bind('titleSizeNum', state.title, 'size', true);
     bind('titleColor', state.title, 'color');
+    
     bind('subtitleText', state.subtitle, 'text');
     bind('subtitleFont', state.subtitle, 'font');
     bind('subtitleSize', state.subtitle, 'size', true);
@@ -424,7 +443,7 @@
 
     document.getElementById('btnExport').addEventListener('click', () => {
         const link = document.createElement('a');
-        link.download = `art-frame-${Date.now()}.png`;
+        link.download = `photo-art-${Date.now()}.png`;
         link.href = canvas.toDataURL();
         link.click();
     });
